@@ -12,7 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-.version>6.1.2</spring-.version>
+        <spring-version>6.1.2</spring-version>
     </properties>
 
     <build>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring-.version}</version>
+            <version>${spring-version}</version>
         </dependency>
 
 
@@ -67,5 +67,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    </properties>
 </project>
