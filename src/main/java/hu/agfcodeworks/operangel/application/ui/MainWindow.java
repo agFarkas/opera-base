@@ -4,6 +4,7 @@ import hu.agfcodeworks.operangel.application.ui.components.tabpanes.CalendarTabP
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.ConductorsTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.OperasTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.PerformersTabPane;
+import hu.agfcodeworks.operangel.application.ui.components.tabpanes.SeasonsTabPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,9 @@ public class MainWindow extends JFrame {
 
     @Autowired
     private OperasTabPane pnOperas;
+
+    @Autowired
+    private SeasonsTabPane pnSeasons;
 
     @Value("${application.title}")
     private String applicationName;
@@ -54,6 +58,7 @@ public class MainWindow extends JFrame {
         tabbedPane.addTab("Karmesterek", pnConductors);
         tabbedPane.addTab("Előadók", pnPerformers);
         tabbedPane.addTab("Operák", pnOperas);
+        tabbedPane.addTab("Évadok", pnSeasons);
 
         return tabbedPane;
     }
