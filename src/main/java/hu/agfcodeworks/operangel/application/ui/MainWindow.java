@@ -5,12 +5,15 @@ import hu.agfcodeworks.operangel.application.ui.components.tabpanes.ConductorsTa
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.OperasTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.PerformersTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.SeasonsTabPane;
+import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
 @Component
@@ -45,10 +48,23 @@ public class MainWindow extends JFrame {
         setTitle(TITLE_PATTERN.formatted(applicationName, applicationVersion));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        var mainTabbedPane = makeMainTabbedPane();
-        add(mainTabbedPane);
+        add(makeMainTabbedPane());
+        setJMenuBar(makeMenuBar());
 
         setVisible(true);
+    }
+
+    private JMenuBar makeMenuBar() {
+        var menuBar = new JMenuBar();
+
+        var mFile = new JMenu("Fájl");
+        menuBar.add(mFile);
+
+        mFile.add(UiUtil.makeMenuItem("Importálás", event -> this.importFile(), true));
+        mFile.add(UiUtil.makeMenuItem("Exportálás", event -> this.exportFile(), true));
+        mFile.add(UiUtil.makeMenuItem("Kilépés", event -> this.closeWindow(), false));
+
+        return menuBar;
     }
 
     private JTabbedPane makeMainTabbedPane() {
@@ -61,5 +77,17 @@ public class MainWindow extends JFrame {
         tabbedPane.addTab("Évadok", pnSeasons);
 
         return tabbedPane;
+    }
+
+    private void importFile() {
+
+    }
+
+    private void exportFile() {
+
+    }
+
+    private void closeWindow() {
+        this.dispose();
     }
 }
