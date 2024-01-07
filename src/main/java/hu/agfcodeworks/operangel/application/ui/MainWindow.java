@@ -5,45 +5,23 @@ import hu.agfcodeworks.operangel.application.ui.components.tabpanes.ConductorsTa
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.OperasTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.PerformersTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.SeasonsTabPane;
+import hu.agfcodeworks.operangel.application.ui.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
 
-@Component
 public class MainWindow extends JFrame {
 
     private static final String TITLE_PATTERN = "%s (%s)";
 
-    @Autowired
-    private CalendarTabPane pnCalendar;
+    private final String applicationName = "Operangel";
 
-    @Autowired
-    private ConductorsTabPane pnConductors;
+    private final String applicationVersion = "1.0.0 - BETA";
 
-    @Autowired
-    private PerformersTabPane pnPerformers;
-
-    @Autowired
-    private OperasTabPane pnOperas;
-
-    @Autowired
-    private SeasonsTabPane pnSeasons;
-
-    @Value("${application.title}")
-    private String applicationName;
-
-    @Value("${application.version}")
-    private String applicationVersion;
-
-    @PostConstruct
-    public void postConstruct() {
+    public MainWindow() {
         setSize(1600, 900);
         setTitle(TITLE_PATTERN.formatted(applicationName, applicationVersion));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -58,11 +36,20 @@ public class MainWindow extends JFrame {
         var menuBar = new JMenuBar();
 
         var mFile = new JMenu("Fájl");
+        var mSettings = new JMenu("Beállítások");
+        var mHelp = new JMenu("Súgó");
+
         menuBar.add(mFile);
+        menuBar.add(mSettings);
+        menuBar.add(mHelp);
 
         mFile.add(UiUtil.makeMenuItem("Importálás", event -> this.importFile(), true));
         mFile.add(UiUtil.makeMenuItem("Exportálás", event -> this.exportFile(), true));
         mFile.add(UiUtil.makeMenuItem("Kilépés", event -> this.closeWindow(), false));
+
+        mSettings.add(UiUtil.makeMenuItem("Adatbázis", event -> this.changeDatabaseConnection(), true));
+
+        mHelp.add(UiUtil.makeMenuItem("Névjegy", event -> showAbout(), true));
 
         return menuBar;
     }
@@ -70,11 +57,11 @@ public class MainWindow extends JFrame {
     private JTabbedPane makeMainTabbedPane() {
         var tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Naptár", pnCalendar);
-        tabbedPane.addTab("Karmesterek", pnConductors);
-        tabbedPane.addTab("Előadók", pnPerformers);
-        tabbedPane.addTab("Operák", pnOperas);
-        tabbedPane.addTab("Évadok", pnSeasons);
+        tabbedPane.addTab("Naptár", new CalendarTabPane());
+        tabbedPane.addTab("Karmesterek", new ConductorsTabPane());
+        tabbedPane.addTab("Előadók", new PerformersTabPane());
+        tabbedPane.addTab("Operák", new OperasTabPane());
+        tabbedPane.addTab("Évadok", new SeasonsTabPane());
 
         return tabbedPane;
     }
@@ -88,6 +75,15 @@ public class MainWindow extends JFrame {
     }
 
     private void closeWindow() {
+        ContextUtil.stopContext();
         this.dispose();
+    }
+
+    private void changeDatabaseConnection() {
+
+    }
+
+    private void showAbout() {
+
     }
 }
