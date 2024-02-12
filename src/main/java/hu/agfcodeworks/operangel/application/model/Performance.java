@@ -31,9 +31,6 @@ public class Performance extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opera_id", referencedColumnName = "id", nullable = false)
     private Opera opera;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "conductor_id", referencedColumnName = "id", nullable = false)
-    private Conductor conductor;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.performance")
     private List<ColleagueRole> colleagueRoles;
