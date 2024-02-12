@@ -8,7 +8,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -16,7 +18,9 @@ import javax.persistence.MappedSuperclass;
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @MappedSuperclass
-public abstract class Colleague extends AbstractEntity {
+@Entity
+@Table(name = "colleague")
+public class Colleague extends AbstractEntity {
 
     @Column(name = "given_name", nullable = false)
     private String givenName;

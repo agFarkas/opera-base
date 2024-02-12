@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.model.embeddable;
 
+import hu.agfcodeworks.operangel.application.model.Colleague;
 import hu.agfcodeworks.operangel.application.model.Performance;
-import hu.agfcodeworks.operangel.application.model.Performer;
 import hu.agfcodeworks.operangel.application.model.Role;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,6 +32,7 @@ public class CastId implements Serializable {
     private Role role;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "performer_id", referencedColumnName = "id", nullable = false)
-    private Performer performer;
+    @JoinColumn(name = "colleague_id", referencedColumnName = "id", nullable = false)
+    private Colleague colleague;
+
 }
