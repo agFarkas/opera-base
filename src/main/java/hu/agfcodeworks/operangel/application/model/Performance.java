@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,11 +30,14 @@ public class Performance extends AbstractEntity {
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opera_id", referencedColumnName = "id", nullable = false)
-    private Opera opera;
+    @JoinColumn(name = "play_id", referencedColumnName = "id", nullable = false)
+    private Play play;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "id.performance")
+    private ConductorRole conductorRole;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.performance")
-    private List<ColleagueRole> colleagueRoles;
+    private List<PerformerRole> performerRoles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", referencedColumnName = "id", nullable = false)

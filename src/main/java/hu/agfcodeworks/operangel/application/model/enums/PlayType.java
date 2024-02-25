@@ -1,8 +1,8 @@
 package hu.agfcodeworks.operangel.application.model.enums;
 
-public enum Functionality {
+public enum PlayType {
 
-    CONDUCTOR,
+    OPERA,
 
-    PERFORMER
+    OTHER
 }

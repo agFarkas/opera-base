@@ -1,7 +1,5 @@
 package hu.agfcodeworks.operangel.application.model.embeddable;
 
-import hu.agfcodeworks.operangel.application.model.Colleague;
-import hu.agfcodeworks.operangel.application.model.Performance;
 import hu.agfcodeworks.operangel.application.model.Role;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,26 +11,18 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
+import javax.persistence.MappedSuperclass;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
+@MappedSuperclass
 @Embeddable
-public class CastId implements Serializable {
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "performance_id", referencedColumnName = "id", nullable = false)
-    private Performance performance;
+public class PerformerId extends FunctionalityId {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     private Role role;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "colleague_id", referencedColumnName = "id", nullable = false)
-    private Colleague colleague;
-
 }
