@@ -5,7 +5,8 @@ import hu.agfcodeworks.operangel.application.ui.components.tabpanes.ConductorsTa
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.OperasTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.PerformersTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.SeasonsTabPane;
-import hu.agfcodeworks.operangel.application.ui.util.ContextUtil;
+import hu.agfcodeworks.operangel.application.ui.design.TabbedPaneUi;
+import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
 
 import javax.swing.JFrame;
@@ -57,11 +58,15 @@ public class MainWindow extends JFrame {
     private JTabbedPane makeMainTabbedPane() {
         var tabbedPane = new JTabbedPane();
 
+        tabbedPane.setUI(new TabbedPaneUi());
+
         tabbedPane.addTab("Naptár", new CalendarTabPane());
         tabbedPane.addTab("Karmesterek", new ConductorsTabPane());
         tabbedPane.addTab("Előadók", new PerformersTabPane());
         tabbedPane.addTab("Operák", new OperasTabPane());
         tabbedPane.addTab("Évadok", new SeasonsTabPane());
+
+        tabbedPane.setEnabledAt(1, false);
 
         return tabbedPane;
     }
