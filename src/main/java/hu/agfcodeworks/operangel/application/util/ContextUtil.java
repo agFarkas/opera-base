@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.ui.util;
+package hu.agfcodeworks.operangel.application.util;
 
 import hu.agfcodeworks.operangel.application.configuration.Config;
 import hu.agfcodeworks.operangel.application.dto.StatusCategory;
