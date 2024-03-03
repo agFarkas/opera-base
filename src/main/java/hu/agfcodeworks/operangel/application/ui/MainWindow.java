@@ -35,9 +35,9 @@ public class MainWindow extends JFrame {
     private JMenuBar makeMenuBar() {
         var menuBar = new JMenuBar();
 
-        var mFile = new JMenu("Fájl");
-        var mSettings = new JMenu("Beállítások");
-        var mHelp = new JMenu("Súgó");
+        var mFile = UiUtil.makeMenu("Fájl");
+        var mSettings = UiUtil.makeMenu("Beállítások");
+        var mHelp = UiUtil.makeMenu("Súgó");
 
         menuBar.add(mFile);
         menuBar.add(mSettings);
