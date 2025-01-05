@@ -1,7 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.design;
 
 import javax.swing.UIManager;
-import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.Color;
 import java.awt.Font;
@@ -14,6 +13,8 @@ import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static javax.swing.plaf.basic.BasicGraphicsUtils.drawString;
+
 public class TabbedPaneUi extends BasicTabbedPaneUI {
 
     private static final String SCROLL_BAR_THUMB_SHADOW_KEY = "ScrollBar.thumbShadow";
@@ -22,27 +23,55 @@ public class TabbedPaneUi extends BasicTabbedPaneUI {
 
     private final Color selectedBgColor = new Color(0, 0, 50, 10);
 
-    private final Color deSelectedBgColor = new Color(0, 0, 50, 100);
+    private final Color selectedBorderColor;
 
-    private final Color disabledBgColor = new Color(0, 0, 50, 40);
+    private final Color deSelectedBgColor = new Color(0, 0, 50, 55);
 
-    private final Color disabledCaptionColor = new Color(100, 100, 100);
+    private final Color deselectedBorderColor;
+
+    private final Color disabledBgColor = new Color(0, 0, 50, 28);
+
+    private final Color disabledBorderColor;
+
+    private final Color disabledCaptionColor = new Color(100, 100, 100, 110);
+
     private final Color enabledCaptionColor = Color.BLACK;
 
-    private final int inclTab = 4;
+    private final int inclTab = 1;
 
-    private final int anchoFocoH = 4;
-
-    private final int anchoCarpetas = 18;
+    private final int tabPadding = 20;
 
     private Polygon shape;
 
+    public TabbedPaneUi() {
+        var scrollBarThumbShadowColor = UIManager.getColor(SCROLL_BAR_THUMB_SHADOW_KEY);
+
+        this.selectedBorderColor = new Color(
+                scrollBarThumbShadowColor.getRed(),
+                scrollBarThumbShadowColor.getGreen(),
+                scrollBarThumbShadowColor.getBlue()
+        );
+
+        this.deselectedBorderColor = new Color(
+                scrollBarThumbShadowColor.getRed(),
+                scrollBarThumbShadowColor.getGreen(),
+                scrollBarThumbShadowColor.getBlue(),
+                70
+        );
+
+        this.disabledBorderColor = new Color(
+                scrollBarThumbShadowColor.getRed(),
+                scrollBarThumbShadowColor.getGreen(),
+                scrollBarThumbShadowColor.getBlue(),
+                40
+        );
+    }
 
     @Override
     protected void installDefaults() {
         super.installDefaults();
 
-        tabAreaInsets.right = anchoCarpetas;
+        tabAreaInsets.right = 18;
     }
 
     @Override
@@ -55,12 +84,10 @@ public class TabbedPaneUi extends BasicTabbedPaneUI {
             }
 
             Arrays.sort(lines);
-
             var fila = runCount;
 
             for (var i = 0; i < lines.length - 1; i++, fila--) {
                 var carp = new Polygon();
-
                 var actLine = lines[i];
 
                 carp.addPoint(0, actLine);
@@ -112,36 +139,45 @@ public class TabbedPaneUi extends BasicTabbedPaneUI {
         if (Objects.nonNull(v)) {
             v.paint(g, textRect);
         } else {
-            var mnemIndex = tabPane.getDisplayedMnemonicIndexAt(tabIndex);
+            var mnemonicIndex = tabPane.getDisplayedMnemonicIndexAt(tabIndex);
 
             g.setColor(calculateTabCaptionColor(tabIndex));
-            BasicGraphicsUtils.drawString(g, title, mnemIndex, textRect.x, textRect.y + metrics.getAscent());
+            drawString(g, title, mnemonicIndex, textRect.x, textRect.y + metrics.getAscent());
         }
     }
 
     @Override
     protected int calculateTabWidth(int tabPlacement, int tabIndex, FontMetrics metrics) {
-        return 20 + inclTab + super.calculateTabWidth(tabPlacement, tabIndex, metrics);
+        return tabPadding + inclTab + super.calculateTabWidth(tabPlacement, tabIndex, metrics);
     }
 
     @Override
     protected int calculateTabHeight(int tabPlacement, int tabIndex, int fontHeight) {
         if (tabPlacement == LEFT || tabPlacement == RIGHT) {
             return super.calculateTabHeight(tabPlacement, tabIndex, fontHeight);
-        } else {
-            return anchoFocoH + super.calculateTabHeight(tabPlacement, tabIndex, fontHeight);
         }
+
+        int anchoFocoH = 4;
+        return anchoFocoH + super.calculateTabHeight(tabPlacement, tabIndex, fontHeight);
     }
 
     @Override
     protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected) {
+        drawBorder(g, calculateBorderColor(tabIndex));
+    }
+
+    private Color calculateBorderColor(int tabIndex) {
+        if (isEnabled(tabIndex)) {
+            return deselectedBorderColor;
+        }
+
+        return disabledBorderColor;
     }
 
     @Override
     protected void paintFocusIndicator(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect, boolean isSelected) {
         if (tabPane.hasFocus() && isSelected) {
-            g.setColor(UIManager.getColor(SCROLL_BAR_THUMB_SHADOW_KEY));
-            g.drawPolygon(shape);
+            drawBorder(g, selectedBorderColor);
         }
     }
 
@@ -155,7 +191,6 @@ public class TabbedPaneUi extends BasicTabbedPaneUI {
         }
 
         return new GradientPaint(0, 0, color1, 0, y + h / 2, deSelectedBgColor);
-
     }
 
     private Color calculateTabCaptionColor(int tabIndex) {
@@ -164,11 +199,15 @@ public class TabbedPaneUi extends BasicTabbedPaneUI {
         }
 
         return disabledCaptionColor;
-
     }
 
     private boolean isEnabled(int tabIndex) {
         return tabPane.isEnabled() && tabPane.isEnabledAt(tabIndex);
+    }
+
+    private void drawBorder(Graphics g, Color borderColor) {
+        g.setColor(borderColor);
+        g.drawPolygon(shape);
     }
 
 }
