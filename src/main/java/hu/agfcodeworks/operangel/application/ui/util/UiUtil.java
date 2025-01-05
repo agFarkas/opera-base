@@ -13,21 +13,31 @@ import java.util.Map;
 @UtilityClass
 public class UiUtil {
 
+    private static final String MENU_PREFIX = "Menu.";
+
+    private static final String MENU_ITEM_PREFIX = "MenuItem.";
+
     static {
         Map.of(
                 "background", new Color(238, 238, 238, 60),
                 "selectionBackground", new Color(163, 184, 204, 60),
                 "acceleratorForeground", new Color(99, 130, 191, 60),
+                "acceleratorSelectionForeground", new Color(99, 130, 191, 60),
                 "font", makeFont((Font) UIManager.get("Menu.font"))
         ).forEach((k, v) -> {
-            UIManager.put("Menu." + k, v);
-            UIManager.put("MenuItem." + k, v);
+            UIManager.put(MENU_PREFIX + k, v);
+            UIManager.put(MENU_ITEM_PREFIX + k, v);
         });
 
+        UIManager.getDefaults()
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey().toString().startsWith("Button"))
+                .forEach(System.out::println);
     }
 
-    private static Object makeFont(Font o) {
-        return o.deriveFont(Font.PLAIN);
+    private static Object makeFont(Font font) {
+        return font.deriveFont(Font.PLAIN);
     }
 
     private static final String CAPTION_PATTERN = "%s%s";

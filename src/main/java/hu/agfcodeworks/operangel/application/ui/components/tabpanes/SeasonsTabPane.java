@@ -7,4 +7,5 @@ public class SeasonsTabPane extends AbstractTabPane {
     public SeasonsTabPane() {
         super(new FlowLayout());
     }
+
 }
