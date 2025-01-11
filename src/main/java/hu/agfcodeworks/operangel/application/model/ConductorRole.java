@@ -14,19 +14,18 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@DiscriminatorColumn(name="functionality_type",
+@DiscriminatorColumn(name = "functionality_type",
         discriminatorType = DiscriminatorType.INTEGER)
 @SuperBuilder(setterPrefix = "with")
 @DiscriminatorValue("conductor_performance")
 @Entity
-public class ConductorRole extends ColleagueRole {
+public class ConductorRole extends ArtistRole {
 
     @EmbeddedId
     private FunctionalityId id;

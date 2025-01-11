@@ -17,7 +17,7 @@ import javax.persistence.InheritanceType;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "functionality_type",
@@ -25,7 +25,7 @@ import javax.persistence.InheritanceType;
 @SuperBuilder(setterPrefix = "with")
 @DiscriminatorValue("performer_performance_role")
 @Entity
-public class PerformerRole extends ColleagueRole {
+public class PerformerRole extends ArtistRole {
 
     @EmbeddedId
     private PerformerId id;

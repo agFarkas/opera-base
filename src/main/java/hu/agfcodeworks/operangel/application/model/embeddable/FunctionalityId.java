@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.model.embeddable;
 
-import hu.agfcodeworks.operangel.application.model.Colleague;
+import hu.agfcodeworks.operangel.application.model.Artist;
 import hu.agfcodeworks.operangel.application.model.Performance;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class FunctionalityId implements Serializable {
     private Performance performance;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "colleague_id", referencedColumnName = "id", nullable = false)
-    private Colleague colleague;
+    @JoinColumn(name = "artist_id", referencedColumnName = "id", nullable = false)
+    private Artist artist;
 
 }
