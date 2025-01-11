@@ -19,8 +19,8 @@ import javax.persistence.Table;
 @SuperBuilder(setterPrefix = "with")
 @MappedSuperclass
 @Entity
-@Table(name = "colleague")
-public class Colleague extends AbstractEntity {
+@Table(name = "artist")
+public class Artist extends AbstractEntity {
 
     @Column(name = "given_name", nullable = false)
     private String givenName;

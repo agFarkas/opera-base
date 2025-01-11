@@ -15,6 +15,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @MappedSuperclass
-public abstract class ColleagueRole implements Serializable {
+public abstract class ArtistRole implements Serializable {
 
 }
