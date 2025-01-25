@@ -4,6 +4,7 @@ import hu.agfcodeworks.operangel.application.configuration.Config;
 import hu.agfcodeworks.operangel.application.dto.StatusCategory;
 import hu.agfcodeworks.operangel.application.dto.StatusDto;
 import lombok.experimental.UtilityClass;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Objects;
@@ -50,5 +51,17 @@ public class ContextUtil {
         if (Objects.isNull(context)) {
             initContext();
         }
+    }
+
+    public <T> T getBean(Class<T> clazz) {
+        if (isContextInactive()) {
+            throw new ApplicationContextException("Context is inactive.");
+        }
+
+        return context.getBean(clazz);
+    }
+
+    private static boolean isContextInactive() {
+        return Objects.isNull(context) || !context.isRunning() || context.isClosed() || !context.isActive();
     }
 }

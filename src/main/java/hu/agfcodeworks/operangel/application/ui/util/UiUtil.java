@@ -1,17 +1,24 @@
 package hu.agfcodeworks.operangel.application.ui.util;
 
+import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus;
 import lombok.experimental.UtilityClass;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
 
 @UtilityClass
 public class UiUtil {
+
+    private final String DB_CONNECTION_STATUS_ICON_FILENAME_PATTERN = "icons/db-connection-%s.png";
 
     private static final String MENU_PREFIX = "Menu.";
 
@@ -58,5 +65,17 @@ public class UiUtil {
         menuItem.setOpaque(false);
 
         return menuItem;
+    }
+
+    public Icon loadDbConnectionIconFromPresource(DbConnectionStatus dbConnectionStatus) {
+        var fileName = DB_CONNECTION_STATUS_ICON_FILENAME_PATTERN.formatted(dbConnectionStatus.name().toLowerCase());
+
+        try (var inputStream = UiUtil.class.getClassLoader().getResourceAsStream(fileName)) {
+            return new ImageIcon(inputStream.readAllBytes());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+
     }
 }

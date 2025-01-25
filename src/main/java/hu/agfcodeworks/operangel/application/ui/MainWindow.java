@@ -1,34 +1,60 @@
 package hu.agfcodeworks.operangel.application.ui;
 
+import hu.agfcodeworks.operangel.application.service.DbSettingsService;
+import hu.agfcodeworks.operangel.application.settings.DbSettings;
+import hu.agfcodeworks.operangel.application.ui.components.custom.StatusBar;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.CalendarTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.ConductorsTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.OperasTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.PerformersTabPane;
 import hu.agfcodeworks.operangel.application.ui.components.tabpanes.SeasonsTabPane;
 import hu.agfcodeworks.operangel.application.ui.design.TabbedPaneUi;
-import hu.agfcodeworks.operangel.application.util.ContextUtil;
+import hu.agfcodeworks.operangel.application.ui.dialog.DbSettingsDialog;
 import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
+import hu.agfcodeworks.operangel.application.util.ContextUtil;
+import hu.agfcodeworks.operangel.application.util.FileUtil;
+import hu.agfcodeworks.operangel.application.util.OutContextUtil;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
+import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+import static hu.agfcodeworks.operangel.application.constants.FilePaths.FILENAME_DB_SETTINGS;
+import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.AWAITING;
+import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.CLOSED;
+import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.ESTABLISHED;
+import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.REFUSED;
+import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DialogStatus.OK;
 
 public class MainWindow extends JFrame {
 
     private static final String TITLE_PATTERN = "%s (%s)";
 
+    private final DbSettingsService dbSettingsService = OutContextUtil.getComponent(DbSettingsService.class);
+
     private final String applicationName = "Operangel";
 
     private final String applicationVersion = "1.0.0 - BETA";
+
+    private final StatusBar statusBar = new StatusBar();
 
     public MainWindow() {
         setSize(1600, 900);
         setTitle(TITLE_PATTERN.formatted(applicationName, applicationVersion));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        add(makeMainTabbedPane());
+        var contentPane = getContentPane();
+
+        contentPane.add(makeMainTabbedPane());
         setJMenuBar(makeMenuBar());
+
+        contentPane.add(statusBar, BorderLayout.PAGE_END);
+
+        addWindowListener(makeWindowListener());
 
         setVisible(true);
     }
@@ -85,10 +111,48 @@ public class MainWindow extends JFrame {
     }
 
     private void changeDatabaseConnection() {
+        var dbSettings = dbSettingsService.obtainDbSettings();
+        var dialog = new DbSettingsDialog(this, dbSettings);
 
+        if (dialog.getDialogStatus() == OK) {
+            dbSettingsService.saveDbSettings(dialog.getValue());
+            startContext(dbSettings);
+        }
     }
 
     private void showAbout() {
 
+    }
+
+    private WindowListener makeWindowListener() {
+        return new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent event) {
+                statusBar.setDbConnectionStatus(CLOSED);
+
+                if (FileUtil.fileExists(FILENAME_DB_SETTINGS)) {
+                    var dbSettings = dbSettingsService.obtainDbSettings();
+                    startContext(dbSettings);
+                } else {
+                    changeDatabaseConnection();
+                }
+            }
+
+            @Override
+            public void windowClosing(WindowEvent event) {
+                super.windowClosing(event);
+            }
+        };
+    }
+
+    private void startContext(DbSettings dbSettings) {
+        try {
+            statusBar.setDbSettings(dbSettings);
+            statusBar.setDbConnectionStatus(AWAITING);
+            ContextUtil.startContext();
+            statusBar.setDbConnectionStatus(ESTABLISHED);
+        } catch (Exception ex) {
+            statusBar.setDbConnectionStatus(REFUSED);
+        }
     }
 }
