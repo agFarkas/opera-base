@@ -72,8 +72,8 @@ public class UiUtil {
 
         try (var inputStream = UiUtil.class.getClassLoader().getResourceAsStream(fileName)) {
             return new ImageIcon(inputStream.readAllBytes());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
         }
 
 

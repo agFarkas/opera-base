@@ -9,6 +9,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class StatusBar extends JPanel {
 
     public StatusBar() {
         setLayout(new FlowLayout(FlowLayout.LEFT));
+        lbDbUrl.setFont(lbDbUrl.getFont().deriveFont(Font.PLAIN));
 
         add(lbDbUrl);
     }
