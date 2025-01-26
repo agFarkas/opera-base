@@ -1,10 +1,12 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.labeled;
 
 import hu.agfcodeworks.operangel.application.ui.components.custom.JCustomComboBox;
+import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ValidationStatus;
 import lombok.NonNull;
 
 import javax.swing.ComboBoxEditor;
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Function;
 
 public class JLabeledComboBox<I> extends JLabeledComponent<JCustomComboBox<I>> {
@@ -47,5 +49,9 @@ public class JLabeledComboBox<I> extends JLabeledComponent<JCustomComboBox<I>> {
 
     public void setTextProvider(@NonNull Function<I, String> textProvider) {
         component.setTextProvider(textProvider);
+    }
+
+    public Set<ValidationStatus> getValidationStatus() {
+        return component.getValidationStatus();
     }
 }

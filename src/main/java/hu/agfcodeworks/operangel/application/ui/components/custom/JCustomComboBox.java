@@ -1,6 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom;
 
 import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ValidationStatus;
 import hu.agfcodeworks.operangel.application.ui.renderer.CustomComboBoxRenderer;
 import lombok.NonNull;
 
@@ -9,16 +10,18 @@ import javax.swing.JComboBox;
 import javax.swing.ListCellRenderer;
 import java.awt.event.ItemEvent;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> {
+public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements Validated {
 
     private Comparator<I> itemComparator = (i1, i2) -> 0;
 
@@ -41,6 +44,8 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> {
     private int itemIndex = -1;
 
     private int deselectedIndex = -1;
+
+    private boolean mandatory = false;
 
     public JCustomComboBox() {
         super.addItemListener(event -> {
@@ -230,5 +235,21 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> {
 
     public void setSelectedListItem(I item) {
         setSelectedItem(new ListItemWrapper<>(item));
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    public Set<ValidationStatus> getValidationStatus() {
+        if(mandatory && getSelectedIndex() < 0) {
+            return Set.of(ValidationStatus.INVALID_FOR_MANDATORY);
+        }
+
+        return Collections.emptySet();
     }
 }

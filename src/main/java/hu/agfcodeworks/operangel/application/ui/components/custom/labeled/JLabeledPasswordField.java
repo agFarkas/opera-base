@@ -3,7 +3,6 @@ package hu.agfcodeworks.operangel.application.ui.components.custom.labeled;
 import lombok.NonNull;
 
 import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
 

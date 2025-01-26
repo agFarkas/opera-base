@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
@@ -13,9 +14,13 @@ public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
     protected final C component;
 
+    private boolean mandatory;
+
     public JLabeledComponent(@NonNull String labelText, @NonNull C component) {
         this.label = new JLabel(labelText);
         this.component = component;
+
+        setMandatory(false);
 
         buildPanel();
     }
@@ -37,5 +42,19 @@ public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
     public void setLabelText(String labelText) {
         label.setText(labelText);
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        label.setFont(label.getFont().deriveFont(makeStyle(mandatory)));
+
+        this.mandatory = mandatory;
+    }
+
+    private int makeStyle(boolean mandatory) {
+        return mandatory ? Font.BOLD : Font.PLAIN;
     }
 }

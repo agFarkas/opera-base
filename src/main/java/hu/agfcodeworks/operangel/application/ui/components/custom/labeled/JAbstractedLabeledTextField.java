@@ -1,5 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.labeled;
 
+import hu.agfcodeworks.operangel.application.ui.components.custom.Validated;
+import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ValidationStatus;
 import lombok.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -7,10 +9,12 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Color;
+import java.util.HashSet;
+import java.util.Set;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
 
-public abstract class JAbstractedLabeledTextField<C extends JTextField> extends JLabeledComponent<C> {
+public abstract class JAbstractedLabeledTextField<C extends JTextField> extends JLabeledComponent<C> implements Validated {
 
     private static final Color validBackground = Color.WHITE;
 
@@ -22,9 +26,12 @@ public abstract class JAbstractedLabeledTextField<C extends JTextField> extends 
 
     private final DocumentListener validationDocumentListener;
 
-    private boolean mandatory = false;
+
+    private String regex = EMPTY_TEXT;
 
     private boolean continuouslyValidated;
+
+    private String validationMessage = EMPTY_TEXT;
 
     public JAbstractedLabeledTextField(@NonNull String labelText, @NonNull C component) {
         super(labelText, component);
@@ -61,18 +68,27 @@ public abstract class JAbstractedLabeledTextField<C extends JTextField> extends 
         component.setText(StringUtils.hasText(text) ? text : EMPTY_TEXT);
     }
 
-    public boolean isMandatory() {
-        return mandatory;
+    public Set<ValidationStatus> getValidationStatus() {
+        var validationStatuses = new HashSet<ValidationStatus>();
+
+        if (!isValidForMandatory()) {
+            validationStatuses.add(ValidationStatus.INVALID_FOR_MANDATORY);
+        }
+
+        if (!isValidByPattern()) {
+            validationStatuses.add(ValidationStatus.INVALID_FOR_CONTENT_RULE);
+        }
+
+        return validationStatuses;
     }
 
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
+    private boolean isValidForMandatory() {
+        return !isMandatory() || StringUtils.hasText(component.getText());
     }
 
-    public boolean isContentValid() {
+    private boolean isValidByPattern() {
         var text = component.getText();
-
-        return (!mandatory || StringUtils.hasText(text));
+        return !StringUtils.hasText(regex) || (StringUtils.hasText(text) && text.matches(regex));
     }
 
     public boolean isContinuouslyValidated() {
@@ -92,12 +108,24 @@ public abstract class JAbstractedLabeledTextField<C extends JTextField> extends 
     }
 
     private void validateContent() {
-        if (isContentValid()) {
+        if (isValidForMandatory() && isValidByPattern()) {
             component.setBackground(validBackground);
             component.setForeground(validForeground);
         } else {
             component.setBackground(invalidBackground);
             component.setForeground(invalidForeground);
         }
+    }
+
+    public void setRegex(String regex) {
+        this.regex = regex;
+    }
+
+    public String getValidationMessage() {
+        return validationMessage;
+    }
+
+    public void setValidationMessage(String validationMessage) {
+        this.validationMessage = validationMessage;
     }
 }
