@@ -1,1 +1,3 @@
 /target/
+/configuration/db-connection.properties
+/src/main/resources/icons/debug.log
