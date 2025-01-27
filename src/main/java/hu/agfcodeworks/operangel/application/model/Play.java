@@ -1,19 +1,23 @@
 package hu.agfcodeworks.operangel.application.model;
 
 import hu.agfcodeworks.operangel.application.model.enums.PlayType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.util.List;
 
 import static hu.agfcodeworks.operangel.application.model.enums.PlayType.OPERA;
@@ -26,6 +30,12 @@ import static hu.agfcodeworks.operangel.application.model.enums.PlayType.OPERA;
 @Table(name = "play")
 @Entity
 public class Play extends AbstractEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "play_seq_gen")
+    @SequenceGenerator(name = "play_seq_gen", sequenceName = "play_seq")
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @Column(name = "title", nullable = false)
     private String title;

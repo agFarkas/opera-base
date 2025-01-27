@@ -3,10 +3,12 @@ package hu.agfcodeworks.operangel.application.mapper;
 import hu.agfcodeworks.operangel.application.settings.DbEngine;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import lombok.NonNull;
+import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
-public class DbSettingsProperiesMapper extends PropertiesMapper<DbSettings> {
+@Component
+public class DbSettingsPropertiesMapper extends PropertiesMapper<DbSettings> {
 
     private static final String DB_ENGINE = "db.engine";
     private static final String DB_HOST = "db.host";

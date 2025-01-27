@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-performance-001" author="agfarkas">
+        <createTable tableName="performance">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="natural_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="play_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_performance_play_id"/>
+            </column>
+
+            <column name="location_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_performance_location_id"/>
+            </column>
+
+            <column name="conductor_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_performance_conductor_id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-performance-002" author="agfarkas">
+        <addUniqueConstraint tableName="performance" columnNames="natural_id"
+                             constraintName="cnstr_performance_natural_id"/>
+
+        <createSequence sequenceName="performance_seq" minValue="0" maxValue="99999999"/>
+
+        <createIndex tableName="performance" indexName="idx_performance_natural_id">
+            <column name="natural_id"/>
+        </createIndex>
+
+        <createIndex tableName="performance" indexName="idx_performance_date">
+            <column name="date"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="performance" baseColumnNames="play_id"
+                                 constraintName="cnstr_fk_performance_play"
+                                 referencedTableName="play"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="performance" baseColumnNames="location_id"
+                                 constraintName="cnstr_fk_performance_location"
+                                 referencedTableName="location"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="performance" baseColumnNames="conductor_id"
+                                 constraintName="cnstr_fk_performance_conductor"
+                                 referencedTableName="artist"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

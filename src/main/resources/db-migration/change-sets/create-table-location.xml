@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-location-001" author="agfarkas">
+        <createTable tableName="location">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="natural_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="name" type="varchar(120)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-location-002" author="agfarkas">
+        <addUniqueConstraint tableName="location" columnNames="natural_id" constraintName="uc_location_natural_id"/>
+
+        <createSequence sequenceName="location_seq" minValue="0" maxValue="99999999"/>
+
+        <createIndex tableName="location" indexName="idx_location_natural_id">
+            <column name="natural_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

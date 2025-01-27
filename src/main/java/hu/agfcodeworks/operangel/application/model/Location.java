@@ -1,20 +1,20 @@
 package hu.agfcodeworks.operangel.application.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -26,7 +26,15 @@ import java.util.List;
 @Table(name = "location")
 public class Location extends AbstractEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_seq_gen")
+    @SequenceGenerator(name = "location_seq_gen", sequenceName = "location_seq")
+    @Column(name = "id", nullable = false)
+    private Long id;
+
     @Column(name = "location", nullable = false)
     private String name;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "location")
+    private List<Performance> performances;
 }

@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.service;
 
-import hu.agfcodeworks.operangel.application.mapper.DbSettingsProperiesMapper;
+import hu.agfcodeworks.operangel.application.mapper.DbSettingsPropertiesMapper;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,12 +19,12 @@ public class DbSettingsService {
 
     private final PropertiesService propertiesService;
 
-    private final DbSettingsProperiesMapper dbSettingsProperiesMapper;
+    private final DbSettingsPropertiesMapper dbSettingsPropertiesMapper;
 
     public DbSettings obtainDbSettings() {
         var dbSettings = obtainProperties();
 
-        return dbSettingsProperiesMapper.propertiesToDto(dbSettings);
+        return dbSettingsPropertiesMapper.propertiesToDto(dbSettings);
     }
 
     private Properties obtainProperties() {
@@ -38,7 +38,7 @@ public class DbSettingsService {
     }
 
     public void saveDbSettings(DbSettings dbSettings) {
-        var properties = dbSettingsProperiesMapper.dtoToProperties(dbSettings);
+        var properties = dbSettingsPropertiesMapper.dtoToProperties(dbSettings);
 
         propertiesService.saveProperties(properties, PATH_DB_SETTINGS, FILENAME_DB_SETTINGS);
     }

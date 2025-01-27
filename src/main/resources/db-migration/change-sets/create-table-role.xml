@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-role-001" author="agfarkas">
+        <createTable tableName="role">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="natural_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="description" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="play_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_role_play_id"/>
+            </column>
+        </createTable>
+
+
+    </changeSet>
+
+    <changeSet id="create-table-role-002" author="agfarkas">
+        <addUniqueConstraint tableName="role" columnNames="natural_id" constraintName="cnstr_role_natural_id"/>
+
+        <createSequence sequenceName="role_seq" minValue="0" maxValue="99999999"/>
+
+        <createIndex tableName="role" indexName="idx_role_natural_id">
+            <column name="natural_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="role" baseColumnNames="play_id" constraintName="cnstr_fk_role_play"
+                                 referencedTableName="play"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

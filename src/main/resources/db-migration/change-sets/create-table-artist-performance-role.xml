@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-artist-performance-role-001" author="agfarkas">
+        <createTable tableName="artist_performance_role">
+            <column name="artist_id" type="bigint">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_artist_performance_role_artist_id"/>
+            </column>
+
+            <column name="performance_id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true" foreignKeyName="fk_artist_performance_role_performance_id"/>
+            </column>
+
+            <column name="role_id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true" foreignKeyName="fk_artist_performance_role_role_id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-artist-performance-role-002" author="agfarkas">
+        <addUniqueConstraint tableName="artist_performance_role" columnNames="artist_id, performance_id, role_id" constraintName="uc_artist_performance_role_join" />
+
+        <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="artist_id"
+                                 constraintName="cnstr_fk_artist_performance_role_artist_id"
+                                 referencedTableName="artist"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="performance_id"
+                                 constraintName="cnstr_fk_artist_performance_role_performance_id"
+                                 referencedTableName="performance"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="role_id"
+                                 constraintName="cnstr_fk_artist_performance_role_role_id"
+                                 referencedTableName="role"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_artist_id">
+            <column name="artist_id"/>
+        </createIndex>
+
+        <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_performance_id">
+            <column name="performance_id"/>
+        </createIndex>
+
+        <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_role_id">
+            <column name="role_id"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

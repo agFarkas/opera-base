@@ -8,14 +8,14 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DbSettingsProperiesMapperTest {
+public class DbSettingsPropertiesMapperTest {
 
-    private final DbSettingsProperiesMapper dbSettingsProperiesMapper = new DbSettingsProperiesMapper();
+    private final DbSettingsPropertiesMapper dbSettingsPropertiesMapper = new DbSettingsPropertiesMapper();
 
     @Test
     void propertiesToDtoTest() {
         var properties = makeProperties();
-        var dbSettings = dbSettingsProperiesMapper.propertiesToDto(properties);
+        var dbSettings = dbSettingsPropertiesMapper.propertiesToDto(properties);
 
         assertThat(dbSettings.getDbEngine().getName()).isEqualTo("postgresql");
         assertThat(dbSettings.getHost()).isEqualTo("localhost");
@@ -28,7 +28,7 @@ public class DbSettingsProperiesMapperTest {
     @Test
     void dtoToPropertiesTest() {
         var dbSettings = makeDto();
-        var properties = dbSettingsProperiesMapper.dtoToProperties(dbSettings);
+        var properties = dbSettingsPropertiesMapper.dtoToProperties(dbSettings);
 
         assertThat(properties.getProperty("db.engine")).isEqualTo("postgresql");
         assertThat(properties.getProperty("db.host")).isEqualTo("localhost");

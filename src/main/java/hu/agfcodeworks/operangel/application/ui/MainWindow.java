@@ -153,6 +153,7 @@ public class MainWindow extends JFrame {
             statusBar.setDbConnectionStatus(ESTABLISHED);
         } catch (Exception ex) {
             statusBar.setDbConnectionStatus(REFUSED);
+            ex.printStackTrace();
         }
     }
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-play-001" author="agfarkas">
+        <createTable tableName="play">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="natural_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="title" type="varchar(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="play" columnNames="natural_id" constraintName="cnstr_play_natural_id"/>
+
+        <createSequence sequenceName="play_seq" minValue="0" maxValue="99999999"/>
+
+        <createIndex tableName="play" indexName="idx_play_natural_id">
+            <column name="natural_id"/>
+        </createIndex>
+
+        <createIndex tableName="play" indexName="idx_play_type">
+            <column name="type"/>
+        </createIndex>
+    </changeSet>
+
+
+</databaseChangeLog>

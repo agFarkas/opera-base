@@ -1,26 +1,39 @@
 package hu.agfcodeworks.operangel.application.model;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
+import java.util.List;
+
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
-@MappedSuperclass
 @Entity
 @Table(name = "artist")
 public class Artist extends AbstractEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artist_seq_gen")
+    @SequenceGenerator(name = "artist_seq_gen", sequenceName = "artist_seq")
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @Column(name = "given_name", nullable = false)
     private String givenName;
@@ -30,4 +43,10 @@ public class Artist extends AbstractEntity {
 
     @Column(name = "family_name", nullable = false)
     private String familyName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.artist", targetEntity = ArtistPerformanceRoleJoin.class)
+    private List<ArtistPerformanceRoleJoin> artistPerformanceRoleJoins;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "conductor", targetEntity = Performance.class)
+    private List<Performance> conductedPerformances;
 }
