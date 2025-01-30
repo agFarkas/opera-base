@@ -27,7 +27,7 @@
             </column>
 
             <column name="conductor_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_performance_conductor_id"/>
+                <constraints nullable="true" foreignKeyName="fk_performance_conductor_id"/>
             </column>
         </createTable>
     </changeSet>
@@ -57,5 +57,21 @@
                                  constraintName="cnstr_fk_performance_conductor"
                                  referencedTableName="artist"
                                  referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="create-check-constraint-and-function-for-conductor-validation" author="agfarkas">
+        <sqlFile
+                path="db-migration/change-sets/native-scripts/postgresql/function-play-type-by-id.sql"
+                encoding="UTF-8"
+                relativeToChangelogFile="false"
+        />
+
+        <sql>
+            ALTER TABLE performance
+                ADD CONSTRAINT chk_conductor_validity CHECK (
+                                get_play_type_by_id(play_id) = 'OPERA' AND conductor_id IS NOT NULL
+                        OR get_play_type_by_id(play_id) = 'OTHER'
+                    );
+        </sql>
     </changeSet>
 </databaseChangeLog>

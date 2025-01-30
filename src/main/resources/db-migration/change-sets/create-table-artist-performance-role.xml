@@ -59,20 +59,21 @@
                              constraintName="cnstr_unique_performance_artist"/>
     </changeSet>
 
-    <changeSet id="create-check-constraints-and-functions-for-artist-performance-role-001" author="agfarkas">
-        <sqlFile dbms="postgresql, h2"
-                 path="db-migration/change-sets/native-scripts/postgresql/function-check-role-in-play-by-performance.sql"
-                 encoding="UTF-8"
-                 relativeToChangelogFile="false"
+    <changeSet id="create-check-constraints-and-functions-for-artist-performance-role-001" author="agfarkas"
+               dbms="postgresql, h2">
+        <sqlFile
+                path="db-migration/change-sets/native-scripts/postgresql/function-check-role-in-play-by-performance.sql"
+                encoding="UTF-8"
+                relativeToChangelogFile="false"
         />
 
-        <sqlFile dbms="postgresql, h2"
-                 path="db-migration/change-sets/native-scripts/postgresql/function-check-artist-not-conductor-by-performance.sql"
-                 encoding="UTF-8"
-                 relativeToChangelogFile="false"
+        <sqlFile
+                path="db-migration/change-sets/native-scripts/postgresql/function-check-artist-not-conductor-by-performance.sql"
+                encoding="UTF-8"
+                relativeToChangelogFile="false"
         />
 
-        <sql dbms="postgresql, h2">
+        <sql>
             ALTER TABLE artist_performance_role
                 ADD CONSTRAINT chk_role_in_play CHECK (check_role_in_play(performance_id, role_id)),
                 ADD CONSTRAINT chk_artist_not_conductor CHECK (check_artist_not_conductor(performance_id, artist_id));

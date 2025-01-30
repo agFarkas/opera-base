@@ -43,7 +43,7 @@ public class Performance extends AbstractEntity {
     private Play play;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Artist.class)
-    @JoinColumn(name = "conductor_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "conductor_id", referencedColumnName = "id")
     private Artist conductor;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.performance")

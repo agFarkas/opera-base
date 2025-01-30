@@ -35,5 +35,10 @@
         </createIndex>
     </changeSet>
 
-
+    <changeSet id="create-check-constraint-001" author="agfarkas" dbms="postgresql, h2">
+        <sql>
+            ALTER TABLE play
+                ADD CONSTRAINT chk_type_values CHECK (type in ('OPERA', 'OTHER'));
+        </sql>
+    </changeSet>
 </databaseChangeLog>
