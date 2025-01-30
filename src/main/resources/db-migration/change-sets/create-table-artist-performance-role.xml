@@ -8,22 +8,22 @@
     <changeSet id="create-table-artist-performance-role-001" author="agfarkas">
         <createTable tableName="artist_performance_role">
             <column name="artist_id" type="bigint">
-                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_artist_performance_role_artist_id"/>
+                <constraints nullable="false" foreignKeyName="fk_artist_performance_role_artist_id"/>
             </column>
 
             <column name="performance_id" type="bigint">
-                <constraints primaryKey="true" nullable="false" unique="true" foreignKeyName="fk_artist_performance_role_performance_id"/>
+                <constraints nullable="false"
+                             foreignKeyName="fk_artist_performance_role_performance_id"/>
             </column>
 
             <column name="role_id" type="bigint">
-                <constraints primaryKey="true" nullable="false" unique="true" foreignKeyName="fk_artist_performance_role_role_id"/>
+                <constraints nullable="false"
+                             foreignKeyName="fk_artist_performance_role_role_id"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="create-table-artist-performance-role-002" author="agfarkas">
-        <addUniqueConstraint tableName="artist_performance_role" columnNames="artist_id, performance_id, role_id" constraintName="uc_artist_performance_role_join" />
-
         <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="artist_id"
                                  constraintName="cnstr_fk_artist_performance_role_artist_id"
                                  referencedTableName="artist"
@@ -50,6 +50,32 @@
         <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_role_id">
             <column name="role_id"/>
         </createIndex>
+    </changeSet>
 
+    <changeSet id="unique-constraints-for-artist-performance-role-001" author="agfarkas">
+        <addUniqueConstraint tableName="artist_performance_role" columnNames="performance_id, role_id"
+                             constraintName="cnstr_unique_performance_role"/>
+        <addUniqueConstraint tableName="artist_performance_role" columnNames="performance_id, artist_id"
+                             constraintName="cnstr_unique_performance_artist"/>
+    </changeSet>
+
+    <changeSet id="create-check-constraints-and-functions-for-artist-performance-role-001" author="agfarkas">
+        <sqlFile dbms="postgresql, h2"
+                 path="db-migration/change-sets/native-scripts/postgresql/function-check-role-in-play-by-performance.sql"
+                 encoding="UTF-8"
+                 relativeToChangelogFile="false"
+        />
+
+        <sqlFile dbms="postgresql, h2"
+                 path="db-migration/change-sets/native-scripts/postgresql/function-check-artist-not-conductor-by-performance.sql"
+                 encoding="UTF-8"
+                 relativeToChangelogFile="false"
+        />
+
+        <sql dbms="postgresql, h2">
+            ALTER TABLE artist_performance_role
+                ADD CONSTRAINT chk_role_in_play CHECK (check_role_in_play(performance_id, role_id)),
+                ADD CONSTRAINT chk_artist_not_conductor CHECK (check_artist_not_conductor(performance_id, artist_id));
+        </sql>
     </changeSet>
 </databaseChangeLog>

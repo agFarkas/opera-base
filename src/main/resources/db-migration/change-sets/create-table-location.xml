@@ -14,12 +14,11 @@
                 <constraints nullable="false" unique="true"/>
             </column>
 
-            <column name="name" type="varchar(120)"/>
+            <column name="location_name" type="varchar(120)"/>
         </createTable>
     </changeSet>
 
     <changeSet id="create-table-location-002" author="agfarkas">
-        <addUniqueConstraint tableName="location" columnNames="natural_id" constraintName="uc_location_natural_id"/>
 
         <createSequence sequenceName="location_seq" minValue="0" maxValue="99999999"/>
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @Entity
@@ -31,7 +31,7 @@ public class Performance extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "performance_seq_gen")
-    @SequenceGenerator(name = "performance_seq_gen", sequenceName = "performance_seq")
+    @SequenceGenerator(name = "performance_seq_gen", sequenceName = "performance_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

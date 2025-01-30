@@ -7,7 +7,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -22,7 +21,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @Entity
@@ -31,7 +30,7 @@ public class Artist extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artist_seq_gen")
-    @SequenceGenerator(name = "artist_seq_gen", sequenceName = "artist_seq")
+    @SequenceGenerator(name = "artist_seq_gen", sequenceName = "artist_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

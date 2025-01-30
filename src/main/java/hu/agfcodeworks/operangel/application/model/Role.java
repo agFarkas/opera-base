@@ -21,7 +21,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @Entity
@@ -30,7 +30,7 @@ public class Role extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_seq_gen")
-    @SequenceGenerator(name = "role_seq_gen", sequenceName = "role_seq")
+    @SequenceGenerator(name = "role_seq_gen", sequenceName = "role_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

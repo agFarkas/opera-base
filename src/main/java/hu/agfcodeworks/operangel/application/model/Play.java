@@ -24,7 +24,7 @@ import static hu.agfcodeworks.operangel.application.model.enums.PlayType.OPERA;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @Table(name = "play")
@@ -33,7 +33,7 @@ public class Play extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "play_seq_gen")
-    @SequenceGenerator(name = "play_seq_gen", sequenceName = "play_seq")
+    @SequenceGenerator(name = "play_seq_gen", sequenceName = "play_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

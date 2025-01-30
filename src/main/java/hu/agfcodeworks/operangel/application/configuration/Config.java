@@ -83,7 +83,7 @@ public class Config {
 
         properties.setProperty("driver-class-name", dbSettings.getDbEngine().getDriverClass().getName());
         properties.setProperty("hibernate.dialect", dbSettings.getDbEngine().getDialectClass().getName());
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");
         properties.setProperty("hibernate.enable_lazy_load_no_trans", "false");
 
         return properties;

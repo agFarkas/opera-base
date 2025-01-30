@@ -19,7 +19,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @Entity
@@ -28,11 +28,11 @@ public class Location extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_seq_gen")
-    @SequenceGenerator(name = "location_seq_gen", sequenceName = "location_seq")
+    @SequenceGenerator(name = "location_seq_gen", sequenceName = "location_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "location", nullable = false)
+    @Column(name = "location_name", nullable = false)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "location")

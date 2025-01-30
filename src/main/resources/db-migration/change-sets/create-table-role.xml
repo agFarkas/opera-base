@@ -22,13 +22,9 @@
                 <constraints nullable="false" foreignKeyName="fk_role_play_id"/>
             </column>
         </createTable>
-
-
     </changeSet>
 
     <changeSet id="create-table-role-002" author="agfarkas">
-        <addUniqueConstraint tableName="role" columnNames="natural_id" constraintName="cnstr_role_natural_id"/>
-
         <createSequence sequenceName="role_seq" minValue="0" maxValue="99999999"/>
 
         <createIndex tableName="role" indexName="idx_role_natural_id">

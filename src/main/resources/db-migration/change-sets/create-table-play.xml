@@ -21,9 +21,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
 
-        <addUniqueConstraint tableName="play" columnNames="natural_id" constraintName="cnstr_play_natural_id"/>
-
+    <changeSet id="create-table-play-002" author="agfarkas">
         <createSequence sequenceName="play_seq" minValue="0" maxValue="99999999"/>
 
         <createIndex tableName="play" indexName="idx_play_natural_id">

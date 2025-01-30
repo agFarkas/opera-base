@@ -13,12 +13,13 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @MappedSuperclass
 public abstract class AbstractEntity implements Serializable {
 
+    @EqualsAndHashCode.Include
     @Column(name = "natural_id", nullable = false)
     private UUID naturalId;
 }
