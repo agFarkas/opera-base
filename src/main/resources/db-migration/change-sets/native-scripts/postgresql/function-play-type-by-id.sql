@@ -1,6 +1,7 @@
 CREATE FUNCTION get_play_type_by_id(play_id int8)
     RETURNS varchar
-    language plpgsql AS '
+    language plpgsql AS
+'
     DECLARE
         play_type VARCHAR(5);
     BEGIN

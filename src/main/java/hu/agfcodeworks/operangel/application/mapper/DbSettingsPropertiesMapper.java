@@ -17,6 +17,14 @@ public class DbSettingsPropertiesMapper extends PropertiesMapper<DbSettings> {
     private static final String DB_USERNAME = "db.auth.username";
     private static final String DB_PASSWORD = "db.auth.password";
 
+    private static Integer mapIntProperty(String property) {
+        try {
+            return Integer.parseInt(property);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("The value of '%s' must be number.".formatted(property));
+        }
+    }
+
     @Override
     public Properties dtoToProperties(@NonNull DbSettings dbSettings) {
         var properties = new Properties();
@@ -44,13 +52,5 @@ public class DbSettingsPropertiesMapper extends PropertiesMapper<DbSettings> {
                 .withUsername(properties.getProperty(DB_USERNAME))
                 .withPassword(properties.getProperty(DB_PASSWORD))
                 .build();
-    }
-
-    private static Integer mapIntProperty(String property) {
-        try {
-            return Integer.parseInt(property);
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("The value of '%s' must be number.".formatted(property));
-        }
     }
 }

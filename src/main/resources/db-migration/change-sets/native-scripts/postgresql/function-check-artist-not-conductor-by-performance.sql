@@ -1,6 +1,7 @@
 CREATE FUNCTION check_artist_not_conductor(perf_id int8, artist_id int8)
     RETURNS BOOLEAN
-    language plpgsql AS '
+    language plpgsql AS
+'
     DECLARE
         cond_id int8;
     BEGIN

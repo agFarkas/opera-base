@@ -1,6 +1,7 @@
 CREATE FUNCTION check_role_in_play(perf_id int8, rl_id int8)
     RETURNS BOOLEAN
-    language plpgsql AS '
+    language plpgsql AS
+'
     DECLARE
         cnt_roles int;
     BEGIN

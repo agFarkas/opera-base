@@ -6,7 +6,6 @@ import hu.agfcodeworks.operangel.application.util.DbUtil;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.servicelocator.LiquibaseService;
 import lombok.AllArgsConstructor;
-import org.hibernate.dialect.PostgresPlusDialect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +30,17 @@ public class Config {
     public static final String CLASSPATH_PATTERN = "classpath:%s";
 
     private final DbSettingsService dbSettingsService;
+
+    private static Properties makeProperties(DbSettings dbSettings) {
+        var properties = new Properties();
+
+        properties.setProperty("driver-class-name", dbSettings.getDbEngine().getDriverClass().getName());
+        properties.setProperty("hibernate.dialect", dbSettings.getDbEngine().getDialectClass().getName());
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");
+        properties.setProperty("hibernate.enable_lazy_load_no_trans", "false");
+
+        return properties;
+    }
 
     @Bean
     public DbSettings dbSettings() {
@@ -76,16 +86,5 @@ public class Config {
         entityManager.setJpaProperties(properties);
 
         return entityManager;
-    }
-
-    private static Properties makeProperties(DbSettings dbSettings) {
-        var properties = new Properties();
-
-        properties.setProperty("driver-class-name", dbSettings.getDbEngine().getDriverClass().getName());
-        properties.setProperty("hibernate.dialect", dbSettings.getDbEngine().getDialectClass().getName());
-        properties.setProperty("hibernate.hbm2ddl.auto", "none");
-        properties.setProperty("hibernate.enable_lazy_load_no_trans", "false");
-
-        return properties;
     }
 }

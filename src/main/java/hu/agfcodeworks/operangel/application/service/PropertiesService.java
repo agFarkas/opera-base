@@ -9,12 +9,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.URL;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
 
 @Service
 public class PropertiesService {
+
+    private static boolean createFile(File file) {
+        try {
+            return file.createNewFile();
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
 
     public Properties readProperties(@NonNull String fileName) {
         var file = new File(fileName);
@@ -41,25 +48,17 @@ public class PropertiesService {
     public void saveProperties(Properties properties, String path, String fileName) {
         var pathFile = new File(path);
 
-        if(!pathFile.exists()) {
+        if (!pathFile.exists()) {
             pathFile.mkdirs();
         }
 
         var file = new File(fileName);
-        if(!file.exists()) {
+        if (!file.exists()) {
             createFile(file);
         }
 
         try (var outputStream = new FileOutputStream(file)) {
             properties.store(outputStream, "");
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
-    private static boolean createFile(File file) {
-        try {
-            return file.createNewFile();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }

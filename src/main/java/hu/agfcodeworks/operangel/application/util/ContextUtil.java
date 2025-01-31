@@ -21,6 +21,7 @@ public class ContextUtil {
     private void initContext() {
         context = new AnnotationConfigApplicationContext(Config.class);
     }
+
     public StatusDto startContext() {
         conditionallyInitContext();
         context.start();
@@ -29,7 +30,6 @@ public class ContextUtil {
                 .withCategory(StatusCategory.ERROR)
                 .build();
     }
-
 
     public StatusDto startContext(@NonNull ContextEventListener contextEventListener) {
         try {
