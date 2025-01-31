@@ -20,6 +20,10 @@
             <column name="type" type="varchar(5)">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="composer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
@@ -32,6 +36,10 @@
 
         <createIndex tableName="play" indexName="idx_play_type">
             <column name="type"/>
+        </createIndex>
+
+        <createIndex tableName="play" indexName="idx_play_composer_id">
+            <column name="composer_id"/>
         </createIndex>
     </changeSet>
 

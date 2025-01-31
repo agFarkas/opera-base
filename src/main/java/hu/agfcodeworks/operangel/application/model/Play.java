@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -49,4 +51,8 @@ public class Play extends AbstractEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "play")
     private List<Performance> performances;
+
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Composer.class)
+    @JoinColumn(name = "composer_id", referencedColumnName = "id", nullable = false)
+    private Composer composer;
 }
