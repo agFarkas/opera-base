@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.ui.components.custom.uidto;
+package hu.agfcodeworks.operangel.application.ui.uidto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

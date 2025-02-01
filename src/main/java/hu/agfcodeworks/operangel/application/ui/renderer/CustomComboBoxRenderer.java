@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
 import lombok.AllArgsConstructor;
 
 import javax.swing.Icon;

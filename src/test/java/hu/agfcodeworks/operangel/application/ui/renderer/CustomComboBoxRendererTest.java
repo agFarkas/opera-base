@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
 import hu.agfcodeworks.operangel.application.ui.custom.components.itemdto.TestDto;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -36,14 +36,14 @@ public class CustomComboBoxRendererTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(CustomComboBoxRendererARgumentProvider.class)
+    @ArgumentsSource(CustomComboBoxRendererArgumentProvider.class)
     void getListCellRendererComponentTest(ListItemWrapper<TestDto> value, String expectedText) {
         comboBoxRenderer.getListCellRendererComponent(jListMock, value, 0, true, true);
 
         assertThat(comboBoxRenderer.getText()).isEqualTo(expectedText);
     }
 
-    static class CustomComboBoxRendererARgumentProvider implements ArgumentsProvider {
+    static class CustomComboBoxRendererArgumentProvider implements ArgumentsProvider {
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {

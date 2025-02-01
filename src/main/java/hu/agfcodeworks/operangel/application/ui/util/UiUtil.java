@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.util;
 
-import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus;
+import hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus;
 import lombok.experimental.UtilityClass;
 
 import javax.swing.Icon;
@@ -46,7 +46,7 @@ public class UiUtil {
                 .forEach(System.out::println);
     }
 
-    private static Object makeFont(Font font) {
+    private static Font makeFont(Font font) {
         return font.deriveFont(Font.PLAIN);
     }
 

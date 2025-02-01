@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.labeled;
 
 import hu.agfcodeworks.operangel.application.ui.components.custom.Validated;
-import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ValidationStatus;
+import hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus;
 import lombok.NonNull;
 import org.springframework.util.StringUtils;
 

@@ -4,7 +4,7 @@ import hu.agfcodeworks.operangel.application.dto.ErrorDto;
 import hu.agfcodeworks.operangel.application.exception.ValidationException;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JAbstractedLabeledTextField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComboBox;
-import hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DialogStatus;
+import hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus;
 import org.springframework.util.CollectionUtils;
 
 import javax.swing.BoxLayout;
@@ -23,10 +23,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DialogStatus.CANCEL;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DialogStatus.OK;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ValidationStatus.INVALID_FOR_CONTENT_RULE;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.ValidationStatus.INVALID_FOR_MANDATORY;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.CANCEL;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
+import static hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus.INVALID_FOR_CONTENT_RULE;
+import static hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus.INVALID_FOR_MANDATORY;
 import static hu.agfcodeworks.operangel.application.ui.util.UiConstants.INVALID_VALUES;
 
 public abstract class JAbstractDialog<V> extends JDialog {

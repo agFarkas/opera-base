@@ -36,13 +36,19 @@ public class PropertiesService {
     }
 
     public Properties readPropertiesFromResource(@NonNull String fileName) {
-        try (var inputStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
+        try (var inputStream = getResourceAsStream(fileName)) {
             var resourceBundle = new PropertyResourceBundle(inputStream);
 
             return makeProperties(resourceBundle);
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
+    }
+
+    private InputStream getResourceAsStream(String fileName) {
+        return getClass()
+                .getClassLoader()
+                .getResourceAsStream(fileName);
     }
 
     public void saveProperties(Properties properties, String path, String fileName) {

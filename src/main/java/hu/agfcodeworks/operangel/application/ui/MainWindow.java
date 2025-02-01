@@ -5,11 +5,11 @@ import hu.agfcodeworks.operangel.application.event.listener.ContextEventListener
 import hu.agfcodeworks.operangel.application.service.DbSettingsService;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import hu.agfcodeworks.operangel.application.ui.components.custom.StatusBar;
-import hu.agfcodeworks.operangel.application.ui.components.tabpanes.CalendarTabPane;
-import hu.agfcodeworks.operangel.application.ui.components.tabpanes.ConductorsTabPane;
-import hu.agfcodeworks.operangel.application.ui.components.tabpanes.OperasTabPane;
-import hu.agfcodeworks.operangel.application.ui.components.tabpanes.PerformersTabPane;
-import hu.agfcodeworks.operangel.application.ui.components.tabpanes.SeasonsTabPane;
+import hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes.CalendarTabPane;
+import hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes.ConductorsTabPane;
+import hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes.OperasTabPane;
+import hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes.PerformersTabPane;
+import hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes.SeasonsTabPane;
 import hu.agfcodeworks.operangel.application.ui.design.TabbedPaneUi;
 import hu.agfcodeworks.operangel.application.ui.dialog.DbSettingsDialog;
 import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
@@ -26,11 +26,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import static hu.agfcodeworks.operangel.application.constants.FilePaths.FILENAME_DB_SETTINGS;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.AWAITING;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.CLOSED;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.ESTABLISHED;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DbConnectionStatus.REFUSED;
-import static hu.agfcodeworks.operangel.application.ui.components.custom.uidto.DialogStatus.OK;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.AWAITING;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.CLOSED;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.ESTABLISHED;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.REFUSED;
+import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
 
 public class MainWindow extends JFrame {
 

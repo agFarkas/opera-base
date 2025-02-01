@@ -31,9 +31,8 @@ public class DbSettingsService {
         try {
             return propertiesService.readProperties(FILENAME_DB_SETTINGS);
         } catch (UncheckedIOException ex) {
-            var properties = propertiesService.readPropertiesFromResource(DEFAULT_PATH_DB_SETTINGS);
 
-            return properties;
+            return propertiesService.readPropertiesFromResource(DEFAULT_PATH_DB_SETTINGS);
         }
     }
 
