@@ -147,6 +147,10 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         return itemSupplier;
     }
 
+    public void setItemSupplier(@NonNull Supplier<Optional<I>> itemSupplier) {
+        this.itemSupplier = itemSupplier;
+    }
+
     public I getSelectedListItem() {
         var wrapper = (ListItemWrapper<I>) super.getSelectedItem();
         if (Objects.isNull(wrapper)) {
@@ -156,8 +160,8 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         return wrapper.getDto();
     }
 
-    public void setItemSupplier(@NonNull Supplier<Optional<I>> itemSupplier) {
-        this.itemSupplier = itemSupplier;
+    public void setSelectedListItem(I item) {
+        setSelectedItem(new ListItemWrapper<>(item));
     }
 
     public void addListItems(@NonNull Collection<@NonNull I> items) {
@@ -171,7 +175,6 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
 
         sortItems();
     }
-
 
     private void sortItems() {
         var itemsInCollection = streamOfItems()
@@ -233,10 +236,6 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         super.removeItem(anObject);
     }
 
-    public void setSelectedListItem(I item) {
-        setSelectedItem(new ListItemWrapper<>(item));
-    }
-
     public boolean isMandatory() {
         return mandatory;
     }
@@ -246,7 +245,7 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
     }
 
     public Set<ValidationStatus> getValidationStatus() {
-        if(mandatory && getSelectedIndex() < 0) {
+        if (mandatory && getSelectedIndex() < 0) {
             return Set.of(ValidationStatus.INVALID_FOR_MANDATORY);
         }
 

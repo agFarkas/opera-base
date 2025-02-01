@@ -24,11 +24,9 @@ public class StatusBar extends JPanel {
         }
     }
 
-    private DbSettings dbSettings;
-
-    private DbConnectionStatus dbConnectionStatus;
-
     private final JLabel lbDbUrl = new JLabel(" ");
+    private DbSettings dbSettings;
+    private DbConnectionStatus dbConnectionStatus;
 
 
     public StatusBar() {

@@ -1,5 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui;
 
+import hu.agfcodeworks.operangel.application.event.ContextEvent;
+import hu.agfcodeworks.operangel.application.event.listener.ContextEventListener;
 import hu.agfcodeworks.operangel.application.service.DbSettingsService;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import hu.agfcodeworks.operangel.application.ui.components.custom.StatusBar;
@@ -41,6 +43,8 @@ public class MainWindow extends JFrame {
     private final String applicationVersion = "1.0.0 - BETA";
 
     private final StatusBar statusBar = new StatusBar();
+
+    private final ContextEventListener contextEventListener = this::statusChanged;
 
     public MainWindow() {
         setSize(1600, 900);
@@ -146,13 +150,16 @@ public class MainWindow extends JFrame {
     }
 
     private void startContext(DbSettings dbSettings) {
-        try {
-            statusBar.setDbSettings(dbSettings);
-            statusBar.setDbConnectionStatus(AWAITING);
-            ContextUtil.startContext();
-            statusBar.setDbConnectionStatus(ESTABLISHED);
-        } catch (Exception ex) {
-            statusBar.setDbConnectionStatus(REFUSED);
+        statusBar.setDbSettings(dbSettings);
+        ContextUtil.startContext(contextEventListener);
+    }
+
+    private void statusChanged(ContextEvent event) {
+        switch (event.getStatus()) {
+            case CLOSED -> statusBar.setDbConnectionStatus(CLOSED);
+            case AWAITING -> statusBar.setDbConnectionStatus(AWAITING);
+            case ESTABLISHED -> statusBar.setDbConnectionStatus(ESTABLISHED);
+            case REFUSED -> statusBar.setDbConnectionStatus(REFUSED);
         }
     }
 }

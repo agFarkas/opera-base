@@ -10,10 +10,8 @@ import java.awt.Font;
 
 public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
-    private final JLabel label;
-
     protected final C component;
-
+    private final JLabel label;
     private boolean mandatory;
 
     public JLabeledComponent(@NonNull String labelText, @NonNull C component) {

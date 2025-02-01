@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-play-001" author="agfarkas">
+        <createTable tableName="play">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="natural_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="title" type="varchar(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(5)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="composer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-play-002" author="agfarkas">
+        <createSequence sequenceName="play_seq" minValue="0" maxValue="99999999"/>
+
+        <createIndex tableName="play" indexName="idx_play_natural_id">
+            <column name="natural_id"/>
+        </createIndex>
+
+        <createIndex tableName="play" indexName="idx_play_type">
+            <column name="type"/>
+        </createIndex>
+
+        <createIndex tableName="play" indexName="idx_play_composer_id">
+            <column name="composer_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create-constraints-for-play-001" author="agfarkas">
+        <addForeignKeyConstraint baseTableName="play" baseColumnNames="composer_id"
+                                 constraintName="cnstr_fk_play_composer_id"
+                                 referencedTableName="composer"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="create-check-constraint-001" author="agfarkas" dbms="postgresql">
+        <sql>
+            ALTER TABLE play
+                ADD CONSTRAINT chk_type_values CHECK (type in ('OPERA', 'OTHER'));
+        </sql>
+    </changeSet>
+</databaseChangeLog>

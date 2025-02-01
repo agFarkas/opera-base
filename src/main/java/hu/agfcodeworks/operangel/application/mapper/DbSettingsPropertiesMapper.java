@@ -3,10 +3,12 @@ package hu.agfcodeworks.operangel.application.mapper;
 import hu.agfcodeworks.operangel.application.settings.DbEngine;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import lombok.NonNull;
+import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
-public class DbSettingsProperiesMapper extends PropertiesMapper<DbSettings> {
+@Component
+public class DbSettingsPropertiesMapper extends PropertiesMapper<DbSettings> {
 
     private static final String DB_ENGINE = "db.engine";
     private static final String DB_HOST = "db.host";
@@ -14,6 +16,14 @@ public class DbSettingsProperiesMapper extends PropertiesMapper<DbSettings> {
     private static final String DB_NAME = "db.name";
     private static final String DB_USERNAME = "db.auth.username";
     private static final String DB_PASSWORD = "db.auth.password";
+
+    private static Integer mapIntProperty(String property) {
+        try {
+            return Integer.parseInt(property);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("The value of '%s' must be number.".formatted(property));
+        }
+    }
 
     @Override
     public Properties dtoToProperties(@NonNull DbSettings dbSettings) {
@@ -42,13 +52,5 @@ public class DbSettingsProperiesMapper extends PropertiesMapper<DbSettings> {
                 .withUsername(properties.getProperty(DB_USERNAME))
                 .withPassword(properties.getProperty(DB_PASSWORD))
                 .build();
-    }
-
-    private static Integer mapIntProperty(String property) {
-        try {
-            return Integer.parseInt(property);
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("The value of '%s' must be number.".formatted(property));
-        }
     }
 }

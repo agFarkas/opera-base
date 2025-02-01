@@ -97,6 +97,31 @@ public abstract class JAbstractDialog<V> extends JDialog {
         pack();
     }
 
+    protected static List<ErrorDto> getErrorDtos(JLabeledComboBox<?> comboBox) {
+        var validationStatuses = comboBox.getValidationStatus();
+
+        if (!CollectionUtils.isEmpty(validationStatuses)) {
+            return List.of(new ErrorDto(comboBox.getLabelText(), VALIDATION_MESSAGE_MANDATORY));
+        }
+
+        return Collections.emptyList();
+    }
+
+    protected static List<ErrorDto> getErrorDtos(JAbstractedLabeledTextField<?> textField) {
+        var validationStatuses = textField.getValidationStatus();
+        var errorDtos = new LinkedList<ErrorDto>();
+
+        if (validationStatuses.contains(INVALID_FOR_MANDATORY)) {
+            errorDtos.add(new ErrorDto(textField.getLabelText(), VALIDATION_MESSAGE_MANDATORY));
+        }
+
+        if (validationStatuses.contains(INVALID_FOR_CONTENT_RULE)) {
+            errorDtos.add(new ErrorDto(textField.getLabelText(), textField.getValidationMessage()));
+        }
+
+        return errorDtos;
+    }
+
     private void onOK() {
         try {
             validateContent();
@@ -135,30 +160,5 @@ public abstract class JAbstractDialog<V> extends JDialog {
 
     public DialogStatus getDialogStatus() {
         return dialogStatus;
-    }
-
-    protected static List<ErrorDto> getErrorDtos(JLabeledComboBox<?> comboBox) {
-        var validationStatuses = comboBox.getValidationStatus();
-
-        if (!CollectionUtils.isEmpty(validationStatuses)) {
-            return List.of(new ErrorDto(comboBox.getLabelText(), VALIDATION_MESSAGE_MANDATORY));
-        }
-
-        return Collections.emptyList();
-    }
-
-    protected static List<ErrorDto> getErrorDtos(JAbstractedLabeledTextField<?> textField) {
-        var validationStatuses = textField.getValidationStatus();
-        var errorDtos = new LinkedList<ErrorDto>();
-
-        if (validationStatuses.contains(INVALID_FOR_MANDATORY)) {
-            errorDtos.add(new ErrorDto(textField.getLabelText(), VALIDATION_MESSAGE_MANDATORY));
-        }
-
-        if (validationStatuses.contains(INVALID_FOR_CONTENT_RULE)) {
-            errorDtos.add(new ErrorDto(textField.getLabelText(), textField.getValidationMessage()));
-        }
-
-        return errorDtos;
     }
 }

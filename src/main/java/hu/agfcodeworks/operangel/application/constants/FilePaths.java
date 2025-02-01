@@ -6,5 +6,5 @@ public interface FilePaths {
 
     String FILENAME_DB_SETTINGS = "%s/db-connection.properties".formatted(PATH_DB_SETTINGS);
 
-    String PATH_DB_CHANGELOG = "db-changelog/changelog.xml";
+    String PATH_DB_CHANGELOG = "db-migration/changelog.xml";
 }

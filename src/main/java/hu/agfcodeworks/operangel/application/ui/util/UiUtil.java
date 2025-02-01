@@ -23,6 +23,9 @@ public class UiUtil {
     private static final String MENU_PREFIX = "Menu.";
 
     private static final String MENU_ITEM_PREFIX = "MenuItem.";
+    private static final String CAPTION_PATTERN = "%s%s";
+    private static final String TRIPLE_DOT = "...";
+    private static final String EMPTY_STRING = "";
 
     static {
         Map.of(
@@ -46,10 +49,6 @@ public class UiUtil {
     private static Object makeFont(Font font) {
         return font.deriveFont(Font.PLAIN);
     }
-
-    private static final String CAPTION_PATTERN = "%s%s";
-    private static final String TRIPLE_DOT = "...";
-    private static final String EMPTY_STRING = "";
 
     public JMenuItem makeMenuItem(String caption, ActionListener actionListener, boolean dialogOpening) {
         var menuItem = new JMenuItem(CAPTION_PATTERN.formatted(caption, dialogOpening ? TRIPLE_DOT : EMPTY_STRING));

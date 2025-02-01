@@ -22,19 +22,22 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
+@Table(name = "composer")
 @Entity
-@Table(name = "location")
-public class Location extends AbstractEntity {
+public class Composer extends AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "location_seq_gen")
-    @SequenceGenerator(name = "location_seq_gen", sequenceName = "location_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "composer_seq_gen")
+    @SequenceGenerator(name = "composer_seq_gen", sequenceName = "composer_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "location_name", nullable = false)
-    private String name;
+    @Column(name = "given_name")
+    private String givenName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "location")
-    private List<Performance> performances;
+    @Column(name = "family_name", nullable = false)
+    private String familyName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "composer")
+    private List<Play> plays;
 }

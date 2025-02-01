@@ -50,7 +50,7 @@ public class OutContextUtil {
     public <T> T getComponent(Class<T> clazz) {
         var componentOpt = getOptionalComponent(clazz);
 
-        if(componentOpt.isPresent()) {
+        if (componentOpt.isPresent()) {
             return componentOpt.get();
         }
 

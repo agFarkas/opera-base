@@ -3,18 +3,15 @@ package hu.agfcodeworks.operangel.application.ui.dialog;
 import hu.agfcodeworks.operangel.application.dto.ErrorDto;
 import hu.agfcodeworks.operangel.application.settings.DbEngine;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
-import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JAbstractedLabeledTextField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComboBox;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComponent;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledNumberField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledPasswordField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledTextField;
-import org.springframework.util.CollectionUtils;
 
 import javax.swing.JPanel;
 import java.awt.Frame;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -3,6 +3,10 @@ package hu.agfcodeworks.operangel.application.util;
 import hu.agfcodeworks.operangel.application.configuration.Config;
 import hu.agfcodeworks.operangel.application.dto.StatusCategory;
 import hu.agfcodeworks.operangel.application.dto.StatusDto;
+import hu.agfcodeworks.operangel.application.event.ContextEvent;
+import hu.agfcodeworks.operangel.application.event.listener.ContextEventListener;
+import hu.agfcodeworks.operangel.application.event.values.ContextStatus;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -23,8 +27,42 @@ public class ContextUtil {
         context.start();
 
         return StatusDto.builder()
-                .withCategory(StatusCategory.OK)
+                .withCategory(StatusCategory.ERROR)
                 .build();
+    }
+
+    public StatusDto startContext(@NonNull ContextEventListener contextEventListener) {
+        try {
+            contextEventListener.statusChanged(
+                    ContextEvent.builder()
+                            .withStatus(ContextStatus.AWAITING)
+                            .build()
+            );
+            conditionallyInitContext();
+            context.start();
+
+            contextEventListener.statusChanged(
+                    ContextEvent.builder()
+                            .withStatus(ContextStatus.ESTABLISHED)
+                            .build()
+            );
+
+            return StatusDto.builder()
+                    .withCategory(StatusCategory.OK)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            contextEventListener.statusChanged(
+                    ContextEvent.builder()
+                            .withStatus(ContextStatus.REFUSED)
+                            .build()
+            );
+
+            return StatusDto.builder()
+                    .withCategory(StatusCategory.ERROR)
+                    .build();
+        }
     }
 
     public StatusDto stopContext() {

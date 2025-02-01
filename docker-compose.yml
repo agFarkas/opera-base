@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  operangel-db:
+    container_name: operangel-db
+    image: postgres:15.1
+    restart: always
+    environment:
+      - POSTGRES_DB=operangel
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
