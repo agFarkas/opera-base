@@ -60,7 +60,7 @@
     </changeSet>
 
     <changeSet id="create-check-constraints-and-functions-for-artist-performance-role-001" author="agfarkas"
-               dbms="postgresql, h2">
+               dbms="postgresql">
         <sqlFile
                 path="db-migration/change-sets/native-scripts/postgresql/function-check-role-in-play-by-performance.sql"
                 encoding="UTF-8"

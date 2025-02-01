@@ -43,7 +43,14 @@
         </createIndex>
     </changeSet>
 
-    <changeSet id="create-check-constraint-001" author="agfarkas" dbms="postgresql, h2">
+    <changeSet id="create-constraints-for-play-001" author="agfarkas">
+        <addForeignKeyConstraint baseTableName="play" baseColumnNames="composer_id"
+                                 constraintName="cnstr_fk_play_composer_id"
+                                 referencedTableName="composer"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="create-check-constraint-001" author="agfarkas" dbms="postgresql">
         <sql>
             ALTER TABLE play
                 ADD CONSTRAINT chk_type_values CHECK (type in ('OPERA', 'OTHER'));
