@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="/db-change/change-sets/create-table-artist.xml"/>
+    <include file="/db-change/change-sets/create-table-composer.xml"/>
+    <include file="/db-change/change-sets/create-table-play.xml"/>
+    <include file="/db-change/change-sets/create-table-role.xml"/>
+    <include file="/db-change/change-sets/create-table-location.xml"/>
+    <include file="/db-change/change-sets/create-table-performance.xml"/>
+    <include file="/db-change/change-sets/create-table-artist-performance-role.xml"/>
+</databaseChangeLog>

@@ -52,23 +52,16 @@
         </createIndex>
     </changeSet>
 
-    <changeSet id="unique-constraints-for-artist-performance-role-001" author="agfarkas">
-        <addUniqueConstraint tableName="artist_performance_role" columnNames="performance_id, role_id"
-                             constraintName="cnstr_unique_performance_role"/>
-        <addUniqueConstraint tableName="artist_performance_role" columnNames="performance_id, artist_id"
-                             constraintName="cnstr_unique_performance_artist"/>
-    </changeSet>
-
     <changeSet id="create-check-constraints-and-functions-for-artist-performance-role-001" author="agfarkas"
                dbms="postgresql">
         <sqlFile
-                path="db-migration/change-sets/native-scripts/postgresql/function-check-role-in-play-by-performance.sql"
+                path="db-change/change-sets/native-scripts/postgresql/function-check-role-in-play-by-performance.sql"
                 encoding="UTF-8"
                 relativeToChangelogFile="false"
         />
 
         <sqlFile
-                path="db-migration/change-sets/native-scripts/postgresql/function-check-artist-not-conductor-by-performance.sql"
+                path="db-change/change-sets/native-scripts/postgresql/function-check-artist-not-conductor-by-performance.sql"
                 encoding="UTF-8"
                 relativeToChangelogFile="false"
         />

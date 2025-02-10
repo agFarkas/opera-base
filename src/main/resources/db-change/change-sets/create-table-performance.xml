@@ -61,7 +61,7 @@
 
     <changeSet id="create-check-constraint-and-function-for-conductor-validation" author="agfarkas">
         <sqlFile
-                path="db-migration/change-sets/native-scripts/postgresql/function-play-type-by-id.sql"
+                path="db-change/change-sets/native-scripts/postgresql/function-play-type-by-id.sql"
                 encoding="UTF-8"
                 relativeToChangelogFile="false"
         />
