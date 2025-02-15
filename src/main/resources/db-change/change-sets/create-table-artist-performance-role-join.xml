@@ -6,48 +6,52 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="create-table-artist-performance-role-001" author="agfarkas">
-        <createTable tableName="artist_performance_role">
+        <createTable tableName="artist_performance_role_join">
             <column name="artist_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_artist_performance_role_artist_id"/>
+                <constraints nullable="false" foreignKeyName="fk_artist_performance_role_join_artist_id"/>
             </column>
 
             <column name="performance_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_artist_performance_role_performance_id"/>
+                             foreignKeyName="fk_artist_performance_role_join_performance_id"/>
             </column>
 
             <column name="role_id" type="bigint">
                 <constraints nullable="false"
-                             foreignKeyName="fk_artist_performance_role_role_id"/>
+                             foreignKeyName="fk_artist_performance_role_join_role_id"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="create-table-artist-performance-role-002" author="agfarkas">
-        <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="artist_id"
-                                 constraintName="cnstr_fk_artist_performance_role_artist_id"
+        <addForeignKeyConstraint baseTableName="artist_performance_role_join" baseColumnNames="artist_id"
+                                 constraintName="cnstr_fk_artist_performance_role_join_artist_id"
                                  referencedTableName="artist"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="performance_id"
-                                 constraintName="cnstr_fk_artist_performance_role_performance_id"
+        <addForeignKeyConstraint baseTableName="artist_performance_role_join" baseColumnNames="performance_id"
+                                 constraintName="cnstr_fk_artist_performance_role_join_performance_id"
                                  referencedTableName="performance"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="artist_performance_role" baseColumnNames="role_id"
-                                 constraintName="cnstr_fk_artist_performance_role_role_id"
+        <addForeignKeyConstraint baseTableName="artist_performance_role_join" baseColumnNames="role_id"
+                                 constraintName="cnstr_fk_artist_performance_role_join_role_id"
                                  referencedTableName="role"
                                  referencedColumnNames="id"/>
 
-        <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_artist_id">
+        <addUniqueConstraint constraintName="cnstr_uq_artist_performance_role" tableName="artist_performance_role_join"
+                             columnNames="artist_id, performance_id, role_id"/>
+
+        <createIndex tableName="artist_performance_role_join" indexName="idx_artist_performance_role_join_artist_id">
             <column name="artist_id"/>
         </createIndex>
 
-        <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_performance_id">
+        <createIndex tableName="artist_performance_role_join"
+                     indexName="idx_artist_performance_role_join_performance_id">
             <column name="performance_id"/>
         </createIndex>
 
-        <createIndex tableName="artist_performance_role" indexName="idx_artist_performance_role_role_id">
+        <createIndex tableName="artist_performance_role_join" indexName="idx_artist_performance_role_join_role_id">
             <column name="role_id"/>
         </createIndex>
     </changeSet>
@@ -60,16 +64,10 @@
                 relativeToChangelogFile="false"
         />
 
-        <sqlFile
-                path="db-change/change-sets/native-scripts/postgresql/function-check-artist-not-conductor-by-performance.sql"
-                encoding="UTF-8"
-                relativeToChangelogFile="false"
-        />
-
         <sql>
-            ALTER TABLE artist_performance_role
-                ADD CONSTRAINT chk_role_in_play CHECK (check_role_in_play(performance_id, role_id)),
-                ADD CONSTRAINT chk_artist_not_conductor CHECK (check_artist_not_conductor(performance_id, artist_id));
+            ALTER TABLE artist_performance_role_join
+                ADD CONSTRAINT chk_role_in_play CHECK (check_role_in_play(performance_id, role_id))
         </sql>
     </changeSet>
+
 </databaseChangeLog>

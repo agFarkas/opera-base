@@ -1,12 +1,16 @@
 package hu.agfcodeworks.operangel.application.model;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -43,9 +47,14 @@ public class Artist extends AbstractEntity {
     @Column(name = "family_name", nullable = false)
     private String familyName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.artist", targetEntity = ArtistPerformanceRoleJoin.class)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.artist", targetEntity = ArtistPerformanceRoleJoin.class, cascade = CascadeType.ALL)
     private List<ArtistPerformanceRoleJoin> artistPerformanceRoleJoins;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "conductor", targetEntity = Performance.class)
+    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Performance.class)
+    @JoinTable(name = "performance_conductor_join", joinColumns = {
+            @JoinColumn(name = "conductor_id", nullable = false)
+    }, inverseJoinColumns = {
+            @JoinColumn(name = "performance_id", nullable = false)
+    })
     private List<Performance> conductedPerformances;
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-performance-conductor-001" author="agfarkas">
+        <createTable tableName="performance_conductor_join">
+            <column name="conductor_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_performance_conductor_conductor_id"/>
+            </column>
+
+            <column name="performance_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_performance_conductor_performance_id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-performance-conductor-002" author="agfarkas">
+        <addForeignKeyConstraint baseTableName="performance_conductor_join" baseColumnNames="conductor_id"
+                                 constraintName="cnstr_fk_performance_conductor_artist_id"
+                                 referencedTableName="artist"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="performance_conductor_join" baseColumnNames="performance_id"
+                                 constraintName="cnstr_fk_performance_conductor_performance_id"
+                                 referencedTableName="performance"
+                                 referencedColumnNames="id"/>
+
+        <addUniqueConstraint constraintName="cnstr_uq_performance_conductor_join" tableName="performance_conductor_join"
+                             columnNames="performance_id, conductor_id"/>
+
+        <createIndex tableName="performance_conductor_join" indexName="idx_performance_conductor_conductor_id">
+            <column name="conductor_id"/>
+        </createIndex>
+
+        <createIndex tableName="performance_conductor_join" indexName="idx_performance_conductor_performance_id">
+            <column name="performance_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

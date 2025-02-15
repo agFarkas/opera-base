@@ -11,5 +11,6 @@
     <include file="/db-change/change-sets/create-table-role.xml"/>
     <include file="/db-change/change-sets/create-table-location.xml"/>
     <include file="/db-change/change-sets/create-table-performance.xml"/>
-    <include file="/db-change/change-sets/create-table-artist-performance-role.xml"/>
+    <include file="/db-change/change-sets/create-table-performance-conductor-join.xml"/>
+    <include file="/db-change/change-sets/create-table-artist-performance-role-join.xml"/>
 </databaseChangeLog>
