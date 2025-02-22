@@ -8,12 +8,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Map;
+
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.EMPTY_STRING;
 
 @UtilityClass
 public class UiUtil {
@@ -25,7 +28,6 @@ public class UiUtil {
     private static final String MENU_ITEM_PREFIX = "MenuItem.";
     private static final String CAPTION_PATTERN = "%s%s";
     private static final String TRIPLE_DOT = "...";
-    private static final String EMPTY_STRING = "";
 
     static {
         Map.of(
@@ -42,7 +44,7 @@ public class UiUtil {
         UIManager.getDefaults()
                 .entrySet()
                 .stream()
-                .filter(e -> e.getKey().toString().startsWith("Button"))
+//                .filter(e -> e.getKey().toString().startsWith("Button"))
                 .forEach(System.out::println);
     }
 
@@ -74,7 +76,10 @@ public class UiUtil {
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
+    }
 
-
+    public Border getBorder(String key) {
+        return UIManager.getDefaults()
+                .getBorder(key);
     }
 }

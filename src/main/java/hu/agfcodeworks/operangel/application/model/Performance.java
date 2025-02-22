@@ -46,13 +46,8 @@ public class Performance extends AbstractEntity {
     @JoinColumn(name = "play_id", referencedColumnName = "id", nullable = false)
     private Play play;
 
-    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Artist.class, cascade = CascadeType.ALL)
-    @JoinTable(name = "performance_conductor_join", joinColumns = {
-            @JoinColumn(name = "performance_id", nullable = false)
-    }, inverseJoinColumns = {
-            @JoinColumn(name = "conductor_id", nullable = false)
-    })
-    private List<Artist> conductors;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.performance", targetEntity = PerformanceConductorJoin.class, cascade = CascadeType.ALL)
+    private List<PerformanceConductorJoin> performanceConductorJoins;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.performance", cascade = CascadeType.ALL)
     private Set<ArtistPerformanceRoleJoin> artistPerformanceRoleJoins;

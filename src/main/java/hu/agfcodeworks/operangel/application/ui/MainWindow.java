@@ -1,5 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui;
 
+import hu.agfcodeworks.operangel.application.dto.StatusDto;
 import hu.agfcodeworks.operangel.application.event.ContextEvent;
 import hu.agfcodeworks.operangel.application.event.listener.ContextEventListener;
 import hu.agfcodeworks.operangel.application.service.DbSettingsService;
@@ -46,6 +47,16 @@ public class MainWindow extends JFrame {
 
     private final ContextEventListener contextEventListener = this::statusChanged;
 
+    private final CalendarTabPane tpCalendar = new CalendarTabPane(this);
+
+    private final ConductorsTabPane tpConductors = new ConductorsTabPane(this);
+
+    private final PerformersTabPane toPerformers = new PerformersTabPane(this);
+
+    private final OperasTabPane tpOperas = new OperasTabPane(this);
+
+    private final SeasonsTabPane tpSeasons = new SeasonsTabPane(this);
+
     public MainWindow() {
         setSize(1600, 900);
         setTitle(TITLE_PATTERN.formatted(applicationName, applicationVersion));
@@ -60,6 +71,7 @@ public class MainWindow extends JFrame {
 
         addWindowListener(makeWindowListener());
 
+        setPanelsEnabled(false);
         setVisible(true);
     }
 
@@ -90,13 +102,16 @@ public class MainWindow extends JFrame {
 
         tabbedPane.setUI(new TabbedPaneUi());
 
-        tabbedPane.addTab("Naptár", new CalendarTabPane());
-        tabbedPane.addTab("Karmesterek", new ConductorsTabPane());
-        tabbedPane.addTab("Előadók", new PerformersTabPane());
-        tabbedPane.addTab("Operák", new OperasTabPane());
-        tabbedPane.addTab("Évadok", new SeasonsTabPane());
+        tabbedPane.addTab("Naptár", tpCalendar);
+        tabbedPane.addTab("Karmesterek", tpConductors);
+        ;
+        tabbedPane.addTab("Előadók", toPerformers);
+        tabbedPane.addTab("Operák", tpOperas);
+        tabbedPane.addTab("Évadok", tpSeasons);
 
         tabbedPane.setEnabledAt(1, false);
+
+        tabbedPane.setSelectedIndex(3);
 
         return tabbedPane;
     }
@@ -110,8 +125,23 @@ public class MainWindow extends JFrame {
     }
 
     private void closeWindow() {
-        ContextUtil.stopContext();
+        stopContext();
         this.dispose();
+    }
+
+    private StatusDto stopContext() {
+        var statusDto = ContextUtil.stopContext();
+        setPanelsEnabled(false);
+
+        return statusDto;
+    }
+
+    private void setPanelsEnabled(boolean enabled) {
+        tpCalendar.setEnabled(enabled);
+        tpConductors.setEnabled(enabled);
+        toPerformers.setEnabled(enabled);
+        tpOperas.setEnabled(enabled);
+        tpSeasons.setEnabled(enabled);
     }
 
     private void changeDatabaseConnection() {
@@ -130,6 +160,7 @@ public class MainWindow extends JFrame {
 
     private WindowListener makeWindowListener() {
         return new WindowAdapter() {
+
             @Override
             public void windowOpened(WindowEvent event) {
                 statusBar.setDbConnectionStatus(CLOSED);
@@ -152,6 +183,13 @@ public class MainWindow extends JFrame {
     private void startContext(DbSettings dbSettings) {
         statusBar.setDbSettings(dbSettings);
         ContextUtil.startContext(contextEventListener);
+
+        setPanelsEnabled(true);
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        tpOperas.refreshContent();
     }
 
     private void statusChanged(ContextEvent event) {

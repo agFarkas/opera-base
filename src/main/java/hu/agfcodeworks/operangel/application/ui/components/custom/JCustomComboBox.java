@@ -64,12 +64,13 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         }
     }
 
-    private void processNewItemOpt(Optional<I> newItemOpt) {
+    private void processNewItemOpt(@NonNull Optional<I> newItemOpt) {
         if (newItemOpt.isPresent()) {
             var newWrapper = ListItemWrapper.of(newItemOpt.get());
 
             addWrapper(newWrapper);
-            retrieveDefaultModel().setSelectedItem(newWrapper);
+            retrieveDefaultModel()
+                    .setSelectedItem(newWrapper);
         } else {
             if (retrieveDefaultModel().getSize() == 1) {
                 itemIndex = deselectedIndex;

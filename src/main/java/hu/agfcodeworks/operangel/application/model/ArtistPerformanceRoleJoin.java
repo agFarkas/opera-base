@@ -19,7 +19,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @SuperBuilder(setterPrefix = "with")
 @Entity
-@Table(name = "artist_performance_role")
+@Table(name = "artist_performance_role_join")
 public class ArtistPerformanceRoleJoin implements Serializable {
 
     @EmbeddedId

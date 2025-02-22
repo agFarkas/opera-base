@@ -11,7 +11,7 @@ import java.awt.Font;
 public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
     protected final C component;
-    private final JLabel label;
+    protected final JLabel label;
     private boolean mandatory;
 
     public JLabeledComponent(@NonNull String labelText, @NonNull C component) {
@@ -54,5 +54,15 @@ public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
     private int makeStyle(boolean mandatory) {
         return mandatory ? Font.BOLD : Font.PLAIN;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return component.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        component.setEnabled(enabled);
     }
 }

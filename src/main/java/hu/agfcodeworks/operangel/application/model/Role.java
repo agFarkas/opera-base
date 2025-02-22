@@ -1,5 +1,6 @@
 package hu.agfcodeworks.operangel.application.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,6 +42,6 @@ public class Role extends AbstractEntity {
     @JoinColumn(name = "play_id", referencedColumnName = "id", nullable = false)
     private Play play;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.role")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.role", cascade = CascadeType.ALL)
     private List<ArtistPerformanceRoleJoin> artistPerformanceRoleJoins;
 }

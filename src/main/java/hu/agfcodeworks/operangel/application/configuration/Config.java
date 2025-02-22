@@ -10,10 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.TransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -23,6 +26,7 @@ import static hu.agfcodeworks.operangel.application.constants.FilePaths.PATH_DB_
 @LiquibaseService
 @ComponentScan("hu.agfcodeworks.operangel.application")
 @PropertySource("classpath:application.properties")
+@EnableJpaRepositories("hu.agfcodeworks.operangel.application.repository")
 @Configuration
 @AllArgsConstructor
 public class Config {
@@ -86,5 +90,10 @@ public class Config {
         entityManager.setJpaProperties(properties);
 
         return entityManager;
+    }
+
+    @Bean()
+    public TransactionManager transactionManager() {
+        return new JpaTransactionManager();
     }
 }

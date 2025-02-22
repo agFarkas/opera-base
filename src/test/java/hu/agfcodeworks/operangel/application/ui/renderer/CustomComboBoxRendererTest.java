@@ -14,7 +14,7 @@ import javax.swing.JList;
 import java.util.stream.Stream;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
-import static hu.agfcodeworks.operangel.application.ui.util.UiConstants.LIST_ITEM_CREATE_NEW;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.LIST_ITEM_CREATE_NEW;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

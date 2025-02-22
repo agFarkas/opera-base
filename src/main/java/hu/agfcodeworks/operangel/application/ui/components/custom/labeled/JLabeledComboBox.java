@@ -6,6 +6,7 @@ import lombok.NonNull;
 
 import javax.swing.ComboBoxEditor;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -53,5 +54,9 @@ public class JLabeledComboBox<I> extends JLabeledComponent<JCustomComboBox<I>> {
 
     public Set<ValidationStatus> getValidationStatus() {
         return component.getValidationStatus();
+    }
+
+    public void setItemComparator(@NonNull Comparator<I> itemComparator) {
+        component.setItemComparator(itemComparator);
     }
 }

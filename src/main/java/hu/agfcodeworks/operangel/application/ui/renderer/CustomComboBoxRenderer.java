@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
-import static hu.agfcodeworks.operangel.application.ui.util.UiConstants.LIST_ITEM_CREATE_NEW;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.LIST_ITEM_CREATE_NEW;
 
 @AllArgsConstructor
 public class CustomComboBoxRenderer<V> extends BasicComboBoxRenderer {

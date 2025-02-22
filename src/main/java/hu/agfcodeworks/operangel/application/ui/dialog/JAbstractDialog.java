@@ -14,7 +14,11 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -27,7 +31,7 @@ import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.CANCEL
 import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
 import static hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus.INVALID_FOR_CONTENT_RULE;
 import static hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus.INVALID_FOR_MANDATORY;
-import static hu.agfcodeworks.operangel.application.ui.util.UiConstants.INVALID_VALUES;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.INVALID_VALUES;
 
 public abstract class JAbstractDialog<V> extends JDialog {
 
@@ -43,16 +47,17 @@ public abstract class JAbstractDialog<V> extends JDialog {
 
     private static final int VERTICAL_DISTANCE_FROM_OWNER = 15;
 
-    private JPanel contentPane;
+    private Container contentPane;
 
-    private JButton buttonOK;
+    private JButton buttonOK = new JButton("OK");
 
-    private JButton buttonCancel;
+    private JButton buttonCancel = new JButton("Mégsem");
 
-    private JPanel formPane;
-    private JPanel buttonPane;
+    private JPanel formPane = new JPanel();
 
-    private V value;
+    private JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+    protected V value;
 
     private DialogStatus dialogStatus = CANCEL;
 
@@ -63,9 +68,16 @@ public abstract class JAbstractDialog<V> extends JDialog {
         this.value = initialValue;
 
         setTitle(title);
-        setContentPane(contentPane);
+        this.contentPane = getContentPane();
 
         formPane.setLayout(new BoxLayout(formPane, BoxLayout.PAGE_AXIS));
+
+        buttonPane.add(buttonOK);
+        buttonPane.add(buttonCancel);
+
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(formPane);
+        contentPane.add(buttonPane, BorderLayout.PAGE_END);
 
         buildFormPane(formPane);
         initiateValue(initialValue);
@@ -85,13 +97,6 @@ public abstract class JAbstractDialog<V> extends JDialog {
                 onCancel();
             }
         });
-
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(
-                e -> onCancel(),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
-        );
 
         setResizable(false);
         pack();
