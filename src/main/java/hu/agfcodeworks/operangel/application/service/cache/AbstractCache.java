@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -23,7 +24,17 @@ public abstract class AbstractCache<DTO> {
             cacheIsFilled = true;
         }
 
-        return cache.get(naturalId);
+        var dto = cache.get(naturalId);
+
+        if(Objects.isNull(dto)) {
+            return getDefault();
+        }
+
+        return dto;
+    }
+
+    public DTO getDefault() {
+        return null;
     }
 
     public List<DTO> getAll() {
@@ -53,4 +64,7 @@ public abstract class AbstractCache<DTO> {
     protected abstract void fillCache();
 
 
+    public void remove(UUID naturalId) {
+        cache.remove(naturalId);
+    }
 }

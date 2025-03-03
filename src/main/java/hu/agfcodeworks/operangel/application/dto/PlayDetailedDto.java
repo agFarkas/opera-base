@@ -26,4 +26,5 @@ public class PlayDetailedDto {
     private final List<RoleDto> roles;
 
     private final List<PerformanceDto> performances;
+
 }

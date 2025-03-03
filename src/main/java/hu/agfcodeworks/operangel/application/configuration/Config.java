@@ -17,6 +17,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -27,6 +28,7 @@ import static hu.agfcodeworks.operangel.application.constants.FilePaths.PATH_DB_
 @ComponentScan("hu.agfcodeworks.operangel.application")
 @PropertySource("classpath:application.properties")
 @EnableJpaRepositories("hu.agfcodeworks.operangel.application.repository")
+@EnableTransactionManagement
 @Configuration
 @AllArgsConstructor
 public class Config {

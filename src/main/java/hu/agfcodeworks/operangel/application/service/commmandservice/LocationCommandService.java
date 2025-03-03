@@ -28,16 +28,24 @@ public class LocationCommandService {
 
     public LocationDto save(@NonNull LocationDto locationDto) {
         if (Objects.nonNull(locationDto.getNaturalId())) {
-            var newLocationDto = findAndUpdate(locationDto);
-            locationCache.put(newLocationDto.getNaturalId(), newLocationDto);
-
-            return locationDto;
+            return update(locationDto);
         }
 
+        return create(locationDto);
+    }
+
+    private LocationDto create(LocationDto locationDto) {
         var newLocationDto = createNew(locationDto);
         locationCache.put(newLocationDto.getNaturalId(), newLocationDto);
 
         return newLocationDto;
+    }
+
+    private LocationDto update(LocationDto locationDto) {
+        var newLocationDto = findAndUpdate(locationDto);
+        locationCache.put(newLocationDto.getNaturalId(), newLocationDto);
+
+        return locationDto;
     }
 
     private LocationDto findAndUpdate(LocationDto locationDto) {

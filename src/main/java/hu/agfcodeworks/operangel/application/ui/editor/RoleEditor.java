@@ -9,36 +9,58 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.EMPTY_STRING;
+import static hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue.UPDATE_EXISTING;
 import static hu.agfcodeworks.operangel.application.ui.text.Comparators.roleComparator;
 
 public class RoleEditor extends DefaultCellEditor {
+
+    private final int rowIndex;
 
     private final Function<RoleDto, RoleDto> creator;
 
     private final Function<RoleDto, RoleDto> updater;
 
+    private final Consumer<Integer> mandatoryProcedure;
+
+    BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooser;
+
     private final List<RoleDto> roleDtos;
 
     public RoleEditor(
+            int rowIndex,
             @NonNull Function<RoleDto, RoleDto> creator,
             @NonNull Function<RoleDto, RoleDto> updater,
+            @NonNull Consumer<Integer> mandatoryProcedure,
+            @NonNull BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooser,
             @NonNull List<RoleDto> roleDtos
     ) {
         super(new JTextField());
+        this.rowIndex = rowIndex;
+
+        this.creator = creator;
+        this.updater = updater;
+
+        this.mandatoryProcedure = mandatoryProcedure;
+        this.operationChooser = operationChooser;
 
         this.roleDtos = roleDtos.stream()
                 .sorted(roleComparator)
                 .toList();
 
-        this.creator = creator;
-        this.updater = updater;
 
         prepareEditorComponent();
 
-        this.delegate = new EditorDelegate() {
+        this.delegate = makeDelegate();
+    }
+
+    private EditorDelegate makeDelegate() {
+        return new EditorDelegate() {
 
             @Override
             public Object getCellEditorValue() {
@@ -46,7 +68,7 @@ public class RoleEditor extends DefaultCellEditor {
                 var text = textField.getText();
 
                 if (!StringUtils.hasText(text)) {
-                    if (Objects.nonNull(value)) {
+                    if (hasOriginalValue()) {
                         return value;
                     }
 
@@ -54,11 +76,45 @@ public class RoleEditor extends DefaultCellEditor {
                 }
 
                 var trimmedText = text.trim();
+                var roleDto = obtainRoleDto(trimmedText);
+
+                mandatoryProcedure.accept(rowIndex);
+
+                return roleDto;
+            }
+
+            private boolean hasOriginalValue() {
+                return Objects.nonNull(value);
+            }
+
+            private RoleDto obtainRoleDto(String text) {
                 var roleOpt = roleDtos.stream()
-                        .filter(r -> Objects.equals(r.getDescription(), trimmedText))
+                        .filter(r -> Objects.equals(r.getDescription(), text))
                         .findFirst();
 
+                if (hasOriginalValue()) {
+                    return roleOpt.orElseGet(() -> updateOrCreateValueByChoseOperation(text));
+                }
+
                 return roleOpt.orElseGet(() -> createValue(text));
+            }
+
+            private RoleDto updateOrCreateValueByChoseOperation(String text) {
+                var operationOpt = chooseOperation(text);
+                if (operationOpt.isEmpty()) {
+                    return ((RoleDto) value);
+                }
+
+                var operation = operationOpt.get();
+                if (operation == UPDATE_EXISTING) {
+                    return updateValue(((RoleDto) value), text);
+                }
+
+                return createValue(text);
+            }
+
+            private Optional<OperationOnChangingValue> chooseOperation(String text) {
+                return operationChooser.apply(((RoleDto) value), text);
             }
 
             @Override
@@ -87,10 +143,12 @@ public class RoleEditor extends DefaultCellEditor {
                 .build());
     }
 
-    private RoleDto updateValue(RoleDto roleDto, String trimmedText) {
-        return updater.apply(RoleDto.builder()
-                .withNaturalId(roleDto.getNaturalId())
-                .withDescription(trimmedText)
-                .build());
+    private RoleDto updateValue(RoleDto originalRoleDto, String text) {
+        var roleDto = RoleDto.builder()
+                .withNaturalId(originalRoleDto.getNaturalId())
+                .withDescription(text)
+                .build();
+
+        return updater.apply(roleDto);
     }
 }

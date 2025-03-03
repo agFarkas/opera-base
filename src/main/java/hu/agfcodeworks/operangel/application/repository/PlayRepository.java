@@ -24,8 +24,10 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
     @Query("""
             select p from Play p
             join fetch p.composer
-            join fetch p.roles
+            left join fetch p.roles
             where p.naturalId = :naturalId
             """)
     Optional<Play> findByNaturalId(@Param("naturalId") UUID naturalId);
+
+    void deleteByNaturalId(UUID naturalId);
 }

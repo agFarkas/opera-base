@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class RoleDto {
 
-    private UUID playId;
+    private UUID playNaturalId;
 
     @EqualsAndHashCode.Include
     private final UUID naturalId;

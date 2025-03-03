@@ -150,6 +150,7 @@ public class MainWindow extends JFrame {
 
         if (dialog.getDialogStatus() == OK) {
             dbSettingsService.saveDbSettings(dialog.getValue());
+
             startContext(dbSettings);
         }
     }

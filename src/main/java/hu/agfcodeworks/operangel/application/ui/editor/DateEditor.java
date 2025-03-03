@@ -16,12 +16,14 @@ public class DateEditor extends DefaultCellEditor {
 
     private final int row;
     private final int column;
+    private final CellEditingListener editingListener;
 
     public DateEditor(int row, int column, CellEditingListener editingListener) {
         super(new JTextField());
 
         this.row = row;
         this.column = column;
+        this.editingListener = editingListener;
 
         this.delegate = new EditorDelegate() {
 

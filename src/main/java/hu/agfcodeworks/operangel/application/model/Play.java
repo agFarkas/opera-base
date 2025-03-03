@@ -1,6 +1,7 @@
 package hu.agfcodeworks.operangel.application.model;
 
 import hu.agfcodeworks.operangel.application.model.enums.PlayType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,10 +48,10 @@ public class Play extends AbstractEntity {
     @Column(name = "type", nullable = false, length = 5)
     private PlayType type = OPERA;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "play")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "play", cascade = CascadeType.ALL)
     private List<Role> roles;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "play")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "play",  cascade = CascadeType.ALL)
     private List<Performance> performances;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Composer.class)

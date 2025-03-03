@@ -7,11 +7,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
 
     protected final C component;
+
     protected final JLabel label;
+
     private boolean mandatory;
 
     public JLabeledComponent(@NonNull String labelText, @NonNull C component) {
@@ -26,12 +30,23 @@ public abstract class JLabeledComponent<C extends JComponent> extends JPanel {
     private void buildPanel() {
         setLayout(new FlowLayout());
 
+        prepareLabel();
+
         add(label);
         add(component);
 
-        label.setLabelFor(component);
-
         setLayout(new FlowLayout(FlowLayout.RIGHT));
+    }
+
+    private void prepareLabel() {
+        label.setLabelFor(component);
+        label.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                component.requestFocus();
+            }
+        });
     }
 
     public String getLabelText() {

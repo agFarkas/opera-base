@@ -7,8 +7,10 @@ import lombok.NonNull;
 import javax.swing.ComboBoxEditor;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class JLabeledComboBox<I> extends JLabeledComponent<JCustomComboBox<I>> {
 
@@ -58,5 +60,27 @@ public class JLabeledComboBox<I> extends JLabeledComponent<JCustomComboBox<I>> {
 
     public void setItemComparator(@NonNull Comparator<I> itemComparator) {
         component.setItemComparator(itemComparator);
+    }
+
+    public void setItemSupplier(@NonNull Supplier<Optional<I>> itemSupplier) {
+        component.setItemSupplier(itemSupplier);
+    }
+
+    public boolean isProvidingNewAddition() {
+        return component.isProvidingNewAddition();
+    }
+
+    public void setProvidingNewAddition(boolean providingNewAddition) {
+        component.setProvidingNewAddition(providingNewAddition);
+    }
+
+    public void addListItems(Collection<I> items) {
+        component.addListItems(items);
+    }
+
+    @Override
+    public void setMandatory(boolean mandatory) {
+        super.setMandatory(mandatory);
+        component.setMandatory(mandatory);
     }
 }

@@ -10,6 +10,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,6 +50,28 @@ public class JLabeledList<I> extends JLabeledComponent<JList<ListItemWrapper<I>>
         component.setSelectedIndex(index);
     }
 
+    public void addItem(I item) {
+        var element = ListItemWrapper.of(item);
+        retrieveDefaultModel()
+                .insertElementAt(element, calculatePosition(element));
+    }
+
+    private int calculatePosition(ListItemWrapper<I> wrapper) {
+        var model = retrieveDefaultModel();
+        var initialIndex = 0;
+        var size = model.getSize();
+
+        for (var i = initialIndex; i < size; i++) {
+            var wrapperElement = model.getElementAt(i);
+
+            if (itemWrapperComparator.compare(wrapper, wrapperElement) < 0) {
+                return i;
+            }
+        }
+
+        return size;
+    }
+
     public void addItems(Collection<I> items) {
         var distinctItems = items.stream()
                 .sorted(itemComparator)
@@ -61,18 +84,22 @@ public class JLabeledList<I> extends JLabeledComponent<JList<ListItemWrapper<I>>
         sortItems();
     }
 
-    public I getSelectedItem() {
+    public Optional<I> getSelectedItem() {
         var index = component.getSelectedIndex();
+        if (index == -1) {
+            return Optional.empty();
+        }
 
-        return retrieveDefaultModel()
+        return Optional.of(retrieveDefaultModel()
                 .getElementAt(index)
-                .getDto();
+                .getDto());
     }
 
     public void setSelectedItem(I item) {
-        var index = retrieveDefaultModel().indexOf(item);
+        var index = getIndexOfItem(item);
+
         setSelectedIndex(index);
-    };
+    }
 
     public void setTextProvider(@NonNull Function<I, String> textProvider) {
         component.setCellRenderer(new CustomCellRenderer<>(textProvider));
@@ -110,16 +137,36 @@ public class JLabeledList<I> extends JLabeledComponent<JList<ListItemWrapper<I>>
         return Stream.of(wrapperArray);
     }
 
-    public void setFixedCellWidth(int width) {
-        component.setFixedCellWidth(width);
-    }
-
     public void addListSelectionListener(ListSelectionListener listener) {
         component.addListSelectionListener(listener);
+    }
+
+    public void removeItem(I item) {
+        retrieveDefaultModel()
+                .removeElement(ListItemWrapper.of(item));
     }
 
     public void removeAllItems() {
         retrieveDefaultModel()
                 .removeAllElements();
+    }
+
+    public int getIndexOfItem(I item) {
+        return retrieveDefaultModel()
+                .indexOf(ListItemWrapper.of(item));
+    }
+
+    public int getCountOfElements() {
+        return retrieveDefaultModel()
+                .getSize();
+    }
+
+    public void removeItemAt(int index) {
+        retrieveDefaultModel()
+                .remove(index);
+    }
+
+    public void setSelectionMode(int mode) {
+        component.setSelectionMode(mode);
     }
 }

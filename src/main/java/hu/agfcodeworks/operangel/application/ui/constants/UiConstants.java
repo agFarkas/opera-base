@@ -6,9 +6,20 @@ public interface UiConstants {
 
     String EMPTY_STRING = "";
 
+    String YES = "Igen";
+
+    String NO = "Nem";
+
     String LIST_ITEM_CREATE_NEW = "Új hozzáadása...";
 
     String INVALID_VALUES = "Érvénytelen értékek";
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+    Object[] yesNoOptions = {YES, NO};
+
+    Object[] roleChangeOperationOptions = {
+            "Új létrehozása",
+            "Meglévő móodsítása"
+    };
 }

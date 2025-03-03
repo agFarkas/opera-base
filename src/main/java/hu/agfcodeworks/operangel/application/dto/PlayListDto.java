@@ -11,7 +11,7 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @Getter
-public class PlayDto {
+public class PlayListDto {
 
     @EqualsAndHashCode.Include
     private final UUID naturalId;

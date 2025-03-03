@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.service.queryservice;
 
 import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
-import hu.agfcodeworks.operangel.application.dto.PlayDto;
+import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.mapper.PerformanceSummaryDtoMapper;
 import hu.agfcodeworks.operangel.application.repository.PerformanceRepository;
 import lombok.AllArgsConstructor;
@@ -18,8 +18,8 @@ public class PerformanceQueryService {
 
     private final PerformanceSummaryDtoMapper performanceSummaryDtoMapper;
 
-    public Optional<PerformanceSummaryDto> getPerformancesForPlay(PlayDto playDto) {
-        var performances = performanceRepository.findByPlayNaturalId(playDto.getNaturalId());
+    public Optional<PerformanceSummaryDto> getPerformancesForPlay(PlayListDto playListDto) {
+        var performances = performanceRepository.findByPlayNaturalId(playListDto.getNaturalId());
 
         if (CollectionUtils.isEmpty(performances)) {
             return Optional.empty();

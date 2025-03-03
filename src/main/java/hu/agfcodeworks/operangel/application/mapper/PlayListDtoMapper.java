@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.mapper;
 
-import hu.agfcodeworks.operangel.application.dto.PlayDto;
+import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class PlayDtoMapper extends AbstractDtoMapper<Play, PlayDto> {
+public class PlayListDtoMapper extends AbstractDtoMapper<Play, PlayListDto> {
 
     private final ComposerDtoMapper composerDtoMapper;
 
     @Override
-    public PlayDto entityToDto(@NonNull Play play) {
-        return PlayDto.builder()
+    public PlayListDto entityToDto(@NonNull Play play) {
+        return PlayListDto.builder()
                 .withNaturalId(play.getNaturalId())
                 .withComposer(composerDtoMapper.entityToDto(play.getComposer()))
                 .withTitle(play.getTitle())

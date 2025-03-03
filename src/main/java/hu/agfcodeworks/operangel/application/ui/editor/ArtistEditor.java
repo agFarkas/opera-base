@@ -13,7 +13,8 @@ import java.util.function.Supplier;
 public class ArtistEditor extends ComboBoxTableCellEditor<ArtistListDto> {
 
     public ArtistEditor(
-            @NonNull Supplier<Optional<ArtistListDto>> itemSupplier, int fontStyle
+            @NonNull Supplier<Optional<ArtistListDto>> itemSupplier,
+            int fontStyle
     ) {
         super(TextProviders.artistTextProvider, Comparators.artistComparator, itemSupplier);
         var comboBox = getEditorComponent();

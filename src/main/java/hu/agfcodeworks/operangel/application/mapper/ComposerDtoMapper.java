@@ -12,6 +12,7 @@ public class ComposerDtoMapper extends AbstractDtoMapper<Composer, ComposerDto> 
     @Override
     public ComposerDto entityToDto(@NonNull Composer composer) {
         return ComposerDto.builder()
+                .withNaturalId(composer.getNaturalId())
                 .withGivenName(composer.getGivenName())
                 .withGivenNameUnified(TextUtil.unify(composer.getGivenName()))
                 .withFamilyName(composer.getFamilyName())

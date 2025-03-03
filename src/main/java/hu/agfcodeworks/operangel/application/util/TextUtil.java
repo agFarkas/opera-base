@@ -1,5 +1,6 @@
 package hu.agfcodeworks.operangel.application.util;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class TextUtil {
     }
 
 
-    public String unify(String originalText) {
+    public String unify(@NonNull String originalText) {
         var chars = originalText.toLowerCase()
                 .toCharArray();
 

@@ -26,16 +26,24 @@ public class ArtistCommandService {
 
     public ArtistListDto save(@NonNull ArtistListDto artistDto) {
         if (Objects.nonNull(artistDto.getNaturalId())) {
-            var newArtistDto = findAndUpdate(artistDto);
-            artistCache.put(newArtistDto.getNaturalId(), newArtistDto);
-
-            return artistDto;
+            return update(artistDto);
         }
 
+        return create(artistDto);
+    }
+
+    private ArtistListDto create(ArtistListDto artistDto) {
         var newArtistDto = createNew(artistDto);
         artistCache.put(newArtistDto.getNaturalId(), newArtistDto);
 
         return newArtistDto;
+    }
+
+    private ArtistListDto update(ArtistListDto artistDto) {
+        var newArtistDto = findAndUpdate(artistDto);
+        artistCache.put(newArtistDto.getNaturalId(), newArtistDto);
+
+        return artistDto;
     }
 
     private ArtistListDto findAndUpdate(ArtistListDto artistDto) {

@@ -15,10 +15,15 @@ public class RoleCache extends AbstractCache<List<RoleDto>> {
     private final RoleQueryService roleQueryService;
 
     @Override
+    public List<RoleDto> getDefault() {
+        return new LinkedList<>();
+    }
+
+    @Override
     protected void fillCache() {
         roleQueryService.getAllRoles()
                 .forEach(r -> {
-                    var playNaturalId = r.getPlayId();
+                    var playNaturalId = r.getPlayNaturalId();
                     var roleDtos = getOPutDefault(playNaturalId, LinkedList::new);
 
                     roleDtos.add(r);
