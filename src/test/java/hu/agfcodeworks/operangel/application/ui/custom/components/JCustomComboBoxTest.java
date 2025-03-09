@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JCustomComboBoxTest {
@@ -82,16 +83,16 @@ public class JCustomComboBoxTest {
         fillComboBox(4, 2, 5, 1);
 
         comboBox.setProvidingNewAddition(true);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(2));
         comboBox.removeListItem(new TestDto(1));
         comboBox.removeListItem(new TestDto(4));
         comboBox.removeListItem(new TestDto(5));
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(-1);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(0);
         comboBox.setSelectedIndex(0);
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(-1);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(0);
     }
 
     @Test
@@ -99,11 +100,11 @@ public class JCustomComboBoxTest {
         fillComboBox(2, 4, 5, 1);
 
         comboBox.setProvidingNewAddition(true);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(4));
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(-1);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(0);
     }
 
     @Test
@@ -111,11 +112,11 @@ public class JCustomComboBoxTest {
         fillComboBox(2, 4, 5, 1);
 
         comboBox.setProvidingNewAddition(false);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(5));
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(1);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(2);
     }
 
     @Test
@@ -135,11 +136,11 @@ public class JCustomComboBoxTest {
         fillComboBox(2, 4, 5, 1);
 
         comboBox.setProvidingNewAddition(true);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(2));
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(1);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(2);
     }
 
     @Test
@@ -147,11 +148,11 @@ public class JCustomComboBoxTest {
         fillComboBox(2, 4, 5, 1);
 
         comboBox.setProvidingNewAddition(false);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(2));
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(1);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(2);
     }
 
     @Test
@@ -159,11 +160,11 @@ public class JCustomComboBoxTest {
         fillComboBox(2, 4, 5, 1, 3);
 
         comboBox.setProvidingNewAddition(true);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(1));
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(2);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(3);
     }
 
     @Test
@@ -171,7 +172,7 @@ public class JCustomComboBoxTest {
         fillComboBox(2, 4, 5, 1, 3);
 
         comboBox.setProvidingNewAddition(false);
-        comboBox.setSelectedIndex(2);
+        comboBox.setSelectedIndex(3);
 
         comboBox.removeListItem(new TestDto(1));
 
@@ -184,11 +185,12 @@ public class JCustomComboBoxTest {
         comboBox.setItemSupplier(() -> Optional.of(new TestDto(-1)));
 
         fillComboBox(6, 2);
-        comboBox.setSelectedIndex(0);
+        comboBox.setSelectedIndex(1);
 
-        assertThat(comboBox.getSelectedIndex()).isEqualTo(3);
+        assertThat(comboBox.getSelectedIndex()).isEqualTo(4);
         assertThat(comboBox.getSelectedListItem()).isEqualTo(new TestDto(-1));
-        assertThat(comboBox.getItems()).isEqualTo(List.of(
+        assertThat(comboBox.getItems()).isEqualTo(asList(
+                null,
                 new TestDto(6),
                 new TestDto(2),
                 new TestDto(-1)
@@ -202,15 +204,16 @@ public class JCustomComboBoxTest {
 
         fillComboBox(6, 2, 3, 4);
         comboBox.setSelectedIndex(2);
-        comboBox.setSelectedIndex(0);
+        comboBox.setSelectedIndex(1);
 
         assertThat(comboBox.getSelectedIndex()).isEqualTo(2);
-        assertThat(comboBox.getItems()).isEqualTo(List.of(
-                new TestDto(6),
-                new TestDto(2),
-                new TestDto(3),
-                new TestDto(4)
-        ));
+        assertThat(comboBox.getItems()).isEqualTo(
+                asList(null,
+                        new TestDto(6),
+                        new TestDto(2),
+                        new TestDto(3),
+                        new TestDto(4))
+        );
     }
 
     private void fillComboBox(Integer... numbers) {
