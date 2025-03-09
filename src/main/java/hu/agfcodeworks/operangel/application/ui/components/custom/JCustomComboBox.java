@@ -1,8 +1,9 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom;
 
+import hu.agfcodeworks.operangel.application.ui.renderer.CustomComboBoxRenderer;
 import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
 import hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus;
-import hu.agfcodeworks.operangel.application.ui.renderer.CustomComboBoxRenderer;
+import lombok.Getter;
 import lombok.NonNull;
 
 import javax.swing.DefaultComboBoxModel;
@@ -23,27 +24,39 @@ import java.util.stream.Stream;
 
 public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements Validated {
 
+    private static final int INDEX_OF_EMPTY = 0;
+    private static final int INDEX_OF_ADD_NEW = 1;
+
     private Comparator<I> itemComparator = (i1, i2) -> 0;
 
     private final Comparator<ListItemWrapper<I>> itemWrapperComparator = (l1, l2) -> {
         if (l1.isToAddNew()) {
+            if (l2.isEmpty()) {
+                return 1;
+            }
             return -1;
         }
 
         if (l2.isToAddNew()) {
+            if (l1.isEmpty()) {
+                return -1;
+            }
+
             return 1;
         }
 
         return itemComparator.compare(l1.getDto(), l2.getDto());
     };
 
+    @Getter
     private Supplier<Optional<I>> itemSupplier = Optional::empty;
 
+    @Getter
     private boolean providingNewAddition = false;
 
-    private int itemIndex = -1;
+    private int itemIndex = INDEX_OF_EMPTY;
 
-    private int deselectedIndex = -1;
+    private int deselectedIndex = INDEX_OF_EMPTY;
 
     private boolean mandatory = false;
 
@@ -69,10 +82,10 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
             var newWrapper = ListItemWrapper.of(newItemOpt.get());
 
             addWrapper(newWrapper);
-            retrieveDefaultModel()
+            retrieveModel()
                     .setSelectedItem(newWrapper);
         } else {
-            if (retrieveDefaultModel().getSize() == 1) {
+            if (retrieveModel().getSize() == 1) {
                 itemIndex = deselectedIndex;
             }
 
@@ -97,12 +110,12 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
     }
 
     private void addWrapper(ListItemWrapper<I> listItemWrapper) {
-        retrieveDefaultModel()
+        retrieveModel()
                 .insertElementAt(listItemWrapper, calculatePosition(listItemWrapper));
     }
 
     private int calculatePosition(ListItemWrapper<I> wrapper) {
-        var model = retrieveDefaultModel();
+        var model = retrieveModel();
         var initialIndex = determineInitialIndex();
         var size = model.getSize();
 
@@ -122,19 +135,15 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         sortItems();
     }
 
-    public boolean isProvidingNewAddition() {
-        return providingNewAddition;
-    }
-
     public void setProvidingNewAddition(boolean providingNewAddition) {
         var originalProvidingNewCreation = this.providingNewAddition;
 
         if (!originalProvidingNewCreation && providingNewAddition) {
-            retrieveDefaultModel()
-                    .insertElementAt(ListItemWrapper.ofEmpty(), 0);
+            retrieveModel().insertElementAt(ListItemWrapper.ofEmpty(), INDEX_OF_EMPTY);
+            retrieveModel().insertElementAt(ListItemWrapper.ofToAddNew(), INDEX_OF_ADD_NEW);
         } else if (originalProvidingNewCreation && !providingNewAddition) {
-            retrieveDefaultModel()
-                    .removeElementAt(0);
+            retrieveModel().removeElementAt(INDEX_OF_ADD_NEW);
+            retrieveModel().removeElementAt(INDEX_OF_EMPTY);
         }
 
         this.providingNewAddition = providingNewAddition;
@@ -142,10 +151,6 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
 
     public void setTextProvider(@NonNull Function<I, String> textProvider) {
         super.setRenderer(new CustomComboBoxRenderer<>(textProvider));
-    }
-
-    public Supplier<Optional<I>> getItemSupplier() {
-        return itemSupplier;
     }
 
     public void setItemSupplier(@NonNull Supplier<Optional<I>> itemSupplier) {
@@ -171,7 +176,7 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
                 .map(ListItemWrapper::of)
                 .collect(Collectors.toList());
 
-        retrieveDefaultModel()
+        retrieveModel()
                 .addAll(distinctItems);
 
         sortItems();
@@ -182,14 +187,14 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
                 .sorted(itemWrapperComparator)
                 .collect(Collectors.toList());
 
-        var model = retrieveDefaultModel();
+        var model = retrieveModel();
 
         model.removeAllElements();
         model.addAll(itemsInCollection);
     }
 
     private Stream<ListItemWrapper<I>> streamOfItems() {
-        var model = retrieveDefaultModel();
+        var model = retrieveModel();
         var size = model.getSize();
 
         var wrapperArray = new ListItemWrapper[size];
@@ -205,7 +210,7 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         return isProvidingNewAddition() ? 1 : 0;
     }
 
-    private DefaultComboBoxModel<ListItemWrapper<I>> retrieveDefaultModel() {
+    private DefaultComboBoxModel<ListItemWrapper<I>> retrieveModel() {
         return (DefaultComboBoxModel<ListItemWrapper<I>>) super.getModel();
     }
 
@@ -217,11 +222,11 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
     }
 
     public void removeListItem(@NonNull I item) {
-        var model = retrieveDefaultModel();
+        var model = retrieveModel();
         var size = model.getSize();
 
         if (providingNewAddition && (Objects.equals(item, getSelectedListItem()) || size == 2)) {
-            setSelectedIndex(-1);
+            setSelectedIndex(INDEX_OF_EMPTY);
         } else if (!providingNewAddition && size == 1) {
             setSelectedIndex(0);
         }

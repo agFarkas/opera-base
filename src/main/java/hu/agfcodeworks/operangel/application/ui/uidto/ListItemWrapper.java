@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.swing.Icon;
 import java.util.Objects;
@@ -18,6 +19,13 @@ public class ListItemWrapper<DTO> {
     @EqualsAndHashCode.Include
     private DTO dto;
 
+    @EqualsAndHashCode.Include
+    @Setter(AccessLevel.PRIVATE)
+    private boolean toAddNew;
+
+    @Setter(AccessLevel.PRIVATE)
+    private boolean empty;
+
     private Icon icon;
 
     public ListItemWrapper(DTO dto) {
@@ -29,10 +37,16 @@ public class ListItemWrapper<DTO> {
     }
 
     public static <DTO> ListItemWrapper<DTO> ofEmpty() {
-        return new ListItemWrapper<>();
+        var dtoListItemWrapper = new ListItemWrapper<DTO>();
+        dtoListItemWrapper.setEmpty(true);
+
+        return dtoListItemWrapper;
     }
 
-    public boolean isToAddNew() {
-        return Objects.isNull(dto);
+    public static <DTO> ListItemWrapper<DTO> ofToAddNew() {
+        var dtoListItemWrapper = new ListItemWrapper<DTO>();
+        dtoListItemWrapper.setToAddNew(true);
+
+        return dtoListItemWrapper;
     }
 }

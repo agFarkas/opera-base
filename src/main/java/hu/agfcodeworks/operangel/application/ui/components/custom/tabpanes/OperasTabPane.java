@@ -53,8 +53,8 @@ import java.util.Vector;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ARTIST;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_CONDUCTOR;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_CONDUCTOR;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.roleChangeOperationOptions;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.yesNoOptions;
@@ -93,15 +93,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private final JButton btDeletePerformance = new JButton("Előadás törlése");
 
-    private final JButton btSaveAllPerformance = new JButton("Összes módosítás");
-
     private PlayListDto selectedPlay;
 
     private List<PerformanceDto> performances;
 
-    private int lastConductorRow = ROW_CONDUCTOR;
+    private int lastConductorRow = ROW_FIRST_CONDUCTOR;
 
-    private OperaTableCellRenderer operaTableCellRenderer = new OperaTableCellRenderer(ROW_CONDUCTOR);
+    private OperaTableCellRenderer operaTableCellRenderer = new OperaTableCellRenderer(ROW_FIRST_CONDUCTOR);
 
     private final JTable tblPerformances = new JTable() {
 
@@ -111,11 +109,63 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 return false;
             }
 
-            if (column > COLUMN_ROLE && isRoleRow(row)) {
-                return Objects.nonNull(getValueAt(row, COLUMN_ROLE));
+            if (column > COLUMN_ROLE) {
+                if (isConductorRow(row)) {
+                    return hasValue(row, column) || isFirstFreeRowOfConductor(row, column);
+                }
+
+                if (isRoleRow(row)) {
+                    return hasRole(row) &&
+                            (hasValue(row, column) || isFirstFreeRowOfRole(row, column, readSelectedRole(row)));
+                }
             }
 
             return super.isCellEditable(row, column);
+        }
+
+
+        private boolean hasValue(int row, int column) {
+            return Objects.nonNull(getValueAt(row, column));
+        }
+
+        private boolean hasRole(int row) {
+            return hasValue(row, COLUMN_ROLE);
+        }
+
+        private boolean isFirstFreeRowOfConductor(int row, int column) {
+            return row == findFirstFreeRowOfConductor(column);
+        }
+
+        private int findFirstFreeRowOfConductor(int column) {
+            for (var r = ROW_FIRST_CONDUCTOR; r <= lastConductorRow; r++) {
+                if (!hasValue(r, column)) {
+                    return r;
+                }
+            }
+
+            return -1;
+        }
+
+        private boolean isFirstFreeRowOfRole(int row, int column, RoleDto roleDto) {
+            return row == findFirstEmptyRowFor(roleDto, column);
+        }
+
+
+        private int findFirstEmptyRowFor(RoleDto roleDto, int column) {
+            var rowCount = getRowCount();
+
+            for (var r = lastConductorRow + 1; r < rowCount; r++) {
+                if (Objects.equals(getValueAt(r, COLUMN_ROLE), roleDto) && !hasValue(r, column)) {
+                    return r;
+                }
+            }
+
+            return -1;
+        }
+
+        private RoleDto readSelectedRole(int row) {
+            return (RoleDto) retrieveModel()
+                    .getValueAt(row, COLUMN_ROLE);
         }
 
         @Override
@@ -211,7 +261,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private boolean isConductorRow(int row) {
-        return row >= ROW_CONDUCTOR && row <= lastConductorRow;
+        return row >= ROW_FIRST_CONDUCTOR && row <= lastConductorRow;
     }
 
     private boolean isRoleRow(int row) {
@@ -319,9 +369,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
         tblPerformances.setValueAt(performance.getLocation(), ROW_LOCATION, performanceColumnIndex);
 
         for (var i = 0; i < performance.getConductors().size(); i++) {
-            tblPerformances.setValueAt(performance.getConductors().get(i), ROW_CONDUCTOR + i, performanceColumnIndex);
+            tblPerformances.setValueAt(performance.getConductors().get(i), ROW_FIRST_CONDUCTOR + i, performanceColumnIndex);
         }
-
     }
 
     private void fillPerformanceRoleDatas(PerformanceDto performanceDto, int performanceColumnIndex) {
@@ -364,7 +413,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var rowCount = 2 + maxNumOfConductors + maxNumOfRoles + 1;
         var columnCount = 1 + numOfPerformances;
 
-        lastConductorRow = ROW_CONDUCTOR - 1 + maxNumOfConductors;
+        lastConductorRow = ROW_FIRST_CONDUCTOR - 1 + maxNumOfConductors;
         operaTableCellRenderer.setLastConductorRow(lastConductorRow);
 
         var model = new DefaultTableModel(rowCount, columnCount);
@@ -372,7 +421,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         model.setValueAt("Dátum", ROW_DATE, COLUMN_ROLE);
         model.setValueAt("Helyszín", ROW_LOCATION, COLUMN_ROLE);
 
-        for (var r = ROW_CONDUCTOR; r <= lastConductorRow; r++) {
+        for (var r = ROW_FIRST_CONDUCTOR; r <= lastConductorRow; r++) {
             model.setValueAt(CAPTION_CONDUCTOR, r, COLUMN_ROLE);
         }
 

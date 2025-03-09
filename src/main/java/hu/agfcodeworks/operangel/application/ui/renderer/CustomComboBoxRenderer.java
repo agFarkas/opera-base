@@ -78,6 +78,10 @@ public class CustomComboBoxRenderer<V> extends BasicComboBoxRenderer {
             return CREATE_NEW_PATTERN.formatted(LIST_ITEM_CREATE_NEW);
         }
 
+        if (wrapper.isEmpty()) {
+            return EMPTY_TEXT;
+        }
+
         return textProvider.apply(wrapper.getDto());
     }
 }

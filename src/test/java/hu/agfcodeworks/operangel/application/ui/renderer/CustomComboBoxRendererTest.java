@@ -49,7 +49,7 @@ public class CustomComboBoxRendererTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                     Arguments.of(ListItemWrapper.of(new TestDto(2)), "2"),
-                    Arguments.of(ListItemWrapper.ofEmpty(), "[[%s]]".formatted(LIST_ITEM_CREATE_NEW)),
+                    Arguments.of(ListItemWrapper.ofToAddNew(), "[[%s]]".formatted(LIST_ITEM_CREATE_NEW)),
                     Arguments.of(null, EMPTY_TEXT)
             );
         }

@@ -24,7 +24,7 @@ import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConst
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_DATE;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_LOCATION;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ROLE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_CONDUCTOR;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
@@ -132,6 +132,6 @@ public class OperaTableCellRenderer extends DefaultTableCellRenderer {
     }
 
     private boolean isConductorRow(int row) {
-        return row >= ROW_CONDUCTOR && row <= lastConductorRow;
+        return row >= ROW_FIRST_CONDUCTOR && row <= lastConductorRow;
     }
 }
