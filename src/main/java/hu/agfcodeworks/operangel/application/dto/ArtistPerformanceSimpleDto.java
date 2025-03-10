@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.UUID;
-
 @Builder(setterPrefix = "with")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @AllArgsConstructor
 @Getter
-public class RoleJoinDto {
+public class ArtistPerformanceSimpleDto {
 
-    @EqualsAndHashCode.Include
-    private final UUID naturalId;
+    private final PerformanceSimpleDto performanceSimpleDto;
+
+    private final ArtistSimpleDto artistSimpleDto;
 }

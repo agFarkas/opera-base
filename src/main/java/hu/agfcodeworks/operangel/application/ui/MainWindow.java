@@ -37,6 +37,10 @@ public class MainWindow extends JFrame {
 
     private static final String TITLE_PATTERN = "%s (%s)";
 
+    private static final int WIDTH = 1600;
+
+    private static final int HEIGHT = 900;
+
     private final DbSettingsService dbSettingsService = OutContextUtil.getComponent(DbSettingsService.class);
 
     private final String applicationName = "Operangel";
@@ -58,7 +62,8 @@ public class MainWindow extends JFrame {
     private final SeasonsTabPane tpSeasons = new SeasonsTabPane(this);
 
     public MainWindow() {
-        setSize(1600, 900);
+        setSize(WIDTH, HEIGHT);
+
         setTitle(TITLE_PATTERN.formatted(applicationName, applicationVersion));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 

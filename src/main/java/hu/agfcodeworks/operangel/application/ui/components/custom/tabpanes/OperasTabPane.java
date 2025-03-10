@@ -1,17 +1,22 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceDto;
+import hu.agfcodeworks.operangel.application.dto.PerformanceSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
 import hu.agfcodeworks.operangel.application.dto.PlayDetailedDto;
 import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
-import hu.agfcodeworks.operangel.application.dto.RoleJoinDto;
+import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
+import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
 import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
 import hu.agfcodeworks.operangel.application.service.commmandservice.ArtistCommandService;
+import hu.agfcodeworks.operangel.application.service.commmandservice.ArtistPerformanceRoleJoinCommandService;
 import hu.agfcodeworks.operangel.application.service.commmandservice.LocationCommandService;
 import hu.agfcodeworks.operangel.application.service.commmandservice.PlayCommandService;
 import hu.agfcodeworks.operangel.application.service.commmandservice.RoleCommandService;
@@ -80,7 +85,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     public static final String TITLE_UPDATE_OPERA_DIALOG = "Opera módosítása";
 
-
     private final JLabeledList<PlayListDto> lsOpera = new JLabeledList<>("Operák");
 
     private final JButton btCreateOpera = new JButton("Új opera...");
@@ -89,13 +93,15 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private final JButton btDeleteOpera = new JButton("Törlés");
 
+    private final JButton btRefresh = new JButton("Frissítés");
+
     private final JButton btCreatePerformance = new JButton("Új előadás");
 
     private final JButton btDeletePerformance = new JButton("Előadás törlése");
 
     private PlayListDto selectedPlay;
 
-    private List<PerformanceDto> performances;
+    private List<PerformanceSimpleDto> performances;
 
     private int lastConductorRow = ROW_FIRST_CONDUCTOR;
 
@@ -154,7 +160,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         private int findFirstEmptyRowFor(RoleDto roleDto, int column) {
             var rowCount = getRowCount();
 
-            for (var r = lastConductorRow + 1; r < rowCount; r++) {
+            for (var r = findFirstRoleRow(); r < rowCount; r++) {
                 if (Objects.equals(getValueAt(r, COLUMN_ROLE), roleDto) && !hasValue(r, column)) {
                     return r;
                 }
@@ -176,8 +182,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
                             row,
                             r -> createRole(r),
                             r -> updateRole(r),
+                            (rOrig, roleDto) -> changeRole(rOrig, roleDto),
                             this::addRowIfLast,
-                            (originalRole, newRoleDescription) -> chooseOperation(originalRole, newRoleDescription),
+                            (originalRole, newRoleDescription) -> chooseOperationForNewValue(originalRole, newRoleDescription),
+                            (originalRole, newRole) -> chooseOperationForExistingValue(originalRole, newRole),
                             ContextUtil.getBean(RoleCache.class).get(selectedPlay.getNaturalId())
                     );
                 }
@@ -213,7 +221,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 .addRow(new Vector<>());
     }
 
-    private Optional<OperationOnChangingValue> chooseOperation(RoleDto originalRole, String newRoleDescription) {
+    private Optional<OperationOnChangingValue> chooseOperationForNewValue(RoleDto originalRole, String newRoleDescription) {
         if (occursOnlyOnce(originalRole)) {
             return Optional.of(OperationOnChangingValue.UPDATE_EXISTING);
         }
@@ -227,10 +235,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
         };
     }
 
+    private Optional<OperationOnChangingValue> chooseOperationForExistingValue(RoleDto originalRole, RoleDto newRole) {
+        return Optional.empty();
+    }
+
     private boolean occursOnlyOnce(RoleDto roleDto) {
         var count = 0;
 
-        for (var r = getFirstRoleRow(); r < tblPerformances.getRowCount(); r++) {
+        for (var r = findFirstRoleRow(); r < tblPerformances.getRowCount(); r++) {
             if (foundRoleInRow(roleDto, r)) {
                 if (count == 0) {
                     count++;
@@ -317,7 +329,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void fillRoles(List<RoleDto> roles, Optional<PerformanceSummaryDto> performanceSummaryDtoOpt) {
-        var firstRoleRow = getFirstRoleRow();
+        var firstRoleRow = findFirstRoleRow();
         var rolesToDisplay = collectRoles(roles, performanceSummaryDtoOpt);
 
         var r = 0;
@@ -346,7 +358,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void fillRoles(List<RoleDto> roles) {
-        var firstRoleRow = getFirstRoleRow();
+        var firstRoleRow = findFirstRoleRow();
 
         for (int i = 0; i < roles.size(); i++) {
             var roleDto = roles.get(i);
@@ -355,9 +367,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void fillPerformances(List<PerformanceDto> performances) {
-        for (var i = 0; i < performances.size(); i++) {
-            var performanceColumnIndex = COLUMN_ROLE + 1 + i;
-            var performance = performances.get(i);
+        var firstPerformanceColumn = findFirstPerformanceColumn();
+        this.performances = new LinkedList<>();
+
+        for (var c = 0; c < performances.size(); c++) {
+            var performanceColumnIndex = firstPerformanceColumn + c;
+            var performance = performances.get(c);
+
 
             fillPerformanceHeadDatas(performance, performanceColumnIndex);
             fillPerformanceRoleDatas(performance, performanceColumnIndex);
@@ -368,6 +384,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
         tblPerformances.setValueAt(performance.getDate(), ROW_DATE, performanceColumnIndex);
         tblPerformances.setValueAt(performance.getLocation(), ROW_LOCATION, performanceColumnIndex);
 
+        performances.add(PerformanceSimpleDto.builder()
+                .withNaturalId(performance.getNaturalId())
+                .build());
+
         for (var i = 0; i < performance.getConductors().size(); i++) {
             tblPerformances.setValueAt(performance.getConductors().get(i), ROW_FIRST_CONDUCTOR + i, performanceColumnIndex);
         }
@@ -375,18 +395,18 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void fillPerformanceRoleDatas(PerformanceDto performanceDto, int performanceColumnIndex) {
         for (var join : performanceDto.getRoleArtists()) {
-            var rowNumber = seekFirstEmptyPerformanceRowFor(performanceColumnIndex, join.getRoleJoinDto());
+            var rowNumber = seekFirstEmptyPerformanceRowFor(performanceColumnIndex, join.getRoleSimpleDto());
 
             tblPerformances.setValueAt(join.getArtistListDto(), rowNumber, performanceColumnIndex);
         }
     }
 
-    private int seekFirstEmptyPerformanceRowFor(int performanceColumnIndex, RoleJoinDto roleJoinDto) {
-        for (var r = getFirstRoleRow(); r < tblPerformances.getRowCount(); r++) {
+    private int seekFirstEmptyPerformanceRowFor(int performanceColumnIndex, RoleSimpleDto roleSimpleDto) {
+        for (var r = findFirstRoleRow(); r < tblPerformances.getRowCount(); r++) {
             var roleValue = tblPerformances.getValueAt(r, COLUMN_ROLE);
 
             if (roleValue instanceof RoleDto roleDto
-                    && isRoleEqual(roleDto, roleJoinDto)
+                    && isRoleEqual(roleDto, roleSimpleDto)
                     && isRowEmptyForPerformance(performanceColumnIndex, r)
             ) {
                 return r;
@@ -396,8 +416,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return -1;
     }
 
-    private boolean isRoleEqual(RoleDto roleDto, RoleJoinDto roleJoinDto) {
-        return Objects.equals(roleDto.getNaturalId(), roleJoinDto.getNaturalId());
+    private boolean isRoleEqual(RoleDto roleDto, RoleSimpleDto roleSimpleDto) {
+        return Objects.equals(roleDto.getNaturalId(), roleSimpleDto.getNaturalId());
     }
 
     private boolean isRowEmptyForPerformance(int performanceColumnIndex, int rowIndex) {
@@ -461,10 +481,12 @@ public class OperasTabPane extends AbstractCustomTabPane {
         btCreateOpera.addActionListener(e -> createOpera());
         btUpdateOpera.addActionListener(e -> updateOpera());
         btDeleteOpera.addActionListener(e -> deleteOpera());
+        btRefresh.addActionListener(e -> refreshDetails());
 
         operaCrudPanel.add(btCreateOpera);
         operaCrudPanel.add(btUpdateOpera);
         operaCrudPanel.add(btDeleteOpera);
+        operaCrudPanel.add(btRefresh);
 
         return operaCrudPanel;
     }
@@ -474,6 +496,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
         btCreatePerformance.addActionListener(e -> createPerformance());
         btDeletePerformance.addActionListener(e -> deletePerformance());
+
         performanceCrudPanel.add(btCreatePerformance);
         performanceCrudPanel.add(btDeletePerformance);
 
@@ -542,7 +565,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
         }
 
         lsOpera.addItem(playListDto);
-
         lsOpera.setSelectedItem(playListDto);
     }
 
@@ -566,9 +588,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void overwriteAllOccurencesOf(RoleDto newRoleDto) {
         var selectedRow = tblPerformances.getSelectedRow();
+        var rowCount = retrieveModel()
+                .getRowCount();
 
-        for (var r = lastConductorRow + 1; r < retrieveModel().getRowCount(); r++) {
-            if (r != selectedRow && tblPerformances.getValueAt(r, COLUMN_ROLE) instanceof RoleDto roleDto) {
+        for (var r = findFirstRoleRow(); r < rowCount; r++) {
+            var originalRowDto = (RoleDto) tblPerformances.getValueAt(r, COLUMN_ROLE);
+
+            if (r != selectedRow && originalRowDto instanceof RoleDto roleDto) {
                 if (Objects.equals(newRoleDto.getNaturalId(), roleDto.getNaturalId())) {
                     tblPerformances.setValueAt(newRoleDto, r, COLUMN_ROLE);
                 }
@@ -584,8 +610,79 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 .build();
     }
 
-    private void deleteRole(RoleDto roleDto) {
+    private void changeRole(RoleDto originalRole, RoleDto roleDto) {
+        var roleChangeCommand = RoleChangeCommand.builder()
+                .withOriginalRoleNaturalId(originalRole.getNaturalId())
+                .withNewRoleNaturalId(roleDto.getNaturalId())
+                .withArtistPerformanceSimpleDtos(collectArtistPerformanceJoinsForSelectedRow())
+                .build();
 
+        ContextUtil.getBean(ArtistPerformanceRoleJoinCommandService.class)
+                .updateFromRoleToRole(roleChangeCommand);
+
+        if (isOnlyRowWithRole(originalRole)) {
+            deleteRole(originalRole);
+        }
+    }
+
+    private List<ArtistPerformanceSimpleDto> collectArtistPerformanceJoinsForSelectedRow() {
+        var artistPerformanceSimpleDtos = new LinkedList<ArtistPerformanceSimpleDto>();
+        var selectedRow = tblPerformances.getSelectedRow();
+        var columnCount = retrieveModel().getColumnCount();
+        var firstPerformanceColumn = findFirstPerformanceColumn();
+
+        for (var c = 0; c < performances.size(); c++) {
+            var performanceSimpleDto = performances.get(c);
+            var artistDto = (ArtistListDto) tblPerformances.getValueAt(selectedRow, firstPerformanceColumn);
+
+            if (Objects.nonNull(artistDto)) {
+                artistPerformanceSimpleDtos.add(
+                        makeArtistPerformanceSimpleDto(performanceSimpleDto, artistDto)
+                );
+            }
+        }
+
+        return artistPerformanceSimpleDtos;
+    }
+
+    private static ArtistPerformanceSimpleDto makeArtistPerformanceSimpleDto(@NonNull PerformanceSimpleDto performanceSimpleDto, @NonNull ArtistListDto artistDto) {
+        return ArtistPerformanceSimpleDto.builder()
+                .withPerformanceSimpleDto(performanceSimpleDto)
+                .withArtistSimpleDto(ArtistSimpleDto.builder()
+                        .withNaturalId(artistDto.getNaturalId())
+                        .build())
+                .build();
+    }
+
+    private boolean isOnlyRowWithRole(RoleDto originalRole) {
+        var selectedRow = tblPerformances.getSelectedRow();
+        var rowCount = retrieveModel()
+                .getRowCount();
+
+        for (var r = findFirstRoleRow(); r < rowCount; r++) {
+            if (r == selectedRow) {
+                continue;
+            }
+
+            if (tblPerformances.getValueAt(r, COLUMN_ROLE) instanceof RoleDto roleDto && Objects.equals(roleDto, originalRole)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int findFirstRoleRow() {
+        return lastConductorRow + 1;
+    }
+
+    private int findFirstPerformanceColumn() {
+        return COLUMN_ROLE + 1;
+    }
+
+    private void deleteRole(RoleDto roleDto) {
+        ContextUtil.getBean(RoleCommandService.class)
+                .delete(makeRoleCommand(roleDto));
     }
 
     private void createPerformance() {
@@ -649,6 +746,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private Optional<ArtistListDto> createArtist() {
         var dialog = new ArtistDialog(owner, TITLE_CREATE_ARTIST_DIALOG);
+
         if (dialog.getDialogStatus() == OK) {
             var savedValue = ContextUtil.getBean(ArtistCommandService.class)
                     .save(dialog.getValue());
@@ -743,11 +841,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
         btUpdateOpera.setEnabled(enabled);
         btCreatePerformance.setEnabled(enabled);
         btDeletePerformance.setEnabled(enabled);
+        btRefresh.setEnabled(enabled);
 
         tblPerformances.setEnabled(enabled);
-    }
-
-    private int getFirstRoleRow() {
-        return lastConductorRow + 1;
     }
 }

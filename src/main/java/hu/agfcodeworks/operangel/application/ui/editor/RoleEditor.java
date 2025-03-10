@@ -10,12 +10,12 @@ import javax.swing.JTextField;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.EMPTY_STRING;
-import static hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue.UPDATE_EXISTING;
 import static hu.agfcodeworks.operangel.application.ui.text.Comparators.roleComparator;
 
 public class RoleEditor extends DefaultCellEditor {
@@ -23,12 +23,13 @@ public class RoleEditor extends DefaultCellEditor {
     private final int rowIndex;
 
     private final Function<RoleDto, RoleDto> creator;
-
     private final Function<RoleDto, RoleDto> updater;
+    private final BiConsumer<RoleDto, RoleDto> changer;
 
     private final Consumer<Integer> mandatoryProcedure;
 
-    BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooser;
+    private final BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooserForNewValue;
+    private final BiFunction<RoleDto, RoleDto, Optional<OperationOnChangingValue>> operationChooserForExistingValue;
 
     private final List<RoleDto> roleDtos;
 
@@ -36,8 +37,10 @@ public class RoleEditor extends DefaultCellEditor {
             int rowIndex,
             @NonNull Function<RoleDto, RoleDto> creator,
             @NonNull Function<RoleDto, RoleDto> updater,
+            @NonNull BiConsumer<RoleDto, RoleDto> changer,
             @NonNull Consumer<Integer> mandatoryProcedure,
-            @NonNull BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooser,
+            @NonNull BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooserForNewValue,
+            @NonNull BiFunction<RoleDto, RoleDto, Optional<OperationOnChangingValue>> operationChooserForExistingValue,
             @NonNull List<RoleDto> roleDtos
     ) {
         super(new JTextField());
@@ -45,9 +48,11 @@ public class RoleEditor extends DefaultCellEditor {
 
         this.creator = creator;
         this.updater = updater;
+        this.changer = changer;
 
         this.mandatoryProcedure = mandatoryProcedure;
-        this.operationChooser = operationChooser;
+        this.operationChooserForNewValue = operationChooserForNewValue;
+        this.operationChooserForExistingValue = operationChooserForExistingValue;
 
         this.roleDtos = roleDtos.stream()
                 .sorted(roleComparator)
@@ -88,33 +93,50 @@ public class RoleEditor extends DefaultCellEditor {
             }
 
             private RoleDto obtainRoleDto(String text) {
-                var roleOpt = roleDtos.stream()
+                var roleDtoOpt = roleDtos.stream()
                         .filter(r -> Objects.equals(r.getDescription(), text))
                         .findFirst();
 
-                if (hasOriginalValue()) {
-                    return roleOpt.orElseGet(() -> updateOrCreateValueByChoseOperation(text));
+                if (hasOriginalValue() && value instanceof RoleDto originalRoleDto) {
+                    roleDtoOpt.ifPresent(roleDto ->
+                            changer.accept(originalRoleDto, roleDto)
+                    );
+
+                    return roleDtoOpt.orElseGet(() -> updateOrCreateValueByChoseOperation(originalRoleDto, text));
                 }
 
-                return roleOpt.orElseGet(() -> createValue(text));
+                if (roleDtoOpt.isPresent() && value instanceof RoleDto originalRoleDto) {
+                    var roleDto = roleDtoOpt.get();
+
+                    changer.accept(originalRoleDto, roleDto);
+                    return roleDto;
+                }
+
+                return roleDtoOpt.orElseGet(() -> createValue(text));
             }
 
-            private RoleDto updateOrCreateValueByChoseOperation(String text) {
+            private RoleDto updateOrCreateValueByChoseOperation(RoleDto originalRoleDto, String text) {
                 var operationOpt = chooseOperation(text);
-                if (operationOpt.isEmpty()) {
-                    return ((RoleDto) value);
+
+                if (operationOpt.isPresent()) {
+                    var operation = operationOpt.get();
+
+                    return switch (operation) {
+                        case UPDATE_EXISTING -> updateValue(((RoleDto) value), text);
+                        case CREATE_NEW -> {
+                            var roleDto = createValue(text);
+                            changer.accept(originalRoleDto, roleDto);
+
+                            yield roleDto;
+                        }
+                    };
                 }
 
-                var operation = operationOpt.get();
-                if (operation == UPDATE_EXISTING) {
-                    return updateValue(((RoleDto) value), text);
-                }
-
-                return createValue(text);
+                return ((RoleDto) value);
             }
 
             private Optional<OperationOnChangingValue> chooseOperation(String text) {
-                return operationChooser.apply(((RoleDto) value), text);
+                return operationChooserForNewValue.apply(((RoleDto) value), text);
             }
 
             @Override

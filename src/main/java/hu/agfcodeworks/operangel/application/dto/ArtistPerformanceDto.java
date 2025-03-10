@@ -1,0 +1,21 @@
+package hu.agfcodeworks.operangel.application.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+import java.util.UUID;
+
+@Builder(setterPrefix = "with")
+@EqualsAndHashCode
+@AllArgsConstructor
+@Getter
+public class ArtistPerformanceDto {
+
+    private final UUID performanceId;
+
+    private final RoleSimpleDto roleSimpleDto;
+
+    private final ArtistListDto artistListDto;
+}

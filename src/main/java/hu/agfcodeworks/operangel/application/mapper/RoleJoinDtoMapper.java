@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.mapper;
 
-import hu.agfcodeworks.operangel.application.dto.RoleJoinDto;
+import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class RoleJoinDtoMapper extends AbstractDtoMapper<Role, RoleJoinDto> {
+public class RoleJoinDtoMapper extends AbstractDtoMapper<Role, RoleSimpleDto> {
 
     @Override
-    public RoleJoinDto entityToDto(@NonNull Role role) {
-        return RoleJoinDto.builder()
+    public RoleSimpleDto entityToDto(@NonNull Role role) {
+        return RoleSimpleDto.builder()
                 .withNaturalId(role.getNaturalId())
                 .build();
     }

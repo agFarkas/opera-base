@@ -1,7 +1,9 @@
 package hu.agfcodeworks.operangel.application.service.queryservice;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
 import hu.agfcodeworks.operangel.application.mapper.ArtistListDtoMapper;
+import hu.agfcodeworks.operangel.application.model.Artist;
 import hu.agfcodeworks.operangel.application.repository.ArtistRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,4 +28,11 @@ public class ArtistQueryService {
                 .collect(Collectors.toList());
     }
 
+    public List<Artist> findBySimpleDtos(List<ArtistSimpleDto> artistSimpleDtos) {
+        var naturalIds = artistSimpleDtos.stream()
+                .map(ArtistSimpleDto::getNaturalId)
+                .toList();
+
+        return artistRepository.findByNaturalIds(naturalIds);
+    }
 }

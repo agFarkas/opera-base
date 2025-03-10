@@ -2,8 +2,8 @@ package hu.agfcodeworks.operangel.application.mapper;
 
 import hu.agfcodeworks.operangel.application.dto.PerformanceDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
-import hu.agfcodeworks.operangel.application.dto.RoleArtistDto;
-import hu.agfcodeworks.operangel.application.dto.RoleJoinDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceDto;
+import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.model.Performance;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -46,7 +46,7 @@ public class PerformanceSummaryDtoMapper extends AbstractDtoMapper<List<Performa
         var roles = performances.stream()
                 .flatMap(performance ->
                         performance.getRoleArtists().stream()
-                                .map(RoleArtistDto::getRoleJoinDto)
+                                .map(ArtistPerformanceDto::getRoleSimpleDto)
                                 .distinct()
                 ).collect(Collectors.toSet());
 
@@ -56,9 +56,9 @@ public class PerformanceSummaryDtoMapper extends AbstractDtoMapper<List<Performa
         return maxCountMap;
     }
 
-    private Integer getMaxCountInPerformances(List<PerformanceDto> performances, RoleJoinDto roleJoinDto) {
+    private Integer getMaxCountInPerformances(List<PerformanceDto> performances, RoleSimpleDto roleSimpleDto) {
         return performances.stream()
-                .map(prf -> prf.getRoleArtists().stream().filter(ra -> Objects.equals(ra.getRoleJoinDto(), roleJoinDto)).count())
+                .map(prf -> prf.getRoleArtists().stream().filter(ra -> Objects.equals(ra.getRoleSimpleDto(), roleSimpleDto)).count())
                 .max(Long::compareTo)
                 .map(Long::intValue)
                 .orElse(0);
