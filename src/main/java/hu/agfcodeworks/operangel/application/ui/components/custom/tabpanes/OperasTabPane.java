@@ -75,6 +75,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String CAPTION_CONDUCTOR = "Karmester";
 
+    private static final String CAPTION_DATE = "Dátum";
+
+    private static final String CAPTION_LOCATION = "Helyszín";
+
     private static final String ROLE_CHANGE_QUESTION = "A '%s' szerep megnevezését átírtad a következőre: '%s'.\r\nMódosítod a leírást a meglévő szerepnél, vagy új szerepet hozol létre az új leírással?";
 
     public static final String OPERA_DELETE_QUESTION = "Biztosan törlöd ezt az operát: '%s'?";
@@ -84,6 +88,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     public static final String TITLE_CREATE_OPERA_DIALOG = "Új opera";
 
     public static final String TITLE_UPDATE_OPERA_DIALOG = "Opera módosítása";
+
 
     private final JLabeledList<PlayListDto> lsOpera = new JLabeledList<>("Operák");
 
@@ -241,8 +246,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private boolean occursOnlyOnce(RoleDto roleDto) {
         var count = 0;
+        var rowCount = retrieveModel().getRowCount();
 
-        for (var r = findFirstRoleRow(); r < tblPerformances.getRowCount(); r++) {
+        for (var r = findFirstRoleRow(); r < rowCount; r++) {
             if (foundRoleInRow(roleDto, r)) {
                 if (count == 0) {
                     count++;
@@ -388,8 +394,11 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 .withNaturalId(performance.getNaturalId())
                 .build());
 
-        for (var i = 0; i < performance.getConductors().size(); i++) {
-            tblPerformances.setValueAt(performance.getConductors().get(i), ROW_FIRST_CONDUCTOR + i, performanceColumnIndex);
+        var conductors = performance.getConductors();
+
+        for (var i = 0; i < conductors.size(); i++) {
+            var conductor = conductors.get(i);
+            tblPerformances.setValueAt(conductor, ROW_FIRST_CONDUCTOR + i, performanceColumnIndex);
         }
     }
 
@@ -402,7 +411,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private int seekFirstEmptyPerformanceRowFor(int performanceColumnIndex, RoleSimpleDto roleSimpleDto) {
-        for (var r = findFirstRoleRow(); r < tblPerformances.getRowCount(); r++) {
+        var rowCount = retrieveModel().getRowCount();
+
+        for (var r = findFirstRoleRow(); r < rowCount; r++) {
             var roleValue = tblPerformances.getValueAt(r, COLUMN_ROLE);
 
             if (roleValue instanceof RoleDto roleDto
@@ -424,22 +435,20 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return tblPerformances.getValueAt(rowIndex, performanceColumnIndex) == null;
     }
 
-    private void initTableDataModel(Optional<PerformanceSummaryDto> performanceSummaryOpt, int maxNumOfRoles) {
-
+    private void initTableDataModel(@NonNull Optional<PerformanceSummaryDto> performanceSummaryOpt, int maxNumOfRoles) {
         var maxNumOfConductors = performanceSummaryOpt.map(PerformanceSummaryDto::getMaxConductorCount).orElse(1);
-
         var numOfPerformances = performanceSummaryOpt.map(ps -> ps.getPerformances().size()).orElse(0);
 
-        var rowCount = 2 + maxNumOfConductors + maxNumOfRoles + 1;
-        var columnCount = 1 + numOfPerformances;
+        var rowCount = calculateInitialRowCount(maxNumOfRoles, maxNumOfConductors);
+        var columnCount = calculateInitialColumnCount(numOfPerformances);
 
         lastConductorRow = ROW_FIRST_CONDUCTOR - 1 + maxNumOfConductors;
         operaTableCellRenderer.setLastConductorRow(lastConductorRow);
 
         var model = new DefaultTableModel(rowCount, columnCount);
 
-        model.setValueAt("Dátum", ROW_DATE, COLUMN_ROLE);
-        model.setValueAt("Helyszín", ROW_LOCATION, COLUMN_ROLE);
+        model.setValueAt(CAPTION_DATE, ROW_DATE, COLUMN_ROLE);
+        model.setValueAt(CAPTION_LOCATION, ROW_LOCATION, COLUMN_ROLE);
 
         for (var r = ROW_FIRST_CONDUCTOR; r <= lastConductorRow; r++) {
             model.setValueAt(CAPTION_CONDUCTOR, r, COLUMN_ROLE);
@@ -447,6 +456,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
         tblPerformances.setModel(model);
         tblPerformances.setTableHeader(null);
+    }
+
+    private int calculateInitialRowCount(int maxNumOfRoles, Integer maxNumOfConductors) {
+        return 2 + maxNumOfConductors + maxNumOfRoles + 1;
+    }
+
+    private int calculateInitialColumnCount(Integer numOfPerformances) {
+        return 1 + numOfPerformances;
     }
 
     private int calculateMaxNumOfRoles(@NonNull Optional<PerformanceSummaryDto> performanceSummaryOpt, @NonNull List<RoleDto> roles) {
@@ -481,12 +498,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
         btCreateOpera.addActionListener(e -> createOpera());
         btUpdateOpera.addActionListener(e -> updateOpera());
         btDeleteOpera.addActionListener(e -> deleteOpera());
-        btRefresh.addActionListener(e -> refreshDetails());
 
         operaCrudPanel.add(btCreateOpera);
         operaCrudPanel.add(btUpdateOpera);
         operaCrudPanel.add(btDeleteOpera);
-        operaCrudPanel.add(btRefresh);
 
         return operaCrudPanel;
     }
@@ -496,9 +511,11 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
         btCreatePerformance.addActionListener(e -> createPerformance());
         btDeletePerformance.addActionListener(e -> deletePerformance());
+        btRefresh.addActionListener(e -> refreshDetails());
 
         performanceCrudPanel.add(btCreatePerformance);
         performanceCrudPanel.add(btDeletePerformance);
+        performanceCrudPanel.add(btRefresh);
 
         return performanceCrudPanel;
     }
@@ -628,7 +645,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private List<ArtistPerformanceSimpleDto> collectArtistPerformanceJoinsForSelectedRow() {
         var artistPerformanceSimpleDtos = new LinkedList<ArtistPerformanceSimpleDto>();
         var selectedRow = tblPerformances.getSelectedRow();
-        var columnCount = retrieveModel().getColumnCount();
         var firstPerformanceColumn = findFirstPerformanceColumn();
 
         for (var c = 0; c < performances.size(); c++) {
@@ -699,13 +715,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private int addPerformanceColumn() {
         var model = retrieveModel();
-        var columnIndex = model.getColumnCount();
+        var newColumnIndex = model.getColumnCount();
 
-        model.addColumn(columnIndex);
+        model.addColumn(newColumnIndex);
 
         fixColumnWidths();
 
-        return columnIndex;
+        return newColumnIndex;
     }
 
     private void deletePerformance() {
@@ -714,12 +730,12 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void fixColumnWidths() {
         var columnModel = tblPerformances.getColumnModel();
-        var count = columnModel.getColumnCount();
+        var columnCount = columnModel.getColumnCount();
 
-        for (var i = 0; i < count; i++) {
-            var column = columnModel.getColumn(i);
-            column.setPreferredWidth(calculateColumnWidth(i));
+        for (var c = 0; c < columnCount; c++) {
+            var column = columnModel.getColumn(c);
 
+            column.setPreferredWidth(calculateColumnWidth(c));
             column.setCellRenderer(operaTableCellRenderer);
         }
     }
@@ -727,7 +743,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private int calculateColumnWidth(int column) {
         return switch (column) {
             case COLUMN_ROLE -> 140;
-            default -> 200;
+            default -> 230;
         };
     }
 
