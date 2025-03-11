@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.editor;
 
-import hu.agfcodeworks.operangel.application.ui.editor.listener.CellEditingListener;
+import lombok.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.swing.DefaultCellEditor;
@@ -8,22 +8,20 @@ import javax.swing.JTextField;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.EMPTY_STRING;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
 
 public class DateEditor extends DefaultCellEditor {
 
-    private final int row;
-    private final int column;
-    private final CellEditingListener editingListener;
 
-    public DateEditor(int row, int column, CellEditingListener editingListener) {
+    private final BiConsumer<LocalDate, LocalDate> finishedEditingHandler;
+
+    public DateEditor(@NonNull BiConsumer<LocalDate, LocalDate> finishedEditingHandler) {
         super(new JTextField());
 
-        this.row = row;
-        this.column = column;
-        this.editingListener = editingListener;
+        this.finishedEditingHandler = finishedEditingHandler;
 
         this.delegate = new EditorDelegate() {
 
@@ -41,28 +39,26 @@ public class DateEditor extends DefaultCellEditor {
                 }
 
                 if (Objects.isNull(value)) {
-                    return parseText(text);
+                    var trimmedText = text.trim();
+                    var localDate = parseLocalDate(trimmedText);
+
+                    finishedEditingHandler.accept(null, localDate);
+                    return localDate;
                 }
 
-                if (value instanceof LocalDate localDate) {
+                if (value instanceof LocalDate originalLocalDate) {
                     var trimmedText = text.trim();
 
-                    if (!Objects.equals(dateFormatter.format(localDate), trimmedText)) {
-                        return parseLocalDate(trimmedText);
+                    if (!Objects.equals(dateFormatter.format(originalLocalDate), trimmedText)) {
+                        var newLocalDate = parseLocalDate(trimmedText);
+
+                        finishedEditingHandler.accept(originalLocalDate, newLocalDate);
+                        return newLocalDate;
                     }
                 }
 
                 return value;
             }
-
-            private LocalDate parseLocalDate(String trimmedText) {
-                try {
-                    return LocalDate.parse(trimmedText, dateFormatter);
-                } catch (DateTimeParseException ex) {
-                    return (LocalDate) value;
-                }
-            }
-
 
             @Override
             public void setValue(Object value) {
@@ -76,14 +72,14 @@ public class DateEditor extends DefaultCellEditor {
                     textField.setText(dateFormatter.format(localDate));
                 }
             }
-        };
-    }
 
-    private static LocalDate parseText(String text) {
-        try {
-            return LocalDate.parse(text.trim(), dateFormatter);
-        } catch (Exception ex) {
-            return null;
-        }
+            private LocalDate parseLocalDate(String trimmedText) {
+                try {
+                    return LocalDate.parse(trimmedText, dateFormatter);
+                } catch (DateTimeParseException ex) {
+                    return (LocalDate) value;
+                }
+            }
+        };
     }
 }

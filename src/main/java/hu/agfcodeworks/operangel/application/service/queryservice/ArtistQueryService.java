@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,5 +35,9 @@ public class ArtistQueryService {
                 .toList();
 
         return artistRepository.findByNaturalIds(naturalIds);
+    }
+
+    public Optional<Artist> findByNaturalId(UUID naturalId) {
+        return artistRepository.findByNaturalId(naturalId);
     }
 }

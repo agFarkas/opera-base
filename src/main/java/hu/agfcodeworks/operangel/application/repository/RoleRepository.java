@@ -22,6 +22,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     void deleteByNaturalId(UUID naturalId);
 
-    Optional<Role> findByNaturalId(UUID playNaturalId);
+    Optional<Role> findByNaturalId(UUID naturalId);
 
 }

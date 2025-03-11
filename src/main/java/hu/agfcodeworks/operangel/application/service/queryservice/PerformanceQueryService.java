@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -37,5 +38,9 @@ public class PerformanceQueryService {
                 .toList();
 
         return performanceRepository.findByNaturalIds(naturalIds);
+    }
+
+    public Optional<Performance> findByNaturalId(UUID naturalId) {
+        return performanceRepository.findByNaturalId(naturalId);
     }
 }

@@ -1,6 +1,7 @@
 package hu.agfcodeworks.operangel.application.dto.command;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,9 +12,9 @@ import java.util.UUID;
 @Builder(setterPrefix = "with")
 public class RoleChangeCommand {
 
-    private final UUID originalRoleNaturalId;
+    private final RoleSimpleDto originalRole;
 
-    private final UUID newRoleNaturalId;
+    private final RoleSimpleDto newRole;
 
     private final List<ArtistPerformanceSimpleDto> artistPerformanceSimpleDtos;
 }

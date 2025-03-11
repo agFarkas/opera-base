@@ -8,14 +8,23 @@ import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import lombok.NonNull;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_LOCATION;
 
 public class LocationEditor extends ComboBoxTableCellEditor<LocationDto> {
 
-    public LocationEditor(@NonNull Supplier<Optional<LocationDto>> itemSupplier) {
-        super(TextProviders.locationTextProvider, Comparators.locationComparator, itemSupplier);
+    public LocationEditor(
+            @NonNull Supplier<Optional<LocationDto>> itemSupplier,
+            @NonNull BiConsumer<LocationDto, LocationDto> itemChangeHandler
+    ) {
+        super(
+                TextProviders.locationTextProvider,
+                Comparators.locationComparator,
+                itemSupplier,
+                itemChangeHandler
+        );
 
         var comboBox = getEditorComponent();
 

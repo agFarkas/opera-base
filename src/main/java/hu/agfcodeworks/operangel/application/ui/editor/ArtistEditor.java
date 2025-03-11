@@ -8,15 +8,22 @@ import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import lombok.NonNull;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ArtistEditor extends ComboBoxTableCellEditor<ArtistListDto> {
 
     public ArtistEditor(
             @NonNull Supplier<Optional<ArtistListDto>> itemSupplier,
-            int fontStyle
-    ) {
-        super(TextProviders.artistTextProvider, Comparators.artistComparator, itemSupplier);
+            int fontStyle,
+            @NonNull BiConsumer<ArtistListDto, ArtistListDto> itemChangeHandler) {
+        super(
+                TextProviders.artistTextProvider,
+                Comparators.artistComparator,
+                itemSupplier,
+                itemChangeHandler
+        );
         var comboBox = getEditorComponent();
 
         comboBox.addListItems(ContextUtil.getBean(ArtistCache.class)

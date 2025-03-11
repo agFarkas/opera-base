@@ -16,23 +16,32 @@ import java.util.List;
 @Repository
 public interface ArtistPerformanceRoleJoinRepository extends JpaRepository<ArtistPerformanceRoleJoin, ArtistPerformanceRoleId> {
 
-    @Query("""
-            select apr from ArtistPerformanceRoleJoin apr
-            where apr.id.role = :role
-            """)
-    List<ArtistPerformanceRoleJoin> findByIdRole(@Param("role") Role role);
-
     @Modifying
     @Query("""
             update ArtistPerformanceRoleJoin apr set apr.id.role = :newRole
             where apr.id.role = :originalRole
-                and apr.id.performance in :performances
-                and apr.id.artist in :artists
+                and apr.id.performance in :performance
+                and apr.id.artist in :artist
             """)
     void updateJoinsByRole(
             @Param("originalRole") Role originalRole,
             @Param("newRole") Role newRole,
-            @Param("performances") List<Performance> performances,
-            @Param("artists") List<Artist> artists
+            @Param("performance") Performance performance,
+            @Param("artist") Artist artist
+    );
+
+    @Modifying
+    @Query("""
+            update ArtistPerformanceRoleJoin apr set apr.id.artist = :newArtist
+            where apr.id.artist = :originalArtist
+                and apr.id.performance = :performance
+                and apr.id.role = :role
+            """)
+    void updateJoinsByArtist(
+            @Param("originalArtist") Artist originalArtist,
+            @Param("newArtist") Artist newArtist,
+            @Param("performance") Performance performance,
+            @Param("role") Role role
+
     );
 }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -27,4 +28,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
             where prf.naturalId in :naturalIds
             """)
     List<Performance> findByNaturalIds(@Param("naturalIds") List<UUID> naturalIds);
+
+    Optional<Performance> findByNaturalId(UUID naturalId);
 }

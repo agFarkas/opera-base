@@ -7,38 +7,44 @@ import javax.swing.DefaultCellEditor;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ComboBoxTableCellEditor<V> extends DefaultCellEditor {
+
+    private final BiConsumer<V, V> itemChangeHandler;
+
     public ComboBoxTableCellEditor(
             @NonNull Function<V, String> textProvider,
             @NonNull Comparator<V> comparator,
-            @NonNull Supplier<Optional<V>> itemSupplier
+            @NonNull Supplier<Optional<V>> itemSupplier,
+            @NonNull BiConsumer<V, V> itemChangeHandler
     ) {
         super(new JCustomComboBox<>());
 
-        var comboBox = getEditorComponent();
-
-        comboBox.setTextProvider(textProvider);
-        comboBox.setItemComparator(comparator);
-        comboBox.setItemSupplier(itemSupplier);
-        comboBox.setProvidingNewAddition(true);
-
+        this.itemChangeHandler = itemChangeHandler;
         this.delegate = new EditorDelegate() {
+            private V originalValue;
 
             @Override
             public Object getCellEditorValue() {
                 var comboBox = getEditorComponent();
-                var value = comboBox.getSelectedListItem();
+                var newValue = comboBox.getSelectedListItem();
 
-                return value;
+                if (!Objects.equals(originalValue, newValue)) {
+                    itemChangeHandler.accept(originalValue, newValue);
+                }
+
+                return newValue;
             }
 
 
             @Override
             public void setValue(Object value) {
-                super.setValue(value);
+                this.originalValue = (V) value;
+
+                super.setValue(this.originalValue);
                 var comboBox = getEditorComponent();
 
                 if (Objects.nonNull(value)) {
@@ -46,6 +52,17 @@ public class ComboBoxTableCellEditor<V> extends DefaultCellEditor {
                 }
             }
         };
+
+        prepareComboBox(textProvider, comparator, itemSupplier);
+    }
+
+    private void prepareComboBox(Function<V, String> textProvider, Comparator<V> comparator, Supplier<Optional<V>> itemSupplier) {
+        var comboBox = getEditorComponent();
+
+        comboBox.setTextProvider(textProvider);
+        comboBox.setItemComparator(comparator);
+        comboBox.setItemSupplier(itemSupplier);
+        comboBox.setProvidingNewAddition(true);
     }
 
     protected JCustomComboBox<V> getEditorComponent() {
