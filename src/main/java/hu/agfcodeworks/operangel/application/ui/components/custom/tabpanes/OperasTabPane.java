@@ -17,6 +17,7 @@ import hu.agfcodeworks.operangel.application.dto.command.ArtistRoleChangeCommand
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
+import hu.agfcodeworks.operangel.application.service.cache.ArtistCache;
 import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
 import hu.agfcodeworks.operangel.application.service.commmandservice.ArtistCommandService;
 import hu.agfcodeworks.operangel.application.service.commmandservice.ArtistPerformanceRoleJoinCommandService;
@@ -53,6 +54,7 @@ import java.awt.Frame;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +62,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ARTIST;
@@ -67,9 +70,13 @@ import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConst
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.LIST_LINE_BREAK;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.RETURN_AND_LINE_BREAK;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.roleChangeOperationOptions;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.yesNoOptions;
 import static hu.agfcodeworks.operangel.application.ui.text.Comparators.playDtoByTitleComparator;
+import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.artistTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
 import static hu.agfcodeworks.operangel.application.util.ContextUtil.getBean;
@@ -88,15 +95,21 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String CAPTION_LOCATION = "Helyszín";
 
-    private static final String ROLE_CHANGE_QUESTION = "A '%s' szerep megnevezését átírtad a következőre: '%s'.\r\nMódosítod a leírást a meglévő szerepnél, vagy új szerepet hozol létre az új leírással?";
+    private static final String ROLE_CHANGE_QUESTION_PATTERN = "A '%s' szerep megnevezését átírtad a következőre: '%s'.\r\nMódosítod a leírást a meglévő szerepnél, vagy új szerepet hozol létre az új leírással?";
 
-    public static final String OPERA_DELETE_QUESTION = "Biztosan törlöd ezt az operát: '%s'?";
+    public static final String OPERA_DELETE_QUESTION_PATTERN = "Biztosan törlöd ezt az operát: '%s'?";
 
     public static final String CHOOSING_OPERATION_TITLE = "Műveletválasztás";
 
     public static final String TITLE_CREATE_OPERA_DIALOG = "Új opera";
 
-    public static final String TITLE_UPDATE_OPERA_DIALOG = "Opera módosítása";
+    private static final String TITLE_UPDATE_OPERA_DIALOG = "Opera módosítása";
+
+    private static final String ARTIST_PERFORMANCE_ASSOCIATION_WARNING_PATTERN = "'%s' szerepben többször szerepelnek a következő énekesek: %s%s%sEzek visszavonásra kerülnek.";
+
+    private static final String DUPLICATE_ARTIST_PERFORMANCE_ASSOCIATIONS_WARNING_TITLE = "Többszörös szerep-énekes párosítás";
+
+    private static final String ARTIST_PERFORMANCE_TEXT_PATTERN = "%s-i előadásban %s";
 
 
     private final JLabeledList<PlayListDto> lsOpera = new JLabeledList<>("Operák");
@@ -211,10 +224,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
             }
 
             return switch (row) {
-                case ROW_DATE -> new DateEditor((originalDate, newDate) -> dateEditingFinished(originalDate, newDate));
+                case ROW_DATE -> new DateEditor((originalDate, newDate) -> changeDate(originalDate, newDate));
                 case ROW_LOCATION -> new LocationEditor(
                         () -> createLocation(),
-                        (originalLocation, newLocation) -> locationChanged(originalLocation, newLocation)
+                        (originalLocation, newLocation) -> changeLocation(originalLocation, newLocation)
                 );
                 default -> {
                     if (isConductorRow(row)) {
@@ -294,7 +307,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private int getRoleUpdateOperationIndex(RoleDto originalRole, String newRoleDescription) {
         return JOptionPane.showOptionDialog(owner,
-                ROLE_CHANGE_QUESTION.formatted(originalRole.getDescription(), newRoleDescription),
+                ROLE_CHANGE_QUESTION_PATTERN.formatted(originalRole.getDescription(), newRoleDescription),
                 CHOOSING_OPERATION_TITLE,
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.PLAIN_MESSAGE,
@@ -540,15 +553,15 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return performanceCrudPanel;
     }
 
-    private void dateEditingFinished(LocalDate originalDate, LocalDate newDate) {
+    private void changeDate(LocalDate originalDate, LocalDate newDate) {
         if (!Objects.equals(originalDate, newDate)) {
-            tryToSavePerformance();
+            tryToSaveSelectedPerformance();
         }
     }
 
-    private void locationChanged(LocationDto originalLocation, LocationDto newLocation) {
+    private void changeLocation(LocationDto originalLocation, LocationDto newLocation) {
         if (!Objects.equals(originalLocation, newLocation)) {
-            tryToSavePerformance();
+            tryToSaveSelectedPerformance();
         }
     }
 
@@ -557,8 +570,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
             if (Objects.nonNull(newConductor)) {
                 tryToDeleteConductorJoin(originalConductor);
             } else {
-
-                tryToSavePerformance();
+                tryToSaveSelectedPerformance();
             }
         }
     }
@@ -637,7 +649,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private int showConfirmationForDeleteOpera() {
         return JOptionPane.showOptionDialog(owner,
-                OPERA_DELETE_QUESTION.formatted(composerPlayTextProvider.apply(selectedPlay)),
+                OPERA_DELETE_QUESTION_PATTERN.formatted(composerPlayTextProvider.apply(selectedPlay)),
                 CHOOSING_OPERATION_TITLE,
                 JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, yesNoOptions, yesNoOptions[1]);
@@ -721,12 +733,16 @@ public class OperasTabPane extends AbstractCustomTabPane {
             deleteRole(originalRole);
         }
 
-        clearDuplicateAssociationsInTable(roleChangeCommand, duplicateAssociations);
+        if (!duplicateAssociations.isEmpty()) {
+            showWarningOfClearingDuplicateAssociAtions(newRoleDto, duplicateAssociations);
+            clearDuplicateAssociationsInTable(roleChangeCommand, duplicateAssociations);
+        }
+
     }
 
     private void clearDuplicateAssociationsInTable(RoleChangeCommand roleChangeCommand, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
         duplicateAssociations.forEach(artistPerformanceSimpleDto -> {
-            var performanceColumn = calculateSelectedPerformanceColumn(artistPerformanceSimpleDto.getPerformanceSimpleDto());
+            var performanceColumn = calculatePerformanceColumn(artistPerformanceSimpleDto.getPerformanceSimpleDto());
 
             clearDuplicateAssociationInPerformanceColumn(roleChangeCommand, performanceColumn, artistPerformanceSimpleDto);
         });
@@ -759,7 +775,58 @@ public class OperasTabPane extends AbstractCustomTabPane {
         }
     }
 
-    private int calculateSelectedPerformanceColumn(PerformanceSimpleDto performanceSimpleDto) {
+    private void showWarningOfClearingDuplicateAssociAtions(RoleDto roleDto, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
+        var associations = collectAssociationsByLocalDate(duplicateAssociations);
+        var artistNamesByPerformanceDateText = textifyAssociations(associations);
+
+        JOptionPane.showMessageDialog(
+                owner,
+                ARTIST_PERFORMANCE_ASSOCIATION_WARNING_PATTERN.formatted(roleDto.getDescription(), LIST_LINE_BREAK, artistNamesByPerformanceDateText, RETURN_AND_LINE_BREAK),
+                DUPLICATE_ARTIST_PERFORMANCE_ASSOCIATIONS_WARNING_TITLE,
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private String textifyAssociations(HashMap<LocalDate, Set<ArtistListDto>> associations) {
+        return associations.keySet()
+                .stream()
+                .map(date -> ARTIST_PERFORMANCE_TEXT_PATTERN.formatted(
+                        dateFormatter.format(date), joinArtistNames(associations.get(date))
+                )).collect(Collectors.joining(LIST_LINE_BREAK));
+    }
+
+    private String joinArtistNames(Set<ArtistListDto> artistListDtos) {
+        return artistListDtos.stream()
+                .map(artistTextProvider)
+                .collect(Collectors.joining(" , "));
+    }
+
+    private HashMap<LocalDate, Set<ArtistListDto>> collectAssociationsByLocalDate(Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
+        var associations = new HashMap<LocalDate, Set<ArtistListDto>>();
+
+        duplicateAssociations.forEach(artistPerformanceSimpleDto -> {
+            var date = readDateBy(artistPerformanceSimpleDto.getPerformanceSimpleDto());
+
+            if (!associations.containsKey(date)) {
+                associations.put(date, new HashSet<>());
+            }
+
+            associations.get(date)
+                    .add(findArtistListDtoBy(artistPerformanceSimpleDto.getArtistSimpleDto()));
+        });
+        return associations;
+    }
+
+    private ArtistListDto findArtistListDtoBy(ArtistSimpleDto artistSimpleDto) {
+        return getBean(ArtistCache.class)
+                .get(artistSimpleDto.getNaturalId());
+    }
+
+    private LocalDate readDateBy(PerformanceSimpleDto performanceSimpleDto) {
+        return (LocalDate) tblPerformances.getValueAt(ROW_DATE, calculatePerformanceColumn(performanceSimpleDto));
+    }
+
+    private int calculatePerformanceColumn(PerformanceSimpleDto performanceSimpleDto) {
         return findFirstPerformanceColumn() + performances.indexOf(performanceSimpleDto);
     }
 
@@ -981,7 +1048,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var performanceSimpleDto = findSelectedPerformance();
 
         if (Objects.isNull(performanceSimpleDto.getNaturalId())) {
-            tryToSavePerformance();
+            tryToSaveSelectedPerformance();
         } else {
             updateOrDeleteArtistPerformanceRoleJoin(originalSinger, newSinger);
         }
@@ -1123,7 +1190,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         tblPerformances.setEnabled(enabled);
     }
 
-    private void tryToSavePerformance() {
+    private void tryToSaveSelectedPerformance() {
 
     }
 

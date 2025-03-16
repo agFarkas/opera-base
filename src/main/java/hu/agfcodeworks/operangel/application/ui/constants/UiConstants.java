@@ -6,6 +6,10 @@ public interface UiConstants {
 
     String EMPTY_STRING = "";
 
+    String RETURN_AND_LINE_BREAK = "\r\n";
+
+    String LIST_LINE_BREAK = "\r\n - ";
+
     String YES = "Igen";
 
     String NO = "Nem";
