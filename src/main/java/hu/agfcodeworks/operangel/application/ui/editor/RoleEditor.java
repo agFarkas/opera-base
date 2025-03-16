@@ -24,12 +24,11 @@ public class RoleEditor extends DefaultCellEditor {
 
     private final Function<RoleDto, RoleDto> creator;
     private final Function<RoleDto, RoleDto> updater;
-    private final BiConsumer<RoleDto, RoleDto> changer;
+    private final BiConsumer<RoleDto, RoleDto> singleExchanger;
 
     private final Consumer<Integer> mandatoryProcedure;
 
     private final BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooserForNewValue;
-    private final BiFunction<RoleDto, RoleDto, Optional<OperationOnChangingValue>> operationChooserForExistingValue;
 
     private final List<RoleDto> roleDtos;
 
@@ -37,10 +36,9 @@ public class RoleEditor extends DefaultCellEditor {
             int rowIndex,
             @NonNull Function<RoleDto, RoleDto> creator,
             @NonNull Function<RoleDto, RoleDto> updater,
-            @NonNull BiConsumer<RoleDto, RoleDto> changer,
+            @NonNull BiConsumer<RoleDto, RoleDto> singleExchanger,
             @NonNull Consumer<Integer> mandatoryProcedure,
             @NonNull BiFunction<RoleDto, String, Optional<OperationOnChangingValue>> operationChooserForNewValue,
-            @NonNull BiFunction<RoleDto, RoleDto, Optional<OperationOnChangingValue>> operationChooserForExistingValue,
             @NonNull List<RoleDto> roleDtos
     ) {
         super(new JTextField());
@@ -48,11 +46,10 @@ public class RoleEditor extends DefaultCellEditor {
 
         this.creator = creator;
         this.updater = updater;
-        this.changer = changer;
+        this.singleExchanger = singleExchanger;
 
         this.mandatoryProcedure = mandatoryProcedure;
         this.operationChooserForNewValue = operationChooserForNewValue;
-        this.operationChooserForExistingValue = operationChooserForExistingValue;
 
         this.roleDtos = roleDtos.stream()
                 .sorted(roleComparator)
@@ -70,8 +67,13 @@ public class RoleEditor extends DefaultCellEditor {
             @Override
             public Object getCellEditorValue() {
                 var textField = (JTextField) editorComponent;
-                var text = textField.getText();
+                return processText(
+                        textField.getText()
+                );
 
+            }
+
+            private Object processText(String text) {
                 if (!StringUtils.hasText(text)) {
                     if (hasOriginalValue()) {
                         return value;
@@ -93,39 +95,36 @@ public class RoleEditor extends DefaultCellEditor {
             }
 
             private RoleDto obtainRoleDto(String text) {
-                var roleDtoOpt = roleDtos.stream()
-                        .filter(r -> Objects.equals(r.getDescription(), text))
-                        .findFirst();
+                var newRoleDtoOpt = selectRoleDtoBy(text);
 
                 if (hasOriginalValue() && value instanceof RoleDto originalRoleDto) {
-                    roleDtoOpt.ifPresent(roleDto ->
-                            changer.accept(originalRoleDto, roleDto)
-                    );
+                    newRoleDtoOpt.ifPresent(roleDto -> exchangeExistingRoles(originalRoleDto, roleDto));
 
-                    return roleDtoOpt.orElseGet(() -> updateOrCreateValueByChoseOperation(originalRoleDto, text));
+                    return newRoleDtoOpt.orElseGet(() -> updateOrCreateValueByChoseOperation(originalRoleDto, text));
                 }
 
-                if (roleDtoOpt.isPresent() && value instanceof RoleDto originalRoleDto) {
-                    var roleDto = roleDtoOpt.get();
+                return newRoleDtoOpt.orElseGet(() -> createRoleDto(text));
+            }
 
-                    changer.accept(originalRoleDto, roleDto);
-                    return roleDto;
-                }
+            private Optional<RoleDto> selectRoleDtoBy(String text) {
+                return roleDtos.stream()
+                        .filter(r -> Objects.equals(r.getDescription(), text))
+                        .findFirst();
+            }
 
-                return roleDtoOpt.orElseGet(() -> createValue(text));
+            private void exchangeExistingRoles(RoleDto originalRoleDto, RoleDto roleDto) {
+                RoleEditor.this.exchangeExistingRoles(originalRoleDto, roleDto);
             }
 
             private RoleDto updateOrCreateValueByChoseOperation(RoleDto originalRoleDto, String text) {
                 var operationOpt = chooseOperation(text);
 
                 if (operationOpt.isPresent()) {
-                    var operation = operationOpt.get();
-
-                    return switch (operation) {
-                        case UPDATE_EXISTING -> updateValue(((RoleDto) value), text);
+                    return switch (operationOpt.get()) {
+                        case UPDATE_ALL_OCCURENCES -> updateValue(((RoleDto) value), text);
                         case CREATE_NEW -> {
-                            var roleDto = createValue(text);
-                            changer.accept(originalRoleDto, roleDto);
+                            var roleDto = createRoleDto(text);
+                            singleExchanger.accept(originalRoleDto, roleDto);
 
                             yield roleDto;
                         }
@@ -153,24 +152,44 @@ public class RoleEditor extends DefaultCellEditor {
         };
     }
 
+    private void exchangeExistingRoles(RoleDto originalRoleDto, RoleDto roleDto) {
+        singleExchanger.accept(originalRoleDto, roleDto);
+    }
+
     private void prepareEditorComponent() {
         var textField = (JTextField) editorComponent;
 
-        textField.setDocument(new AutoCompleterDocument<>(textField, roleDtos, RoleDto::getDescription));
+        textField.setDocument(
+                makeAutoCompleterDocument(textField)
+        );
     }
 
-    private RoleDto createValue(String text) {
-        return creator.apply(RoleDto.builder()
-                .withDescription(text.trim())
-                .build());
+    private AutoCompleterDocument<RoleDto> makeAutoCompleterDocument(JTextField textField) {
+        return new AutoCompleterDocument<>(textField, roleDtos, RoleDto::getDescription);
+    }
+
+    private RoleDto createRoleDto(String text) {
+        return creator.apply(
+                makeRoleDto(text)
+        );
     }
 
     private RoleDto updateValue(RoleDto originalRoleDto, String text) {
-        var roleDto = RoleDto.builder()
+        return updater.apply(
+                makeRoleDto(originalRoleDto, text)
+        );
+    }
+
+    private RoleDto makeRoleDto(String text) {
+        return RoleDto.builder()
+                .withDescription(text.trim())
+                .build();
+    }
+
+    private RoleDto makeRoleDto(RoleDto originalRoleDto, String text) {
+        return RoleDto.builder()
                 .withNaturalId(originalRoleDto.getNaturalId())
                 .withDescription(text)
                 .build();
-
-        return updater.apply(roleDto);
     }
 }

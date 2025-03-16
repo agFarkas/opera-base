@@ -29,6 +29,11 @@ public class ComboBoxTableCellEditor<V> extends DefaultCellEditor {
 
             @Override
             public Object getCellEditorValue() {
+                return processValueChange();
+
+            }
+
+            private V processValueChange() {
                 var comboBox = getEditorComponent();
                 var newValue = comboBox.getSelectedListItem();
 
