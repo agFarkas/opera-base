@@ -737,7 +737,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
             showWarningOfClearingDuplicateAssociAtions(newRoleDto, duplicateAssociations);
             clearDuplicateAssociationsInTable(roleChangeCommand, duplicateAssociations);
         }
-
     }
 
     private void clearDuplicateAssociationsInTable(RoleChangeCommand roleChangeCommand, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
@@ -746,7 +745,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
             clearDuplicateAssociationInPerformanceColumn(roleChangeCommand, performanceColumn, artistPerformanceSimpleDto);
         });
-
     }
 
     private void clearDuplicateAssociationInPerformanceColumn(RoleChangeCommand roleChangeCommand, int performanceColumn, ArtistPerformanceSimpleDto artistPerformanceSimpleDto) {
@@ -806,6 +804,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
         duplicateAssociations.forEach(artistPerformanceSimpleDto -> {
             var date = readDateBy(artistPerformanceSimpleDto.getPerformanceSimpleDto());
+            if (Objects.isNull(date)) {
+                return;
+            }
 
             if (!associations.containsKey(date)) {
                 associations.put(date, new HashSet<>());
@@ -814,6 +815,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
             associations.get(date)
                     .add(findArtistListDtoBy(artistPerformanceSimpleDto.getArtistSimpleDto()));
         });
+
         return associations;
     }
 
