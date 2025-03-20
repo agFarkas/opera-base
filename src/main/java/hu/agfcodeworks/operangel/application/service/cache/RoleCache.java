@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.service.cache;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
-import hu.agfcodeworks.operangel.application.service.queryservice.RoleQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.RoleQueryService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

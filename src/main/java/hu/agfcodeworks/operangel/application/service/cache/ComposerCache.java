@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.service.cache;
 
 import hu.agfcodeworks.operangel.application.dto.ComposerDto;
-import hu.agfcodeworks.operangel.application.service.queryservice.ComposerQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.ComposerQueryService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

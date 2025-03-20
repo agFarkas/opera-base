@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.queryservice;
+package hu.agfcodeworks.operangel.application.service.query.service;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.mapper.RoleDtoMapper;

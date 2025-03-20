@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.commmandservice;
+package hu.agfcodeworks.operangel.application.service.commmand.service;
 
 import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
@@ -8,7 +8,7 @@ import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.enums.PlayType;
 import hu.agfcodeworks.operangel.application.repository.PlayRepository;
 import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
-import hu.agfcodeworks.operangel.application.service.queryservice.ComposerQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.ComposerQueryService;
 import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

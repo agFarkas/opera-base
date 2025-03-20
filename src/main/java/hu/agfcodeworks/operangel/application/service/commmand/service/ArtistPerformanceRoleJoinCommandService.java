@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.commmandservice;
+package hu.agfcodeworks.operangel.application.service.commmand.service;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
@@ -13,9 +13,9 @@ import hu.agfcodeworks.operangel.application.model.Performance;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.model.embeddable.ArtistPerformanceRoleId;
 import hu.agfcodeworks.operangel.application.repository.ArtistPerformanceRoleJoinRepository;
-import hu.agfcodeworks.operangel.application.service.queryservice.ArtistQueryService;
-import hu.agfcodeworks.operangel.application.service.queryservice.PerformanceQueryService;
-import hu.agfcodeworks.operangel.application.service.queryservice.RoleQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.ArtistQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.PerformanceQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.RoleQueryService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

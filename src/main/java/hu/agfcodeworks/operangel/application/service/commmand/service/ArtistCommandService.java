@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.commmandservice;
+package hu.agfcodeworks.operangel.application.service.commmand.service;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
 import hu.agfcodeworks.operangel.application.mapper.ArtistListDtoMapper;

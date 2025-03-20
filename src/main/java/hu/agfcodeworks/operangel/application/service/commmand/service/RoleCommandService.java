@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.commmandservice;
+package hu.agfcodeworks.operangel.application.service.commmand.service;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
@@ -7,7 +7,7 @@ import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.repository.RoleRepository;
 import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
-import hu.agfcodeworks.operangel.application.service.queryservice.PlayQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
 import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
