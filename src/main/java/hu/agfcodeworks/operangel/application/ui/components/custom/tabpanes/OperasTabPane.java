@@ -12,9 +12,7 @@ import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
 import hu.agfcodeworks.operangel.application.dto.PlayDetailedDto;
 import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
-import hu.agfcodeworks.operangel.application.dto.RolePerformanceSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.command.ArtistRoleChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
@@ -39,6 +37,7 @@ import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
 import hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue;
 import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
+import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import lombok.NonNull;
 
@@ -85,7 +84,6 @@ import static hu.agfcodeworks.operangel.application.ui.text.Comparators.playDtoB
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.artistTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
-import static hu.agfcodeworks.operangel.application.util.ContextUtil.getBean;
 
 public class OperasTabPane extends AbstractCustomTabPane {
 
@@ -583,7 +581,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var playPerformanceChangeCommand = createPlayPerformanceChangeCommand();
 
         //TODO save to DB!!!
-        getBean(PlayPerformanceCommandService.class)
+        ContextUtil.getBean(PlayPerformanceCommandService.class)
                 .save(playPerformanceChangeCommand);
 
         performances.clear();
@@ -640,7 +638,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var dialog = new PlayDialog(owner, TITLE_CREATE_OPERA_DIALOG);
 
         if (dialog.getDialogStatus() == OK) {
-            var playListDto = getBean(PlayCommandService.class)
+            var playListDto = ContextUtil.getBean(PlayCommandService.class)
                     .saveOpera(makePlayCommand(dialog.getValue()));
 
             putPlayIntoList(playListDto);
@@ -651,7 +649,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var dialog = new PlayDialog(owner, TITLE_UPDATE_OPERA_DIALOG, selectedPlay);
 
         if (dialog.getDialogStatus() == OK) {
-            var playListDto = getBean(PlayCommandService.class)
+            var playListDto = ContextUtil.getBean(PlayCommandService.class)
                     .saveOpera(makePlayCommand(dialog.getValue()));
 
             putPlayIntoList(playListDto);
@@ -663,7 +661,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
             return;
         }
 
-        getBean(PlayCommandService.class)
+        ContextUtil.getBean(PlayCommandService.class)
                 .deletePlay(selectedPlay.getNaturalId());
 
         var selectedIndex = lsOpera.getSelectedIndex();
@@ -769,7 +767,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var duplicateAssociations = collectDuplicateArtistPerformanceAssociations(originalRole, newRoleDto);
         var roleChangeCommand = makeRoleChangeCommandExceptDuplicateAssociations(originalRole, newRoleDto, duplicateAssociations);
 
-        getBean(ArtistPerformanceRoleJoinCommandService.class)
+        ContextUtil.getBean(ArtistPerformanceRoleJoinCommandService.class)
                 .updateFromRoleToRole(roleChangeCommand);
 
         if (isOnlyRowWithRole(originalRole)) {
@@ -863,7 +861,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private ArtistListDto findArtistListDtoBy(ArtistSimpleDto artistSimpleDto) {
-        return getBean(ArtistCache.class)
+        return ContextUtil.getBean(ArtistCache.class)
                 .get(artistSimpleDto.getNaturalId());
     }
 
@@ -996,7 +994,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void createPerformance() {
         addPerformanceColumn();
         performances.add(PerformanceSimpleDto.builder()
-                        .withNaturalId(UUID.randomUUID())
+                .withNaturalId(UUID.randomUUID())
                 .build());
     }
 
@@ -1045,7 +1043,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var dialog = new LocationDialog(owner, TITLE_CREATE_LOCATION_DIALOG);
 
         if (dialog.getDialogStatus() == OK) {
-            var savedValue = getBean(LocationCommandService.class)
+            var savedValue = ContextUtil.getBean(LocationCommandService.class)
                     .save(dialog.getValue());
 
             return Optional.of(savedValue);
@@ -1058,7 +1056,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var dialog = new ArtistDialog(owner, TITLE_CREATE_CONDUCTOR_DIALOG);
 
         if (dialog.getDialogStatus() == OK) {
-            var savedValue = getBean(ArtistCommandService.class)
+            var savedValue = ContextUtil.getBean(ArtistCommandService.class)
                     .save(dialog.getValue());
 
             return Optional.of(savedValue);
@@ -1071,7 +1069,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var dialog = new ArtistDialog(owner, TITLE_CREATE_SINGER_DIALOG);
 
         if (dialog.getDialogStatus() == OK) {
-            var savedValue = getBean(ArtistCommandService.class)
+            var savedValue = ContextUtil.getBean(ArtistCommandService.class)
                     .save(dialog.getValue());
 
             return Optional.of(savedValue);
@@ -1131,7 +1129,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
             setSelectedPlay(playListDto);
 
-            getBean(PlayQueryService.class)
+            ContextUtil.getBean(PlayQueryService.class)
                     .getPlay(playListDto.getNaturalId())
                     .ifPresent(this::loadPerformances);
 
@@ -1141,7 +1139,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void loadPerformances(PlayDetailedDto playDetailedDto) {
-        var performanceSummary = getBean(PerformanceQueryService.class)
+        var performanceSummary = ContextUtil.getBean(PerformanceQueryService.class)
                 .getPerformancesForPlay(selectedPlay);
 
         refreshDetails(playDetailedDto, performanceSummary);
@@ -1256,8 +1254,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 .withArtistSimpleDto(artistSimpleDto)
                 .withRoleSimpleDto(convertToRoleSimpleDto(
                         readRoleDto(artistRow)
-                ))
-                .build();
+                )).build();
     }
 
     private void refreshDetails(@NonNull PlayDetailedDto playDetailedDto, @NonNull Optional<PerformanceSummaryDto> performanceSummaryOpt) {
@@ -1268,7 +1265,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     public void refreshContent() {
         clearContent();
         lsOpera.addItems(
-                getBean(PlayQueryService.class)
+                ContextUtil.getBean(PlayQueryService.class)
                         .getAllOperas()
         );
     }
