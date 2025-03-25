@@ -41,6 +41,6 @@ public class RoleQueryService {
     private static Set<UUID> obtainNaturalIds(List<RoleSimpleDto> roleSimpleDtos) {
         return roleSimpleDtos.stream()
                 .map(RoleSimpleDto::getNaturalId)
-                .toList();
+                .collect(Collectors.toSet());
     }
 }
