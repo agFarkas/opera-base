@@ -22,6 +22,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -68,9 +69,15 @@ public class PerformanceCommandService {
                 new ArrayList<>(collectRoleDtos(performanceStateDto))
         );
 
+        performance.setDate(convertDate(performanceStateDto));
         performance.setLocation(findLocation(performanceStateDto));
         performance.setPerformanceConductorJoins(makePerformanceConductorJoins(performance, artists, performanceStateDto));
         performance.setArtistPerformanceRoleJoins(makeArtistPerformanceRoleJoins(performance, artists, roles, performanceStateDto));
+
+    }
+
+    private Timestamp convertDate(PerformanceStateDto performanceStateDto) {
+        return Timestamp.valueOf(performanceStateDto.getDate().atStartOfDay());
     }
 
     //TODO try to restructure with ThreadLocale
