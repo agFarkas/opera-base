@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class RoleJoinDtoMapper extends AbstractDtoMapper<Role, RoleSimpleDto> {
+public class RoleJoinDtoMapper extends AbstractMapper<Role, RoleSimpleDto> {
 
     @Override
     public RoleSimpleDto entityToDto(@NonNull Role role) {

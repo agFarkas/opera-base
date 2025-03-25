@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
-public class PlayDetailedDtoMapper extends AbstractDtoMapper<Play, PlayDetailedDto> {
+public class PlayDetailedDtoMapper extends AbstractMapper<Play, PlayDetailedDto> {
 
     private final ComposerDtoMapper composerDtoMapper;
 

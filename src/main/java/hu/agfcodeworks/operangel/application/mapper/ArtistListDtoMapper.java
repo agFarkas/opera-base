@@ -1,14 +1,13 @@
 package hu.agfcodeworks.operangel.application.mapper;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
-import hu.agfcodeworks.operangel.application.dto.ComposerDto;
 import hu.agfcodeworks.operangel.application.model.Artist;
 import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ArtistListDtoMapper extends AbstractDtoMapper<Artist, ArtistListDto> {
+public class ArtistListDtoMapper extends AbstractMapper<Artist, ArtistListDto> {
 
     @Override
     public ArtistListDto entityToDto(@NonNull Artist artist) {

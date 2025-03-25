@@ -30,11 +30,15 @@ public class ArtistQueryService {
     }
 
     public List<Artist> findBySimpleDtos(List<ArtistSimpleDto> artistSimpleDtos) {
-        var naturalIds = artistSimpleDtos.stream()
+        return artistRepository.findByNaturalIds(
+                obtainNaturalIds(artistSimpleDtos)
+        );
+    }
+
+    private List<UUID> obtainNaturalIds(List<ArtistSimpleDto> artistSimpleDtos) {
+        return artistSimpleDtos.stream()
                 .map(ArtistSimpleDto::getNaturalId)
                 .toList();
-
-        return artistRepository.findByNaturalIds(naturalIds);
     }
 
     public Optional<Artist> findByNaturalId(UUID naturalId) {

@@ -7,7 +7,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ComposerDtoMapper extends AbstractDtoMapper<Composer, ComposerDto> {
+public class ComposerDtoMapper extends AbstractMapper<Composer, ComposerDto> {
 
     @Override
     public ComposerDto entityToDto(@NonNull Composer composer) {

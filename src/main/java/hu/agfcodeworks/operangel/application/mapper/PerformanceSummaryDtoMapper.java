@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
-public class PerformanceSummaryDtoMapper extends AbstractDtoMapper<List<Performance>, PerformanceSummaryDto> {
+public class PerformanceSummaryDtoMapper extends AbstractMapper<List<Performance>, PerformanceSummaryDto> {
 
     private final PerformanceDtoMapper performanceDtoMapper;
 

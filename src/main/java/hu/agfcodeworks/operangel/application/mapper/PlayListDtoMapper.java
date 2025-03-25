@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class PlayListDtoMapper extends AbstractDtoMapper<Play, PlayListDto> {
+public class PlayListDtoMapper extends AbstractMapper<Play, PlayListDto> {
 
     private final ComposerDtoMapper composerDtoMapper;
 

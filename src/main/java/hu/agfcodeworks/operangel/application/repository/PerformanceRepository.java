@@ -30,4 +30,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     List<Performance> findByNaturalIds(@Param("naturalIds") List<UUID> naturalIds);
 
     Optional<Performance> findByNaturalId(UUID naturalId);
+
+    void deleteByNaturalId(UUID naturalId);
 }

@@ -6,6 +6,8 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +18,11 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@Builder(setterPrefix = "with")
 @EqualsAndHashCode
 @NoArgsConstructor
 @Embeddable
+@AllArgsConstructor
 public class PerformanceConductorId implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER, targetEntity = Artist.class)

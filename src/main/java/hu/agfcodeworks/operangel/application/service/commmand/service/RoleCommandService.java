@@ -2,11 +2,11 @@ package hu.agfcodeworks.operangel.application.service.commmand.service;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
+import hu.agfcodeworks.operangel.application.dto.command.RoleDeleteCommand;
 import hu.agfcodeworks.operangel.application.mapper.RoleDtoMapper;
 import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.repository.RoleRepository;
-import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
 import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
 import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,6 @@ public class RoleCommandService {
 
     private final PlayQueryService playQueryService;
 
-    private final RoleCache roleCache;
 
     public RoleDto save(@NonNull RoleCommand roleCommand) {
         if (Objects.nonNull(roleCommand.getNaturalId())) {
@@ -39,27 +38,11 @@ public class RoleCommandService {
     }
 
     private RoleDto create(RoleCommand roleCommand) {
-        var roleDto = createNew(roleCommand);
-        refreshInCache(roleDto);
-
-        return roleDto;
+        return createNew(roleCommand);
     }
 
     private RoleDto update(RoleCommand roleCommand) {
-        var newRoleDto = findAndUpdate(roleCommand);
-        refreshInCache(newRoleDto);
-
-        return newRoleDto;
-    }
-
-    private void refreshInCache(RoleDto roleDto) {
-        var cacheList = roleCache.get(roleDto.getPlayNaturalId());
-
-        if (cacheList.contains(roleDto)) {
-            cacheList.remove(roleDto);
-        }
-
-        cacheList.add(roleDto);
+        return findAndUpdate(roleCommand);
     }
 
 
@@ -98,17 +81,8 @@ public class RoleCommandService {
                 .orElseThrow(() -> new RuntimeException("Play Not Found"));
     }
 
-    public void delete(@NonNull RoleCommand roleCommand) {
+    public void delete(@NonNull RoleDeleteCommand roleCommand) {
         roleRepository.deleteByNaturalId(roleCommand.getNaturalId());
-        removeFromCache(roleCommand);
     }
 
-    private void removeFromCache(RoleCommand roleCommand) {
-        var  cacheList = roleCache.get(roleCommand.getPlayNaturalId());
-        var roleDtoOpt = cacheList.stream()
-                .filter(r -> Objects.equals(r.getNaturalId(), roleCommand.getNaturalId()))
-                .findFirst();
-
-        roleDtoOpt.ifPresent(cacheList::remove);
-    }
 }

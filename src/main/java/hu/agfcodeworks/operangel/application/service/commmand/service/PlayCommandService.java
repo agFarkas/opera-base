@@ -7,7 +7,6 @@ import hu.agfcodeworks.operangel.application.model.Composer;
 import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.enums.PlayType;
 import hu.agfcodeworks.operangel.application.repository.PlayRepository;
-import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
 import hu.agfcodeworks.operangel.application.service.query.service.ComposerQueryService;
 import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -30,8 +28,6 @@ public class PlayCommandService {
 
     private final ComposerQueryService composerQueryService;
 
-    private final RoleCache roleCache;
-
     public PlayListDto saveOpera(@NonNull PlayCommand playCommand) {
         if (Objects.nonNull(playCommand.getNaturalId())) {
             return update(playCommand);
@@ -42,8 +38,6 @@ public class PlayCommandService {
 
     private PlayListDto create(PlayCommand playCommand) {
         var playListDto = createNew(playCommand);
-
-        roleCache.put(playListDto.getNaturalId(), new LinkedList<>());
 
         return playListDto;
     }
@@ -100,6 +94,5 @@ public class PlayCommandService {
 
     public void deletePlay(UUID naturalId) {
         playRepository.deleteByNaturalId(naturalId);
-        roleCache.remove(naturalId);
     }
 }

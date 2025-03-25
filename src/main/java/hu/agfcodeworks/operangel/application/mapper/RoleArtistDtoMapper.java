@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class RoleArtistDtoMapper extends AbstractDtoMapper<ArtistPerformanceRoleJoin, ArtistPerformanceDto> {
+public class RoleArtistDtoMapper extends AbstractMapper<ArtistPerformanceRoleJoin, ArtistPerformanceDto> {
 
     private final ArtistListDtoMapper artistListDtoMapper;
 

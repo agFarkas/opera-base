@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -23,5 +24,11 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     void deleteByNaturalId(UUID naturalId);
 
     Optional<Role> findByNaturalId(UUID naturalId);
+
+    @Query("""
+            select r from Role r
+                where r.naturalId in :naturalIds
+            """)
+    List<Role> findByNaturalIds(Set<UUID> naturalIds);
 
 }

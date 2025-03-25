@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class RoleDtoMapper extends AbstractDtoMapper<Role, RoleDto> {
+public class RoleDtoMapper extends AbstractMapper<Role, RoleDto> {
 
     @Override
     public RoleDto entityToDto(@NonNull Role role) {

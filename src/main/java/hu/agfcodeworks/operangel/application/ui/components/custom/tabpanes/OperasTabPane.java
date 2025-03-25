@@ -14,7 +14,6 @@ import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.dto.RolePerformanceSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.command.ArtistPerformanceRoleJoinDeleteCommand;
 import hu.agfcodeworks.operangel.application.dto.command.ArtistRoleChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCommand;
@@ -23,13 +22,11 @@ import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.dto.state.PlayStateDto;
 import hu.agfcodeworks.operangel.application.service.cache.ArtistCache;
-import hu.agfcodeworks.operangel.application.service.cache.RoleCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistPerformanceRoleJoinCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.LocationCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.PlayCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.PlayPerformanceCommandService;
-import hu.agfcodeworks.operangel.application.service.commmand.service.RoleCommandService;
 import hu.agfcodeworks.operangel.application.service.query.service.PerformanceQueryService;
 import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledList;
@@ -42,6 +39,7 @@ import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
 import hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue;
 import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
+import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import lombok.NonNull;
 
 import javax.swing.JButton;
@@ -105,11 +103,11 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String ROLE_CHANGE_QUESTION_PATTERN = "A '%s' szerep megnevezését átírva a következőre: '%s'.\r\nMódosítod a leírást a meglévő szerepnél, vagy új szerepet hozol létre az új leírással?";
 
-    public static final String OPERA_DELETE_QUESTION_PATTERN = "Biztosan törlöd ezt az operát: '%s'?";
+    private static final String OPERA_DELETE_QUESTION_PATTERN = "Biztosan törlöd ezt az operát: '%s'?";
 
-    public static final String CHOOSING_OPERATION_TITLE = "Műveletválasztás";
+    private static final String CHOOSING_OPERATION_TITLE = "Műveletválasztás";
 
-    public static final String TITLE_CREATE_OPERA_DIALOG = "Új opera";
+    private static final String TITLE_CREATE_OPERA_DIALOG = "Új opera";
 
     private static final String TITLE_UPDATE_OPERA_DIALOG = "Opera módosítása";
 
@@ -147,6 +145,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private List<PerformanceSimpleDto> performances;
 
     private PlayStateDto originalState;
+
+    private PlayStateDto newState;
 
     private boolean stateChanged;
 
@@ -274,8 +274,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     };
 
     private List<RoleDto> readRoleDtosFromCache() {
-        return getBean(RoleCache.class)
-                .get(selectedPlay.getNaturalId());
+        return newState.getRoles();
     }
 
     private void addEmptyRow() {
@@ -412,7 +411,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private Integer getMaxRoleCountOf(RoleDto roleDto, PerformanceSummaryDto perfSumDto) {
-        return perfSumDto.getMaxRoleCounts().getOrDefault(roleDto.getNaturalId(), 1);
+        return perfSumDto.getMaxRoleCounts()
+                .getOrDefault(roleDto.getNaturalId(), 1);
     }
 
     private void fillRoles(List<RoleDto> roles) {
@@ -601,10 +601,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private PlayPerformanceChangeCommand createPlayPerformanceChangeCommand() {
+        var performanceStateDtos = this.newState.getPerformanceStateDtos();
+        performanceStateDtos.clear();
+        performanceStateDtos.addAll(collectPerformanceStateDtosFromTable());
+
         return PlayPerformanceChangeCommand.builder()
                 .withPlayNaturalId(this.selectedPlay.getNaturalId())
                 .withOriginalPlayState(this.originalState)
-                .withNewPlayState(createPlayState())
+                .withNewPlayState(this.newState)
                 .build();
     }
 
@@ -700,13 +704,11 @@ public class OperasTabPane extends AbstractCustomTabPane {
             return roleDto;
         }
 
-        return getBean(RoleCommandService.class)
-                .save(makeRoleCommand(roleDto));
+        return newState.store(roleDto);
     }
 
     private RoleDto updateRole(RoleDto roleDto) {
-        var newRoleDto = getBean(RoleCommandService.class)
-                .save(makeRoleCommand(roleDto));
+        var newRoleDto = newState.store(roleDto);
 
         overwriteAllOccurencesOf(newRoleDto);
 
@@ -801,7 +803,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
             var actRoleNaturalId = roleDto.getNaturalId();
             if (Objects.equals(actRoleNaturalId, roleChangeCommand.getOriginalRole().getNaturalId()) || Objects.equals(actRoleNaturalId, roleChangeCommand.getNewRole().getNaturalId())) {
-                var artistDto = readArtistListDto(r, performanceColumn);
+                var artistDto = readArtistListDtoFromTable(r, performanceColumn);
 
                 if (Objects.nonNull(artistDto) && Objects.equals(artistDto.getNaturalId(), artistPerformanceSimpleDto.getArtistSimpleDto().getNaturalId())) {
                     if (artists.contains(artistDto)) {
@@ -902,7 +904,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
             var roleDto = readRoleDto(r);
 
             if (Objects.equals(roleDto, originalRole) || Objects.equals(roleDto, newRoleDto)) {
-                var artistListDto = readArtistListDto(r, findFirstPerformanceColumn() + performanceIndex);
+                var artistListDto = readArtistListDtoFromTable(r, findFirstPerformanceColumn() + performanceIndex);
                 var artistPerformanceSimpleDto = Objects.nonNull(artistListDto) ? makeArtistPerformanceSimpleDto(performanceSimpleDto, convertToArtistSimpleDto(artistListDto)) : null;
 
                 if (allAssociations.contains(artistPerformanceSimpleDto)) {
@@ -935,7 +937,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
         for (var c = 0; c < performances.size(); c++) {
             var performanceSimpleDto = performances.get(c);
-            var artistDto = readArtistListDto(selectedRow, firstPerformanceColumn + c);
+            var artistDto = readArtistListDtoFromTable(selectedRow, firstPerformanceColumn + c);
 
             if (Objects.nonNull(performanceSimpleDto.getNaturalId()) && Objects.nonNull(artistDto)) {
                 artistPerformanceSimpleDtos.add(
@@ -988,13 +990,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void deleteRole(RoleDto roleDto) {
-        getBean(RoleCommandService.class)
-                .delete(makeRoleCommand(roleDto));
+        newState.delete(roleDto);
     }
 
     private void createPerformance() {
         addPerformanceColumn();
         performances.add(PerformanceSimpleDto.builder()
+                        .withNaturalId(UUID.randomUUID())
                 .build());
     }
 
@@ -1094,57 +1096,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return splitPane;
     }
 
-    private void updateArtistPerformanceRoleJoin(ArtistListDto originalSinger, ArtistListDto newSinger) {
-        getBean(ArtistPerformanceRoleJoinCommandService.class)
-                .saveArtistRoleJoin(
-                        makeArtisRoleChangeCommand(originalSinger, newSinger)
-                );
-    }
-
-    private ArtistRoleChangeCommand makeArtisRoleChangeCommand(ArtistListDto originalSinger, ArtistListDto newSinger) {
-        var originalSingerSimpleDto = Objects.nonNull(originalSinger) ? convertToArtistSimpleDto(originalSinger) : null;
-
-        return ArtistRoleChangeCommand.builder()
-                .withOriginalArtist(originalSingerSimpleDto)
-                .withNewArtist(convertToArtistSimpleDto(newSinger))
-                .withRolePerformanceSimpleDto(
-                        makeRolePerformanceSimpleDtoFromSelectedRow()
-                ).build();
-    }
-
-    private RolePerformanceSimpleDto makeRolePerformanceSimpleDtoFromSelectedRow() {
-        return RolePerformanceSimpleDto.builder()
-                .withPerformanceSimpleDto(findSelectedPerformance())
-                .withRoleSimpleDto(obtainSelectedRoleSimpleDto())
-                .build();
-    }
-
-    private void deleteArtistPerformanceRoleJoin(ArtistListDto originalSinger) {
-        var deleteCommand = ArtistPerformanceRoleJoinDeleteCommand.builder()
-                .withOriginalArtist(convertToArtistSimpleDto(originalSinger))
-                .withPerformance(findSelectedPerformance())
-                .withRole(obtainSelectedRoleSimpleDto())
-                .build();
-
-        getBean(ArtistPerformanceRoleJoinCommandService.class)
-                .delete(deleteCommand);
-    }
-
-    private RoleSimpleDto obtainSelectedRoleSimpleDto() {
-        var selectedRow = tblPerformances.getSelectedRow();
-        var roleDto = readRoleDto(selectedRow);
-
-        return convertToRoleSimpleDto(roleDto);
-    }
-
     private RoleSimpleDto convertToRoleSimpleDto(RoleDto roleDto) {
         return RoleSimpleDto.builder()
                 .withNaturalId(roleDto.getNaturalId())
                 .build();
-    }
-
-    private PerformanceSimpleDto findSelectedPerformance() {
-        return performances.get(calculateSelectedPerformanceIndex());
     }
 
     private void prepareTblPerformances() {
@@ -1188,6 +1143,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void loadPerformances(PlayDetailedDto playDetailedDto) {
         var performanceSummary = getBean(PerformanceQueryService.class)
                 .getPerformancesForPlay(selectedPlay);
+
         refreshDetails(playDetailedDto, performanceSummary);
     }
 
@@ -1196,21 +1152,28 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void setUpOriginalState() {
-        updateOriginalState(createPlayState());
+        var playState = createPlayStateFromTable();
+        updateOriginalState(playState);
     }
 
-    private void updateOriginalState(PlayStateDto PlayState) {
-        this.originalState = PlayState;
+    private void updateOriginalState(PlayStateDto playState) {
+        this.originalState = playState;
+        this.newState = cloneState(playState);
         this.stateChanged = false;
     }
 
-    private PlayStateDto createPlayState() {
+    private static PlayStateDto cloneState(PlayStateDto playState) {
+        return PlayStateUtil.clone(playState);
+    }
+
+    private PlayStateDto createPlayStateFromTable() {
         return PlayStateDto.builder()
-                .withPerformanceStateDtos(collectPerformanceStateDtos())
+                .withPlayNaturalId(selectedPlay.getNaturalId())
+                .withPerformanceStateDtos(collectPerformanceStateDtosFromTable())
                 .build();
     }
 
-    private List<PerformanceStateDto> collectPerformanceStateDtos() {
+    private List<PerformanceStateDto> collectPerformanceStateDtosFromTable() {
         var columnCount = tblPerformances.getColumnCount();
         var performanceStateDtos = new LinkedList<PerformanceStateDto>();
         var firstPerformanceColumn = findFirstPerformanceColumn();
@@ -1227,18 +1190,18 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private PerformanceStateDto createPerformanceStateDto(int column, PerformanceSimpleDto performanceSimpleDto) {
         return PerformanceStateDto.builder()
                 .withNaturalId(performanceSimpleDto.getNaturalId())
-                .withDate(readDate(column))
-                .withLocation(readLocation(column))
-                .withConductors(collectConductors(column))
-                .withArtistRoleSimpleDtos(collectiArtistRoleDtos(column))
+                .withDate(readDateFromTable(column))
+                .withLocation(readLocationFromTable(column))
+                .withConductors(collectConductorsFromTable(column))
+                .withArtistRoleSimpleDtos(collectArtistRoleDtosFromTable(column))
                 .build();
     }
 
-    private LocalDate readDate(int column) {
+    private LocalDate readDateFromTable(int column) {
         return (LocalDate) tblPerformances.getValueAt(ROW_DATE, column);
     }
 
-    private LocationSimpleDto readLocation(int column) {
+    private LocationSimpleDto readLocationFromTable(int column) {
         return convertToLocationSimpleDto(
                 readLocationDto(column)
         );
@@ -1254,41 +1217,41 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return (LocationDto) tblPerformances.getValueAt(ROW_LOCATION, column);
     }
 
-    private List<ArtistSimpleDto> collectConductors(int column) {
+    private List<ArtistSimpleDto> collectConductorsFromTable(int column) {
         var conductors = new LinkedList<ArtistSimpleDto>();
 
         for (int conductorRow = ROW_FIRST_CONDUCTOR; conductorRow < findFirstRoleRow(); conductorRow++) {
-            readArtistSimpleDto(conductorRow, column)
+            readArtistSimpleDtoFromTable(conductorRow, column)
                     .ifPresent(conductors::add);
         }
 
         return conductors;
     }
 
-    private Optional<ArtistSimpleDto> readArtistSimpleDto(int row, int column) {
+    private Optional<ArtistSimpleDto> readArtistSimpleDtoFromTable(int row, int column) {
         return Optional.ofNullable(
-                readArtistListDto(row, column)
+                readArtistListDtoFromTable(row, column)
         ).map(this::convertToArtistSimpleDto);
     }
 
-    private List<ArtistRoleSimpleDto> collectiArtistRoleDtos(int column) {
+    private List<ArtistRoleSimpleDto> collectArtistRoleDtosFromTable(int column) {
         var rowCount = tblPerformances.getRowCount();
         var artistRoleSimpleDtos = new LinkedList<ArtistRoleSimpleDto>();
 
         for (int artistRow = findFirstRoleRow(); artistRow < rowCount; artistRow++) {
             var aRow = artistRow;
-            readArtistSimpleDto(artistRow, column)
-                    .map(a -> makeArtistRoleSimpleDto(a, aRow))
+            readArtistSimpleDtoFromTable(artistRow, column)
+                    .map(a -> makeArtistRoleSimpleDtoFromTable(a, aRow))
                     .ifPresent(artistRoleSimpleDtos::add);
         }
         return artistRoleSimpleDtos;
     }
 
-    private ArtistListDto readArtistListDto(int row, int column) {
+    private ArtistListDto readArtistListDtoFromTable(int row, int column) {
         return (ArtistListDto) tblPerformances.getValueAt(row, column);
     }
 
-    private ArtistRoleSimpleDto makeArtistRoleSimpleDto(ArtistSimpleDto artistSimpleDto, int artistRow) {
+    private ArtistRoleSimpleDto makeArtistRoleSimpleDtoFromTable(ArtistSimpleDto artistSimpleDto, int artistRow) {
         return ArtistRoleSimpleDto.builder()
                 .withArtistSimpleDto(artistSimpleDto)
                 .withRoleSimpleDto(convertToRoleSimpleDto(

@@ -7,7 +7,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LocationDtoMapper extends AbstractDtoMapper<Location, LocationDto> {
+public class LocationDtoMapper extends AbstractMapper<Location, LocationDto> {
 
     @Override
     public LocationDto entityToDto(@NonNull Location location) {
