@@ -2,7 +2,7 @@ package hu.agfcodeworks.operangel.application.ui.editor;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.ui.text.AutoCompleterDocument;
-import hu.agfcodeworks.operangel.application.util.TextUtil;
+import hu.agfcodeworks.operangel.application.ui.util.TextUtil;
 import lombok.NonNull;
 import org.springframework.util.StringUtils;
 

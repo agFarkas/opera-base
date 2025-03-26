@@ -8,7 +8,7 @@ import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.enums.PlayType;
 import hu.agfcodeworks.operangel.application.repository.PlayRepository;
 import hu.agfcodeworks.operangel.application.service.query.service.ComposerQueryService;
-import hu.agfcodeworks.operangel.application.util.TextUtil;
+import hu.agfcodeworks.operangel.application.ui.util.TextUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;

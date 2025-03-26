@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.util;
+package hu.agfcodeworks.operangel.application.ui.util;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -37,7 +37,6 @@ public class TextUtil {
             unificationMap.put(character, targetChar);
         }
     }
-
 
     public String unify(@NonNull String originalText) {
         var chars = originalText.toLowerCase()

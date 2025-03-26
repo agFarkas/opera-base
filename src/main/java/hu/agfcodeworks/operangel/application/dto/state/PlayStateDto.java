@@ -2,7 +2,7 @@ package hu.agfcodeworks.operangel.application.dto.state;
 
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
-import hu.agfcodeworks.operangel.application.util.TextUtil;
+import hu.agfcodeworks.operangel.application.ui.util.TextUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

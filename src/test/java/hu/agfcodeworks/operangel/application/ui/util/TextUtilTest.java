@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.util;
+package hu.agfcodeworks.operangel.application.ui.util;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;

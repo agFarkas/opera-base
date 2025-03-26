@@ -2,7 +2,7 @@ package hu.agfcodeworks.operangel.application.mapper;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
 import hu.agfcodeworks.operangel.application.model.Artist;
-import hu.agfcodeworks.operangel.application.util.TextUtil;
+import hu.agfcodeworks.operangel.application.ui.util.TextUtil;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 

@@ -1124,11 +1124,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
         lsOpera.setTextProvider(composerPlayTextProvider);
         lsOpera.setItemComparator(playDtoByTitleComparator);
-        lsOpera.addListSelectionListener(e -> handleOperaSelectionChange(e));
+        lsOpera.addListSelectionListener(this::handleOperaSelectionChange);
     }
 
-    private void handleOperaSelectionChange(ListSelectionEvent e) {
-
+    private void handleOperaSelectionChange(ListSelectionEvent event) {
         this.refreshDetails();
     }
 
