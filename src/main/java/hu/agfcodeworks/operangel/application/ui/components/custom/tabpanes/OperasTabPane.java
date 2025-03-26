@@ -49,6 +49,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import java.awt.BorderLayout;
@@ -1005,7 +1006,21 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void deletePerformance() {
-        this.stateChanged = true;
+
+        var columnModel = retrieveColumnModel();
+        int selectedColumn = tblPerformances.getSelectedColumn();
+        var selectedPerformanceIndex = calculateSelectedPerformanceIndex();
+        if(selectedColumn > -1) {
+            markStateChanged();
+
+            columnModel.removeColumn(
+                    columnModel.getColumn(selectedColumn)
+            );
+
+            performances.remove(selectedPerformanceIndex);
+        } else {
+            //TODO: show warning message!
+        }
     }
 
     private void addConductor() {
@@ -1102,6 +1117,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private DefaultTableModel retrieveModel() {
         return (DefaultTableModel) tblPerformances.getModel();
+    }
+
+    private DefaultTableColumnModel retrieveColumnModel() {
+        return (DefaultTableColumnModel) tblPerformances.getColumnModel();
     }
 
     private void prepareLsOpera() {
