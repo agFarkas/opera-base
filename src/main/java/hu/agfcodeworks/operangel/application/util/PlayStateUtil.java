@@ -1,6 +1,5 @@
 package hu.agfcodeworks.operangel.application.util;
 
-import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.dto.state.PlayStateDto;
 import lombok.experimental.UtilityClass;
 

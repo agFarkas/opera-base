@@ -9,29 +9,25 @@ import org.springframework.util.CollectionUtils;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.GridBagLayout;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.INVALID_VALUES;
 import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.CANCEL;
 import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
 import static hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus.INVALID_FOR_CONTENT_RULE;
 import static hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus.INVALID_FOR_MANDATORY;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.INVALID_VALUES;
 
 public abstract class JAbstractDialog<V> extends JDialog {
 

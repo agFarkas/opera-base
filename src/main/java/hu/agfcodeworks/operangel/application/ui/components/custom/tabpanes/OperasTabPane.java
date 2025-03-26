@@ -20,7 +20,6 @@ import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.dto.state.PlayStateDto;
 import hu.agfcodeworks.operangel.application.service.cache.global.ArtistCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistCommandService;
-import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistPerformanceRoleJoinCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.LocationCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.PlayCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.PlayPerformanceCommandService;

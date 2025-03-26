@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
 import hu.agfcodeworks.operangel.application.ui.custom.components.itemdto.TestDto;
+import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionContext;

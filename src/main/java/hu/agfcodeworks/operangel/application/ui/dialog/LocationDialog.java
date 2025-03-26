@@ -1,6 +1,5 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
-import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
 import hu.agfcodeworks.operangel.application.dto.ErrorDto;
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledTextField;

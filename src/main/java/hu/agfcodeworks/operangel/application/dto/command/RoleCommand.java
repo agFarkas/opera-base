@@ -1,6 +1,5 @@
 package hu.agfcodeworks.operangel.application.dto.command;
 
-import hu.agfcodeworks.operangel.application.dto.ComposerDto;
 import lombok.Builder;
 import lombok.Getter;
 

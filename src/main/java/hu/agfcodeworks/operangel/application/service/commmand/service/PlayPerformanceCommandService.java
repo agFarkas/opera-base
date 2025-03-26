@@ -7,13 +7,11 @@ import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleDeleteCommand;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.service.cache.ThreadCachePreparer;
-import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 

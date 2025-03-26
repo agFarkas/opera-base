@@ -1,8 +1,8 @@
 package hu.agfcodeworks.operangel.application.mapper;
 
+import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
-import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceDto;
 import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.model.Performance;
 import lombok.AllArgsConstructor;
