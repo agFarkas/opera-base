@@ -1,7 +1,6 @@
 package hu.agfcodeworks.operangel.application.service.query.service;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
-import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
 import hu.agfcodeworks.operangel.application.mapper.ArtistListDtoMapper;
 import hu.agfcodeworks.operangel.application.model.Artist;
 import hu.agfcodeworks.operangel.application.repository.ArtistRepository;
@@ -29,16 +28,8 @@ public class ArtistQueryService {
                 .collect(Collectors.toList());
     }
 
-    public List<Artist> findBySimpleDtos(List<ArtistSimpleDto> artistSimpleDtos) {
-        return artistRepository.findByNaturalIds(
-                obtainNaturalIds(artistSimpleDtos)
-        );
-    }
-
-    private List<UUID> obtainNaturalIds(List<ArtistSimpleDto> artistSimpleDtos) {
-        return artistSimpleDtos.stream()
-                .map(ArtistSimpleDto::getNaturalId)
-                .toList();
+    public Set<Artist> findByNaturalIds(Set<UUID> naturalIds) {
+        return artistRepository.findByNaturalIds(naturalIds);
     }
 
     public Optional<Artist> findByNaturalId(UUID naturalId) {

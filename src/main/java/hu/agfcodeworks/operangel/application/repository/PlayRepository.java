@@ -29,5 +29,7 @@ public interface PlayRepository extends JpaRepository<Play, Long> {
             """)
     Optional<Play> findByNaturalId(@Param("naturalId") UUID naturalId);
 
+    Optional<Play> getByNaturalId(UUID naturalId);
+
     void deleteByNaturalId(UUID naturalId);
 }

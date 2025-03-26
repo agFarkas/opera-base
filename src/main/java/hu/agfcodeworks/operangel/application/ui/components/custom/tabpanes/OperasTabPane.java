@@ -16,10 +16,9 @@ import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
-import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.dto.state.PlayStateDto;
-import hu.agfcodeworks.operangel.application.service.cache.ArtistCache;
+import hu.agfcodeworks.operangel.application.service.cache.global.ArtistCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistPerformanceRoleJoinCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.LocationCommandService;
@@ -580,7 +579,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void saveChanges() {
         var playPerformanceChangeCommand = createPlayPerformanceChangeCommand();
 
-        //TODO save to DB!!!
         ContextUtil.getBean(PlayPerformanceCommandService.class)
                 .save(playPerformanceChangeCommand);
 
@@ -611,19 +609,19 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void changeDate(LocalDate originalDate, LocalDate newDate) {
-        stateChanged = true;
+        markStateChanged();
     }
 
     private void changeLocation(LocationDto originalLocation, LocationDto newLocation) {
-        stateChanged = true;
+        markStateChanged();
     }
 
     private void changeConductor(ArtistListDto originalConductor, ArtistListDto newConductor) {
-        stateChanged = true;
+        markStateChanged();
     }
 
     private void changeSinger(ArtistListDto originalSinger, ArtistListDto newSinger) {
-        stateChanged = true;
+        markStateChanged();
     }
 
     private boolean hasValue(int row, int column) {
@@ -698,6 +696,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private RoleDto createRole(RoleDto roleDto) {
+        markStateChanged();
+
         if (Objects.nonNull(roleDto.getNaturalId())) {
             return roleDto;
         }
@@ -731,14 +731,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private RoleDto readRoleDto(int row) {
         return (RoleDto) tblPerformances.getValueAt(row, COLUMN_ROLE);
-    }
-
-    private RoleCommand makeRoleCommand(RoleDto roleDto) {
-        return RoleCommand.builder()
-                .withPlayNaturalId(selectedPlay.getNaturalId())
-                .withNaturalId(roleDto.getNaturalId())
-                .withDescription(roleDto.getDescription())
-                .build();
     }
 
     private void changeRole(RoleDto originalRole, RoleDto newRoleDto) {
@@ -993,9 +985,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void createPerformance() {
         addPerformanceColumn();
-        performances.add(PerformanceSimpleDto.builder()
+        performances.add(makeNewPErformanceSingleDto());
+    }
+
+    private static PerformanceSimpleDto makeNewPErformanceSingleDto() {
+        return PerformanceSimpleDto.builder()
                 .withNaturalId(UUID.randomUUID())
-                .build());
+                .build();
     }
 
     private int addPerformanceColumn() {
@@ -1168,7 +1164,22 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return PlayStateDto.builder()
                 .withPlayNaturalId(selectedPlay.getNaturalId())
                 .withPerformanceStateDtos(collectPerformanceStateDtosFromTable())
+                .withRoles(collectRoleDtosFromTable())
                 .build();
+    }
+
+    private List<RoleDto> collectRoleDtosFromTable() {
+        var roles = new LinkedList<RoleDto>();
+
+        for (int row = findFirstRoleRow(); row < tblPerformances.getRowCount(); row++) {
+            var value = tblPerformances.getValueAt(row, COLUMN_ROLE);
+
+            if(Objects.nonNull(value) && !roles.contains(value) && value instanceof RoleDto roleDto) {
+                roles.add(roleDto);
+            }
+        }
+
+        return roles;
     }
 
     private List<PerformanceStateDto> collectPerformanceStateDtosFromTable() {
@@ -1284,9 +1295,11 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void setOperaDatasEnabled(boolean enabled) {
         btDeleteOpera.setEnabled(enabled);
         btUpdateOpera.setEnabled(enabled);
+
         btCreatePerformance.setEnabled(enabled);
         btDeletePerformance.setEnabled(enabled);
         btAddConductor.setEnabled(enabled);
+
         btSave.setEnabled(enabled);
         btRefresh.setEnabled(enabled);
 
@@ -1295,5 +1308,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void clearCell(int row, int column) {
         tblPerformances.setValueAt(null, row, column);
+    }
+
+    private void markStateChanged() {
+        stateChanged = true;
     }
 }

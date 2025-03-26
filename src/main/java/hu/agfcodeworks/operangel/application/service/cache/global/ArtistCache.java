@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.cache;
+package hu.agfcodeworks.operangel.application.service.cache.global;
 
 import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
 import hu.agfcodeworks.operangel.application.service.query.service.ArtistQueryService;

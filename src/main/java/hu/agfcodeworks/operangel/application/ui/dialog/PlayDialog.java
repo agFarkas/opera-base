@@ -3,7 +3,7 @@ package hu.agfcodeworks.operangel.application.ui.dialog;
 import hu.agfcodeworks.operangel.application.dto.ComposerDto;
 import hu.agfcodeworks.operangel.application.dto.ErrorDto;
 import hu.agfcodeworks.operangel.application.dto.PlayListDto;
-import hu.agfcodeworks.operangel.application.service.cache.ComposerCache;
+import hu.agfcodeworks.operangel.application.service.cache.global.ComposerCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ComposerCommandService;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComboBox;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledTextField;

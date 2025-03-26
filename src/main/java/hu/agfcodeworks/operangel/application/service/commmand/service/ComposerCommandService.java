@@ -4,7 +4,7 @@ import hu.agfcodeworks.operangel.application.dto.ComposerDto;
 import hu.agfcodeworks.operangel.application.mapper.ComposerDtoMapper;
 import hu.agfcodeworks.operangel.application.model.Composer;
 import hu.agfcodeworks.operangel.application.repository.ComposerRepository;
-import hu.agfcodeworks.operangel.application.service.cache.ComposerCache;
+import hu.agfcodeworks.operangel.application.service.cache.global.ComposerCache;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;

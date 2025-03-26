@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.cache;
+package hu.agfcodeworks.operangel.application.service.cache.global;
 
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.service.cache;
+package hu.agfcodeworks.operangel.application.service.cache.global;
 
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
 import hu.agfcodeworks.operangel.application.service.query.service.LocationQueryService;

@@ -4,7 +4,7 @@ import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
 import hu.agfcodeworks.operangel.application.mapper.ArtistListDtoMapper;
 import hu.agfcodeworks.operangel.application.model.Artist;
 import hu.agfcodeworks.operangel.application.repository.ArtistRepository;
-import hu.agfcodeworks.operangel.application.service.cache.ArtistCache;
+import hu.agfcodeworks.operangel.application.service.cache.global.ArtistCache;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;

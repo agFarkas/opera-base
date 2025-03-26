@@ -6,6 +6,8 @@ import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCo
 import hu.agfcodeworks.operangel.application.dto.command.RoleCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleDeleteCommand;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
+import hu.agfcodeworks.operangel.application.service.cache.ThreadCachePreparer;
+import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
@@ -21,15 +23,21 @@ public class PlayPerformanceCommandService {
 
     private static final String ROLE_NOT_FOUND_ERROR_MESSAGE_PATTERN = "Role '%s' not found.";
 
+    private final ThreadCachePreparer threadCachePreparer;
+
     private final RoleCommandService roleCommandService;
 
     private final PerformanceCommandService performanceCommandService;
 
-    private final ArtistPerformanceRoleJoinCommandService artistPerformanceRoleJoinCommandService;
-
     public void save(@NonNull PlayPerformanceChangeCommand playPerformanceChangeCommand) {
+        prepareThreadCaches(playPerformanceChangeCommand);
+
         manageRoles(playPerformanceChangeCommand);
         managePerformances(playPerformanceChangeCommand);
+    }
+
+    private void prepareThreadCaches(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
+        threadCachePreparer.prepare(playPerformanceChangeCommand);
     }
 
     private void manageRoles(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
@@ -40,12 +48,21 @@ public class PlayPerformanceCommandService {
 
     private void managePerformances(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
         deletePerformances(playPerformanceChangeCommand);
+        insertOrUpdatePerformances(playPerformanceChangeCommand);
     }
 
     private void deletePerformances(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
         makeStreamOfPerformancesToDelete(playPerformanceChangeCommand)
                 .map(this::makePerformanceSimpleDto)
                 .forEach(performanceCommandService::delete);
+    }
+
+    private void insertOrUpdatePerformances(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
+        var playNaturalId = playPerformanceChangeCommand.getPlayNaturalId();
+        playPerformanceChangeCommand.getNewPlayState()
+                .getPerformanceStateDtos()
+                .forEach(performanceCommandService::save);
+
     }
 
     private PerformanceSimpleDto makePerformanceSimpleDto(PerformanceStateDto performanceStateDto) {

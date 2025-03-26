@@ -1,5 +1,6 @@
 package hu.agfcodeworks.operangel.application.util;
 
+import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.dto.state.PlayStateDto;
 import lombok.experimental.UtilityClass;
 
@@ -10,8 +11,9 @@ public class PlayStateUtil {
 
     public PlayStateDto clone(PlayStateDto playState) {
         return PlayStateDto.builder()
+                .withPlayNaturalId(playState.getPlayNaturalId())
                 .withRoles(new LinkedList<>(playState.getRoles()))
-                .withPerformanceStateDtos(new LinkedList<>(playState.getPerformanceStateDtos()))
+                .withPerformanceStateDtos(new LinkedList<>())
                 .build();
     }
 }

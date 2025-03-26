@@ -2,6 +2,7 @@ package hu.agfcodeworks.operangel.application.ui.editor;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.ui.text.AutoCompleterDocument;
+import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -181,8 +182,11 @@ public class RoleEditor extends DefaultCellEditor {
     }
 
     private RoleDto makeRoleDto(String text) {
+        var trimmedText = text.trim();
+
         return RoleDto.builder()
-                .withDescription(text.trim())
+                .withDescription(trimmedText)
+                .withDescriptionUnified(TextUtil.unify(trimmedText))
                 .build();
     }
 

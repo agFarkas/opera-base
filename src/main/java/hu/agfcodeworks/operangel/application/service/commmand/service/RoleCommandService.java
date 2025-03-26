@@ -8,14 +8,10 @@ import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.repository.RoleRepository;
 import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
-import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.UUID;
 
 @Transactional
 @Service
@@ -30,43 +26,22 @@ public class RoleCommandService {
 
 
     public RoleDto save(@NonNull RoleCommand roleCommand) {
-        if (Objects.nonNull(roleCommand.getNaturalId())) {
-            return update(roleCommand);
-        }
-
-        return create(roleCommand);
+        return updateOrCreate(roleCommand);
     }
 
-    private RoleDto create(RoleCommand roleCommand) {
-        return createNew(roleCommand);
-    }
-
-    private RoleDto update(RoleCommand roleCommand) {
-        return findAndUpdate(roleCommand);
-    }
-
-
-    private RoleDto findAndUpdate(RoleCommand roleCommand) {
+    private RoleDto updateOrCreate(RoleCommand roleCommand) {
         return roleRepository.findByNaturalId(roleCommand.getNaturalId())
                 .map(role -> {
                     role.setDescription(roleCommand.getDescription());
 
                     roleRepository.save(role);
                     return roleDtoMapper.entityToDto(role);
-                }).orElseGet((() -> makeRoleDtoByCommand(roleCommand)));
-    }
-
-    private RoleDto makeRoleDtoByCommand(RoleCommand roleCommand) {
-        return RoleDto.builder()
-                .withNaturalId(roleCommand.getNaturalId())
-                .withDescription(roleCommand.getDescription())
-                .withDescriptionUnified(TextUtil.unify(roleCommand.getDescription()))
-                .build();
+                }).orElseGet((() -> createNew(roleCommand)));
     }
 
     private RoleDto createNew(RoleCommand roleCommand) {
         var entity = Role.builder()
-                .withNaturalId(UUID.randomUUID())
+                .withNaturalId(roleCommand.getNaturalId())
                 .withDescription(roleCommand.getDescription())
                 .withPlay(obtainPlay(roleCommand))
                 .build();
@@ -77,7 +52,7 @@ public class RoleCommandService {
     }
 
     private Play obtainPlay(RoleCommand roleCommand) {
-        return playQueryService.getPlayByNaturalId(roleCommand.getPlayNaturalId())
+        return playQueryService.findByNaturalId(roleCommand.getPlayNaturalId())
                 .orElseThrow(() -> new RuntimeException("Play Not Found"));
     }
 

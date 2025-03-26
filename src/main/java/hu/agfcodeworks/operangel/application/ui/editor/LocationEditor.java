@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.editor;
 
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
-import hu.agfcodeworks.operangel.application.service.cache.LocationCache;
+import hu.agfcodeworks.operangel.application.service.cache.global.LocationCache;
 import hu.agfcodeworks.operangel.application.ui.text.Comparators;
 import hu.agfcodeworks.operangel.application.ui.text.TextProviders;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;

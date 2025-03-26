@@ -16,6 +16,7 @@ import hu.agfcodeworks.operangel.application.repository.ArtistPerformanceRoleJoi
 import hu.agfcodeworks.operangel.application.service.query.service.ArtistQueryService;
 import hu.agfcodeworks.operangel.application.service.query.service.PerformanceQueryService;
 import hu.agfcodeworks.operangel.application.service.query.service.RoleQueryService;
+import hu.agfcodeworks.operangel.application.util.ThreadCacheUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -120,7 +121,10 @@ public class ArtistPerformanceRoleJoinCommandService {
     }
 
     private List<Artist> findArtists(List<ArtistSimpleDto> artistSimpleDtos) {
-        return artistQueryService.findBySimpleDtos(artistSimpleDtos);
+        return artistSimpleDtos.stream()
+                .map(ArtistSimpleDto::getNaturalId)
+                .map(ThreadCacheUtil::getArtistBy)
+                .toList();
     }
 
     private Role findRole(RoleSimpleDto roleSimpleDto) {

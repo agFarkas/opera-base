@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -22,5 +23,5 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
             select a from Artist a
                 where a.naturalId in :naturalIds
             """)
-    List<Artist> findByNaturalIds(@Param("naturalIds") List<UUID> naturalIds);
+    Set<Artist> findByNaturalIds(@Param("naturalIds") Set<UUID> naturalIds);
 }

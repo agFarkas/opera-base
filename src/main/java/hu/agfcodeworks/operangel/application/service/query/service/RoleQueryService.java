@@ -1,7 +1,6 @@
 package hu.agfcodeworks.operangel.application.service.query.service;
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
-import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.mapper.RoleDtoMapper;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.repository.RoleRepository;
@@ -33,14 +32,7 @@ public class RoleQueryService {
         return roleRepository.findByNaturalId(naturalId);
     }
 
-    public List<Role> findBySimpleDtos(List<RoleSimpleDto> roleSimpleDtos) {
-        var naturalIds = obtainNaturalIds(roleSimpleDtos);
+    public Set<Role> findBySimpleDtos(Set<UUID> naturalIds) {
         return roleRepository.findByNaturalIds(naturalIds);
-    }
-
-    private static Set<UUID> obtainNaturalIds(List<RoleSimpleDto> roleSimpleDtos) {
-        return roleSimpleDtos.stream()
-                .map(RoleSimpleDto::getNaturalId)
-                .collect(Collectors.toSet());
     }
 }

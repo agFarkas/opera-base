@@ -1,12 +1,10 @@
 package hu.agfcodeworks.operangel.application.service.commmand.service;
 
-import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
 import hu.agfcodeworks.operangel.application.mapper.LocationDtoMapper;
 import hu.agfcodeworks.operangel.application.model.Location;
-import hu.agfcodeworks.operangel.application.repository.ArtistRepository;
 import hu.agfcodeworks.operangel.application.repository.LocationRepository;
-import hu.agfcodeworks.operangel.application.service.cache.LocationCache;
+import hu.agfcodeworks.operangel.application.service.cache.global.LocationCache;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;

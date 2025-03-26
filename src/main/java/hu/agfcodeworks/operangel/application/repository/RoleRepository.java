@@ -1,10 +1,9 @@
 package hu.agfcodeworks.operangel.application.repository;
 
-import hu.agfcodeworks.operangel.application.dto.RoleDto;
 import hu.agfcodeworks.operangel.application.model.Role;
-import javafx.beans.value.ObservableValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,6 +28,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             select r from Role r
                 where r.naturalId in :naturalIds
             """)
-    List<Role> findByNaturalIds(Set<UUID> naturalIds);
+    Set<Role> findByNaturalIds(@Param("naturalIds") Set<UUID> naturalIds);
 
 }

@@ -37,7 +37,11 @@ public class PlayQueryService {
                 .map(playDetailedDtoMapper::entityToDto);
     }
 
-    public Optional<Play> getPlayByNaturalId(UUID naturalId) {
+    public Optional<Play> findByNaturalId(UUID naturalId) {
         return playRepository.findByNaturalId(naturalId);
+    }
+
+    public  Optional<Play> getByNaturalId(UUID naturalId) {
+        return playRepository.getByNaturalId(naturalId);
     }
 }

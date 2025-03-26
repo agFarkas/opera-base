@@ -2,6 +2,7 @@ package hu.agfcodeworks.operangel.application.dto.state;
 
 
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
+import hu.agfcodeworks.operangel.application.util.TextUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,9 +17,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlayStateDto {
 
+    @Getter
     private final UUID playNaturalId;
-
-    private final RoleDto roleDto;
 
     private final List<RoleDto> roles;
 
@@ -68,6 +68,7 @@ public class PlayStateDto {
                 .withPlayNaturalId(playNaturalId)
                 .withNaturalId(obtainNaturalId(roleDto))
                 .withDescription(roleDto.getDescription())
+                .withDescriptionUnified(TextUtil.unify(roleDto.getDescription()))
                 .build();
     }
 
