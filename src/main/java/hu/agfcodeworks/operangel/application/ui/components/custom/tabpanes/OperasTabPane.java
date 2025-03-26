@@ -1006,10 +1006,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void deletePerformance() {
-
         var columnModel = retrieveColumnModel();
-        int selectedColumn = tblPerformances.getSelectedColumn();
+        var selectedColumn = tblPerformances.getSelectedColumn();
         var selectedPerformanceIndex = calculateSelectedPerformanceIndex();
+
         if(selectedColumn > -1) {
             markStateChanged();
 
