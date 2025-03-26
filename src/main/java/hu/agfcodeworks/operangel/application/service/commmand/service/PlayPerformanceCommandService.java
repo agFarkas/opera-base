@@ -13,6 +13,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -100,10 +101,13 @@ public class PlayPerformanceCommandService {
     }
 
     private Stream<RoleDto> makeStreamOfRolesToDelete(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
+        var roles = playPerformanceChangeCommand.getNewPlayState()
+                .getRoles();
+
         return playPerformanceChangeCommand.getOriginalPlayState()
                 .getRoles()
                 .stream()
-                .filter(r -> !playPerformanceChangeCommand.getNewPlayState().getRoles().contains(r));
+                .filter(role -> !roles.contains(role));
     }
 
     private Stream<RoleDto> makeStreamOfRolesToInsert(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
@@ -129,7 +133,8 @@ public class PlayPerformanceCommandService {
     }
 
     private static Stream<RoleDto> makeStreamOfRolesInNewPlayState(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
-        return playPerformanceChangeCommand.getNewPlayState().getRoles()
+        return playPerformanceChangeCommand.getNewPlayState()
+                .getRoles()
                 .stream();
     }
 

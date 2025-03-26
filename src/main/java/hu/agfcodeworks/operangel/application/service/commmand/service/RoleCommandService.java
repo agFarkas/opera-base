@@ -8,6 +8,7 @@ import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.repository.RoleRepository;
 import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
+import hu.agfcodeworks.operangel.application.util.ThreadCacheUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,8 @@ public class RoleCommandService {
                 .build();
 
         roleRepository.save(entity);
+
+        ThreadCacheUtil.storeRole(entity);
 
         return roleDtoMapper.entityToDto(entity);
     }

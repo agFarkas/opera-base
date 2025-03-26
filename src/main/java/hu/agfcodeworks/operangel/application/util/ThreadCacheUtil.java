@@ -7,6 +7,7 @@ import hu.agfcodeworks.operangel.application.model.Role;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -37,6 +38,17 @@ public class ThreadCacheUtil {
 
     public void storeRoles(@NonNull Set<Role> roles) {
         roleThreadLocal.set(roles);
+    }
+
+    public void storeRole(@NonNull Role role) {
+        var roles = roleThreadLocal.get();
+
+        if(Objects.isNull(roles)) {
+            roles = new HashSet<>();
+            roleThreadLocal.set(roles);
+        }
+
+        roles.add(role);
     }
 
     public void clearAll() {

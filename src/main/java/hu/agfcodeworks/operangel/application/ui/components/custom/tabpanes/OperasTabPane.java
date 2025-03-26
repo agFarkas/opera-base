@@ -760,9 +760,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var duplicateAssociations = collectDuplicateArtistPerformanceAssociations(originalRole, newRoleDto);
         var roleChangeCommand = makeRoleChangeCommandExceptDuplicateAssociations(originalRole, newRoleDto, duplicateAssociations);
 
-        ContextUtil.getBean(ArtistPerformanceRoleJoinCommandService.class)
-                .updateFromRoleToRole(roleChangeCommand);
-
         if (isOnlyRowWithRole(originalRole)) {
             deleteRole(originalRole);
         }
