@@ -534,9 +534,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private int calculateInitialRowCount(int maxNumOfRoles, Integer maxNumOfConductors) {
-        var numOfConductors = maxNumOfConductors > 0? maxNumOfConductors : 1;
+        var actuallyNeededNumOfConductorRows = maxNumOfConductors > 0? maxNumOfConductors : 1;
 
-        return 2 + numOfConductors + maxNumOfRoles + 1;
+        return 2 + actuallyNeededNumOfConductorRows + maxNumOfRoles + 1;
     }
 
     private int calculateInitialColumnCount(int numOfPerformances) {
@@ -552,7 +552,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 .orElseGet(Collections::emptyMap);
 
         var roleCountOutOfPerformances = countRolesOutOfAllPerformances(performanceSummaryOpt, roles);
-        int roleCountsSumInPerformances = roleCountsFromPerformanceSummeries.values()
+        var roleCountsSumInPerformances = roleCountsFromPerformanceSummeries.values()
                 .stream()
                 .mapToInt(Integer::intValue)
                 .sum();
