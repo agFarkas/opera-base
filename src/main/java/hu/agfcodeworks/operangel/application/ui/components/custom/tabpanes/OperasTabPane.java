@@ -35,6 +35,7 @@ import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
 import hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue;
 import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
+import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import lombok.NonNull;
@@ -586,6 +587,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         performances.addAll(makePerformanceSimpleDtos(playPerformanceChangeCommand.getNewPlayState()));
 
         updateOriginalState(playPerformanceChangeCommand.getNewPlayState());
+        updateOriginalState(newState);
     }
 
     private List<PerformanceSimpleDto> makePerformanceSimpleDtos(PlayStateDto playStateDto) {
@@ -807,11 +809,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var associations = collectAssociationsByLocalDate(duplicateAssociations);
         var artistNamesByPerformanceDateText = textifyAssociations(associations);
 
-        JOptionPane.showMessageDialog(
-                owner,
-                ARTIST_PERFORMANCE_ASSOCIATION_WARNING_PATTERN.formatted(roleDto.getDescription(), LIST_LINE_BREAK, artistNamesByPerformanceDateText, RETURN_AND_LINE_BREAK),
+        DialogUtil.showWarningMessage(owner,
                 DUPLICATE_ARTIST_PERFORMANCE_ASSOCIATIONS_WARNING_TITLE,
-                JOptionPane.WARNING_MESSAGE
+                ARTIST_PERFORMANCE_ASSOCIATION_WARNING_PATTERN.formatted(roleDto.getDescription(), LIST_LINE_BREAK, artistNamesByPerformanceDateText, RETURN_AND_LINE_BREAK)
         );
     }
 
@@ -1164,10 +1164,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
         updateOriginalState(playState);
     }
 
+
     private void updateOriginalState(PlayStateDto playState) {
         this.originalState = playState;
         this.newState = cloneState(playState);
+
         this.stateChanged = false;
+
     }
 
     private static PlayStateDto cloneState(PlayStateDto playState) {
