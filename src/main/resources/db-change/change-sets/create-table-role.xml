@@ -35,4 +35,8 @@
                                  referencedTableName="play"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="create-table-role-003" author="agfarkas">
+        <addUniqueConstraint tableName="role" columnNames="play_id, description" constraintName="cnstr_uq_role"/>
+    </changeSet>
 </databaseChangeLog>
