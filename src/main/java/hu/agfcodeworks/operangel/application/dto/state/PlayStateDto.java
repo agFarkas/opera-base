@@ -31,7 +31,7 @@ public class PlayStateDto {
 
     public RoleDto store(@NonNull RoleDto roleDto) {
         if (Objects.isNull(roleDto.getNaturalId())) {
-            return addRole(roleDto);
+            return add(roleDto);
         }
 
         return updateRole(roleDto);
@@ -41,7 +41,11 @@ public class PlayStateDto {
         roles.remove(roleDto);
     }
 
-    private RoleDto addRole(RoleDto roleDto) {
+    public void clearRoles() {
+        roles.clear();
+    }
+
+    private RoleDto add(RoleDto roleDto) {
         var roleDtoOpt = roles.stream()
                 .filter(r -> Objects.equals(r.getDescription(), roleDto.getDescription()))
                 .findFirst();

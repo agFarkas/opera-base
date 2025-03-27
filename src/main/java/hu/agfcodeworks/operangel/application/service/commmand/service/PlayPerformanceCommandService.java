@@ -29,14 +29,12 @@ public class PlayPerformanceCommandService {
     private final PerformanceCommandService performanceCommandService;
 
     public void save(@NonNull PlayPerformanceChangeCommand playPerformanceChangeCommand) {
-        prepareThreadCaches(playPerformanceChangeCommand);
+        threadCachePreparer.prepare(playPerformanceChangeCommand);
 
         manageRoles(playPerformanceChangeCommand);
         managePerformances(playPerformanceChangeCommand);
-    }
 
-    private void prepareThreadCaches(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
-        threadCachePreparer.prepare(playPerformanceChangeCommand);
+        threadCachePreparer.clearAll();
     }
 
     private void manageRoles(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
@@ -57,7 +55,6 @@ public class PlayPerformanceCommandService {
     }
 
     private void insertOrUpdatePerformances(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
-        var playNaturalId = playPerformanceChangeCommand.getPlayNaturalId();
         playPerformanceChangeCommand.getNewPlayState()
                 .getPerformanceStateDtos()
                 .forEach(performanceCommandService::save);

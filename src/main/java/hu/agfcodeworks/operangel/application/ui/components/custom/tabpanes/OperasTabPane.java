@@ -41,7 +41,6 @@ import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import lombok.NonNull;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -67,6 +66,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
@@ -115,6 +116,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String ARTIST_PERFORMANCE_TEXT_PATTERN = "%s-i előadásban %s";
 
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final JLabeledList<PlayListDto> lsOpera = new JLabeledList<>("Operák");
 
@@ -323,12 +325,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private int getRoleUpdateOperationIndex(RoleDto originalRole, String newRoleDescription) {
-        return JOptionPane.showOptionDialog(owner,
-                ROLE_CHANGE_QUESTION_PATTERN.formatted(originalRole.getDescription(), newRoleDescription),
+        return DialogUtil.showCustomQuestionDialog(
+                owner,
                 CHOOSING_OPERATION_TITLE,
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null, roleChangeOperationOptions, roleChangeOperationOptions[0]);
+                ROLE_CHANGE_QUESTION_PATTERN.formatted(originalRole.getDescription(), newRoleDescription),
+                roleChangeOperationOptions,
+                0
+        );
     }
 
     private boolean isConductorRow(int row) {
@@ -578,6 +581,17 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void saveChanges() {
+        try {
+            btSave.setEnabled(false);
+            executeSaveProcedure();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            btSave.setEnabled(true);
+        }
+    }
+
+    private void executeSaveProcedure() {
         var playPerformanceChangeCommand = createPlayPerformanceChangeCommand();
 
         ContextUtil.getBean(PlayPerformanceCommandService.class)
@@ -599,6 +613,11 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private PlayPerformanceChangeCommand createPlayPerformanceChangeCommand() {
+        this.newState.clearRoles();
+
+        collectRoleDtosFromTable()
+                .forEach(this.newState::store);
+
         var performanceStateDtos = this.newState.getPerformanceStateDtos();
         performanceStateDtos.clear();
         performanceStateDtos.addAll(collectPerformanceStateDtosFromTable());
@@ -673,11 +692,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private int showConfirmationForDeleteOpera() {
-        return JOptionPane.showOptionDialog(owner,
-                OPERA_DELETE_QUESTION_PATTERN.formatted(composerPlayTextProvider.apply(selectedPlay)),
+
+        return DialogUtil.showCustomQuestionDialog(
+                owner,
                 CHOOSING_OPERATION_TITLE,
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                null, yesNoOptions, yesNoOptions[1]);
+                OPERA_DELETE_QUESTION_PATTERN.formatted(composerPlayTextProvider.apply(selectedPlay)),
+                yesNoOptions,
+                1
+        );
     }
 
     private PlayCommand makePlayCommand(PlayListDto playListDto) {
@@ -736,7 +758,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void changeRole(RoleDto originalRole, RoleDto newRoleDto) {
-        changeRoleForOneOccurence(originalRole, newRoleDto);
         updateArtistRoleSimpleDtosInOriginalState();
     }
 
@@ -755,20 +776,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
                     }
 
                 });
-    }
-
-    private void changeRoleForOneOccurence(RoleDto originalRole, RoleDto newRoleDto) {
-        var duplicateAssociations = collectDuplicateArtistPerformanceAssociations(originalRole, newRoleDto);
-        var roleChangeCommand = makeRoleChangeCommandExceptDuplicateAssociations(originalRole, newRoleDto, duplicateAssociations);
-
-        if (isOnlyRowWithRole(originalRole)) {
-            deleteRole(originalRole);
-        }
-
-        if (!duplicateAssociations.isEmpty()) {
-            showWarningOfClearingDuplicateAssociAtions(newRoleDto, duplicateAssociations);
-            clearDuplicateAssociationsInTable(roleChangeCommand, duplicateAssociations);
-        }
     }
 
     private void clearDuplicateAssociationsInTable(RoleChangeCommand roleChangeCommand, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
@@ -805,7 +812,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         }
     }
 
-    private void showWarningOfClearingDuplicateAssociAtions(RoleDto roleDto, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
+    private void showWarningOfClearingDuplicateAssociations(RoleDto roleDto, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
         var associations = collectAssociationsByLocalDate(duplicateAssociations);
         var artistNamesByPerformanceDateText = textifyAssociations(associations);
 
@@ -1006,7 +1013,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var selectedColumn = tblPerformances.getSelectedColumn();
         var selectedPerformanceIndex = calculateSelectedPerformanceIndex();
 
-        if(selectedColumn > -1) {
+        if (selectedColumn > -1) {
             markStateChanged();
 
             columnModel.removeColumn(
@@ -1191,7 +1198,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         for (int row = findFirstRoleRow(); row < tblPerformances.getRowCount(); row++) {
             var value = tblPerformances.getValueAt(row, COLUMN_ROLE);
 
-            if(Objects.nonNull(value) && !roles.contains(value) && value instanceof RoleDto roleDto) {
+            if (Objects.nonNull(value) && !roles.contains(value) && value instanceof RoleDto roleDto) {
                 roles.add(roleDto);
             }
         }

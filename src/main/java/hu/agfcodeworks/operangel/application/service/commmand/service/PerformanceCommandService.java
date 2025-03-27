@@ -5,12 +5,7 @@ import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
-import hu.agfcodeworks.operangel.application.model.Artist;
-import hu.agfcodeworks.operangel.application.model.ArtistPerformanceRoleJoin;
-import hu.agfcodeworks.operangel.application.model.Location;
-import hu.agfcodeworks.operangel.application.model.Performance;
-import hu.agfcodeworks.operangel.application.model.PerformanceConductorJoin;
-import hu.agfcodeworks.operangel.application.model.Role;
+import hu.agfcodeworks.operangel.application.model.*;
 import hu.agfcodeworks.operangel.application.model.embeddable.ArtistPerformanceRoleId;
 import hu.agfcodeworks.operangel.application.model.embeddable.PerformanceConductorId;
 import hu.agfcodeworks.operangel.application.repository.PerformanceRepository;
@@ -21,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -93,10 +89,12 @@ public class PerformanceCommandService {
     }
 
     private List<PerformanceConductorJoin> makePerformanceConductorJoins(Performance performance, PerformanceStateDto performanceStateDto) {
-        return performanceStateDto.getConductors()
-                .stream()
-                .map(c -> makePerformanceConductorJoin(performance, c))
-                .toList();
+        return new ArrayList<>(
+                performanceStateDto.getConductors()
+                        .stream()
+                        .map(c -> makePerformanceConductorJoin(performance, c))
+                        .toList()
+        );
     }
 
     private PerformanceConductorJoin makePerformanceConductorJoin(Performance performance, ArtistSimpleDto artistSimpleDto) {

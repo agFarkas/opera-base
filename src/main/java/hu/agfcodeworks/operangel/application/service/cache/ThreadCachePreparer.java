@@ -42,6 +42,10 @@ public class ThreadCachePreparer {
         prepareRoles(playPerformanceChangeCommand);
     }
 
+    public void clearAll() {
+        ThreadCacheUtil.clearAll();
+    }
+
     private void preparePlay(@NonNull PlayPerformanceChangeCommand playPerformanceChangeCommand) {
         playQueryService.getByNaturalId(
                 playPerformanceChangeCommand.getPlayNaturalId()
