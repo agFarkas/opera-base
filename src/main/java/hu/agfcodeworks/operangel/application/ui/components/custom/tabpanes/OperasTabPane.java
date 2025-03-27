@@ -39,6 +39,7 @@ import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import lombok.NonNull;
+import org.springframework.util.CollectionUtils;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -381,7 +382,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
             fillRoles(roles);
         }
 
-        fillPerformances(performanceSummaryDtoOpt.map(PerformanceSummaryDto::getPerformances).orElseGet(Collections::emptyList));
+        var performanceDtos = performanceSummaryDtoOpt.map(PerformanceSummaryDto::getPerformances)
+                .orElseGet(Collections::emptyList);
+
+        fillPerformances(performanceDtos);
 
         actualizeTableShow();
     }
@@ -445,7 +449,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
         performances.add(createPerformanceSimpleDto(performance.getNaturalId()));
 
         var conductors = performance.getConductors();
+        if (!CollectionUtils.isEmpty(conductors)) {
+            fillConductors(performanceColumnIndex, conductors);
+        }
 
+
+    }
+
+    private void fillConductors(int performanceColumnIndex, List<ArtistListDto> conductors) {
         for (var i = 0; i < conductors.size(); i++) {
             var conductor = conductors.get(i);
             tblPerformances.setValueAt(conductor, ROW_FIRST_CONDUCTOR + i, performanceColumnIndex);
@@ -498,7 +509,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var rowCount = calculateInitialRowCount(maxNumOfRoles, maxNumOfConductors);
         var columnCount = calculateInitialColumnCount(numOfPerformances);
 
-        lastConductorRow = ROW_FIRST_CONDUCTOR - 1 + maxNumOfConductors;
+        lastConductorRow = calculateLastConductorRow(maxNumOfConductors);
         operaTableCellRenderer.setLastConductorRow(lastConductorRow);
 
         var model = new DefaultTableModel(rowCount, columnCount);
@@ -514,8 +525,18 @@ public class OperasTabPane extends AbstractCustomTabPane {
         tblPerformances.setTableHeader(null);
     }
 
+    private int calculateLastConductorRow(Integer maxNumOfConductors) {
+        if (maxNumOfConductors > 0) {
+            return ROW_FIRST_CONDUCTOR - 1 + maxNumOfConductors;
+        }
+
+        return ROW_FIRST_CONDUCTOR;
+    }
+
     private int calculateInitialRowCount(int maxNumOfRoles, Integer maxNumOfConductors) {
-        return 2 + maxNumOfConductors + maxNumOfRoles + 1;
+        var numOfConductors = maxNumOfConductors > 0? maxNumOfConductors : 1;
+
+        return 2 + numOfConductors + maxNumOfRoles + 1;
     }
 
     private int calculateInitialColumnCount(int numOfPerformances) {
