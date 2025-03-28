@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
-import hu.agfcodeworks.operangel.application.dto.ErrorDto;
+import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import hu.agfcodeworks.operangel.application.settings.DbEngine;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComboBox;
@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 public class DbSettingsDialog extends JAbstractDialog<DbSettings> {
 
     private static final int TEXT_FIELD_COLUMNS = 15;
+    public static final String TITLE_DB_SETTINGS = "Adatbázis-beállítások";
 
     private JLabeledComboBox<DbEngine> cbDbEngine;
 
@@ -34,7 +35,7 @@ public class DbSettingsDialog extends JAbstractDialog<DbSettings> {
     private JLabeledPasswordField pfPassword;
 
     public DbSettingsDialog(Frame owner, DbSettings value) {
-        super(owner, "Adatbázis-beállítások", value);
+        super(owner, d -> TITLE_DB_SETTINGS, value);
 
         cbDbEngine.setTextProvider(DbEngine::getName);
         setSize(400, 300);
@@ -47,8 +48,8 @@ public class DbSettingsDialog extends JAbstractDialog<DbSettings> {
     }
 
     @Override
-    protected List<ErrorDto> validateCustomFields() {
-        var errorDtos = new LinkedList<ErrorDto>();
+    protected List<DialogValidationErrorDto> validateCustomFields() {
+        var errorDtos = new LinkedList<DialogValidationErrorDto>();
 
         errorDtos.addAll(getErrorDtos(cbDbEngine));
         errorDtos.addAll(getErrorDtos(tfHost));
@@ -99,15 +100,15 @@ public class DbSettingsDialog extends JAbstractDialog<DbSettings> {
     }
 
     @Override
-    protected void initiateValue(DbSettings initialValue) {
+    protected void initiateValue() {
         cbDbEngine.addItems(collectValues());
 
-        cbDbEngine.setSelectedItem(initialValue.getDbEngine());
-        tfHost.setText(initialValue.getHost());
-        tfPort.setText(Integer.toString(initialValue.getPort()));
-        tfName.setText(initialValue.getName());
-        tfUsername.setText(initialValue.getUsername());
-        pfPassword.setText(initialValue.getPassword());
+        cbDbEngine.setSelectedItem(value.getDbEngine());
+        tfHost.setText(value.getHost());
+        tfPort.setText(Integer.toString(value.getPort()));
+        tfName.setText(value.getName());
+        tfUsername.setText(value.getUsername());
+        pfPassword.setText(value.getPassword());
     }
 
     @Override
@@ -120,5 +121,10 @@ public class DbSettingsDialog extends JAbstractDialog<DbSettings> {
                 .withUsername(tfUsername.getText())
                 .withPassword(pfPassword.getText())
                 .build();
+    }
+
+    @Override
+    protected String obtainTitle() {
+        return TITLE_DB_SETTINGS;
     }
 }

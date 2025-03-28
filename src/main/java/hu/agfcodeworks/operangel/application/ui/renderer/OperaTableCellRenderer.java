@@ -8,25 +8,16 @@ import hu.agfcodeworks.operangel.application.ui.text.TextProviders;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_CONDUCTOR;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_DATE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_LOCATION;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ROLE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.*;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
 
 @AllArgsConstructor
@@ -77,19 +68,19 @@ public class OperaTableCellRenderer extends DefaultTableCellRenderer {
         }
 
         if (value instanceof LocationDto locationDto) {
-            return TextProviders.locationTextProvider.apply(locationDto);
+            return TextProviders.locationTextProvider.provide(locationDto);
         }
 
         if (value instanceof RoleDto roleDto) {
-            return TextProviders.roleTextProvider.apply(roleDto);
+            return TextProviders.roleTextProvider.provide(roleDto);
         }
 
         if (value instanceof ComposerDto composerDto) {
-            return TextProviders.composerTextProvider.apply(composerDto);
+            return TextProviders.composerTextProvider.provide(composerDto);
         }
 
         if (value instanceof ArtistListDto artistListDto) {
-            return TextProviders.artistTextProvider.apply(artistListDto);
+            return TextProviders.artistTextProvider.provide(artistListDto);
         }
 
         return value.toString();

@@ -1,6 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
+import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import lombok.AllArgsConstructor;
 
 import javax.swing.Icon;
@@ -9,7 +10,6 @@ import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.Component;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.LIST_ITEM_CREATE_NEW;
@@ -21,7 +21,7 @@ public class CustomComboBoxRenderer<V> extends BasicComboBoxRenderer {
 
     private static final String CREATE_NEW_PATTERN = "[[%s]]";
 
-    private final Function<V, String> textProvider;
+    private final TextProvider<V> textProvider;
 
     private final boolean showIcon;
 
@@ -30,7 +30,7 @@ public class CustomComboBoxRenderer<V> extends BasicComboBoxRenderer {
         this.showIcon = false;
     }
 
-    public CustomComboBoxRenderer(Function<V, String> textProvider) {
+    public CustomComboBoxRenderer(TextProvider<V> textProvider) {
         this.textProvider = textProvider;
         this.showIcon = false;
     }
@@ -82,6 +82,6 @@ public class CustomComboBoxRenderer<V> extends BasicComboBoxRenderer {
             return EMPTY_TEXT;
         }
 
-        return textProvider.apply(wrapper.getDto());
+        return textProvider.provide(wrapper.getDto());
     }
 }

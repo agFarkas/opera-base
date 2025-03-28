@@ -1,6 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.util;
 
-import hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus;
+import hu.agfcodeworks.operangel.application.ui.dto.DbConnectionStatus;
 import lombok.experimental.UtilityClass;
 
 import javax.swing.Icon;

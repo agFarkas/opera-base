@@ -1,21 +1,20 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
+import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import lombok.NonNull;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
 
 public class CustomCellRenderer<V> extends DefaultListCellRenderer {
 
-    private final Function<V, String> textProvider;
+    private final @NonNull TextProvider<V> textProvider;
 
-    public CustomCellRenderer(@NonNull Function<V, String> textProvider) {
+    public CustomCellRenderer(@NonNull TextProvider<V> textProvider) {
         this.textProvider = textProvider;
     }
 
@@ -35,6 +34,6 @@ public class CustomCellRenderer<V> extends DefaultListCellRenderer {
             return EMPTY_TEXT;
         }
 
-        return textProvider.apply(wrapper.getDto());
+        return textProvider.provide(wrapper.getDto());
     }
 }

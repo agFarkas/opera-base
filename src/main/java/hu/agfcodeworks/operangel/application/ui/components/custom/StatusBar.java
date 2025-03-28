@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom;
 
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
-import hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus;
+import hu.agfcodeworks.operangel.application.ui.dto.DbConnectionStatus;
 import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
 import hu.agfcodeworks.operangel.application.util.DbUtil;
 

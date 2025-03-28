@@ -1,9 +1,12 @@
 package hu.agfcodeworks.operangel.application.ui.util;
 
+import hu.agfcodeworks.operangel.application.exception.ValidationException;
 import lombok.experimental.UtilityClass;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;
+
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.INVALID_VALUES;
 
 @UtilityClass
 public class DialogUtil {
@@ -25,6 +28,14 @@ public class DialogUtil {
                 title,
                 JOptionPane.WARNING_MESSAGE,
                 null
+        );
+    }
+
+    public void showWarningMessageByValidation(Component parent, ValidationException ex) {
+        showWarningMessage(
+                parent,
+                INVALID_VALUES,
+                ex.getMessage()
         );
     }
 

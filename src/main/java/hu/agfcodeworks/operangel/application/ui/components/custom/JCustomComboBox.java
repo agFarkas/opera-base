@@ -1,8 +1,9 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom;
 
 import hu.agfcodeworks.operangel.application.ui.renderer.CustomComboBoxRenderer;
-import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
-import hu.agfcodeworks.operangel.application.ui.uidto.ValidationStatus;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
+import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.validation.ValidationStatus;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -149,7 +149,7 @@ public class JCustomComboBox<I> extends JComboBox<ListItemWrapper<I>> implements
         this.providingNewAddition = providingNewAddition;
     }
 
-    public void setTextProvider(@NonNull Function<I, String> textProvider) {
+    public void setTextProvider(@NonNull TextProvider<I> textProvider) {
         super.setRenderer(new CustomComboBoxRenderer<>(textProvider));
     }
 

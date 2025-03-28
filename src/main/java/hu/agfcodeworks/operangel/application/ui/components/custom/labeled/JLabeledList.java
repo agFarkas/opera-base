@@ -1,7 +1,8 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.labeled;
 
 import hu.agfcodeworks.operangel.application.ui.renderer.CustomCellRenderer;
-import hu.agfcodeworks.operangel.application.ui.uidto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
+import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import lombok.NonNull;
 
 import javax.swing.DefaultListModel;
@@ -11,7 +12,6 @@ import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -101,7 +101,7 @@ public class JLabeledList<I> extends JLabeledComponent<JList<ListItemWrapper<I>>
         setSelectedIndex(index);
     }
 
-    public void setTextProvider(@NonNull Function<I, String> textProvider) {
+    public void setTextProvider(@NonNull TextProvider<I> textProvider) {
         component.setCellRenderer(new CustomCellRenderer<>(textProvider));
     }
 

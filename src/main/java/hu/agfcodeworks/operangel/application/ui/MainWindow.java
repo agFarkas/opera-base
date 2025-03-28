@@ -27,11 +27,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import static hu.agfcodeworks.operangel.application.constants.FilePaths.FILENAME_DB_SETTINGS;
-import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.AWAITING;
-import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.CLOSED;
-import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.ESTABLISHED;
-import static hu.agfcodeworks.operangel.application.ui.uidto.DbConnectionStatus.REFUSED;
-import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
+import static hu.agfcodeworks.operangel.application.ui.dto.DbConnectionStatus.AWAITING;
+import static hu.agfcodeworks.operangel.application.ui.dto.DbConnectionStatus.CLOSED;
+import static hu.agfcodeworks.operangel.application.ui.dto.DbConnectionStatus.ESTABLISHED;
+import static hu.agfcodeworks.operangel.application.ui.dto.DbConnectionStatus.REFUSED;
+import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
 
 public class MainWindow extends JFrame {
 

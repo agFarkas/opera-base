@@ -18,6 +18,7 @@ import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCo
 import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
 import hu.agfcodeworks.operangel.application.dto.state.PlayStateDto;
+import hu.agfcodeworks.operangel.application.exception.ValidationException;
 import hu.agfcodeworks.operangel.application.service.cache.global.ArtistCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ArtistCommandService;
 import hu.agfcodeworks.operangel.application.service.commmand.service.LocationCommandService;
@@ -29,6 +30,7 @@ import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabel
 import hu.agfcodeworks.operangel.application.ui.dialog.ArtistDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.LocationDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.PlayDialog;
+import hu.agfcodeworks.operangel.application.ui.dialog.enums.ArtistPosition;
 import hu.agfcodeworks.operangel.application.ui.editor.ArtistEditor;
 import hu.agfcodeworks.operangel.application.ui.editor.DateEditor;
 import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
@@ -38,6 +40,9 @@ import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
 import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
+import hu.agfcodeworks.operangel.application.util.ValidationUtil;
+import hu.agfcodeworks.operangel.application.validation.error.ErrorDto;
+import hu.agfcodeworks.operangel.application.validation.error.PlayPerformanceValidationErrorDto;
 import lombok.NonNull;
 import org.springframework.util.CollectionUtils;
 
@@ -77,23 +82,13 @@ import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConst
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.LIST_LINE_BREAK;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.RETURN_AND_LINE_BREAK;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.roleChangeOperationOptions;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.yesNoOptions;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.*;
 import static hu.agfcodeworks.operangel.application.ui.text.Comparators.playDtoByTitleComparator;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.artistTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
-import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
+import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
 
 public class OperasTabPane extends AbstractCustomTabPane {
-
-    private static final String TITLE_CREATE_LOCATION_DIALOG = "Új helyszín";
-
-    private static final String TITLE_CREATE_SINGER_DIALOG = "Új énekes";
-
-    private static final String TITLE_CREATE_CONDUCTOR_DIALOG = "Új karmester";
 
     private static final String CAPTION_CONDUCTOR = "Karmester";
 
@@ -107,15 +102,13 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String CHOOSING_OPERATION_TITLE = "Műveletválasztás";
 
-    private static final String TITLE_CREATE_OPERA_DIALOG = "Új opera";
-
-    private static final String TITLE_UPDATE_OPERA_DIALOG = "Opera módosítása";
-
     private static final String ARTIST_PERFORMANCE_ASSOCIATION_WARNING_PATTERN = "'%s' szerepben többször szerepelnek a következő énekesek: %s%s%sEzek visszavonásra kerülnek.";
 
     private static final String DUPLICATE_ARTIST_PERFORMANCE_ASSOCIATIONS_WARNING_TITLE = "Többszörös szerep-énekes párosítás";
 
     private static final String ARTIST_PERFORMANCE_TEXT_PATTERN = "%s-i előadásban %s";
+
+    private static final String NO_PERFORMANCE_SELECTED_ERROR_MESSAGE = "Nincs előadás kiválasztva.";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -534,7 +527,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private int calculateInitialRowCount(int maxNumOfRoles, Integer maxNumOfConductors) {
-        var actuallyNeededNumOfConductorRows = maxNumOfConductors > 0? maxNumOfConductors : 1;
+        var actuallyNeededNumOfConductorRows = maxNumOfConductors > 0 ? maxNumOfConductors : 1;
 
         return 2 + actuallyNeededNumOfConductorRows + maxNumOfRoles + 1;
     }
@@ -589,7 +582,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         btCreatePerformance.addActionListener(e -> createPerformance());
         btDeletePerformance.addActionListener(e -> deletePerformance());
         btAddConductor.addActionListener(e -> addConductor());
-        btSave.addActionListener(e -> saveChanges());
+        btSave.addActionListener(e -> executor.submit(this::saveChanges));
         btRefresh.addActionListener(e -> refreshDetails());
 
         performanceCrudPanel.add(btCreatePerformance);
@@ -604,22 +597,33 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void saveChanges() {
         try {
             btSave.setEnabled(false);
-            executeSaveProcedure();
+
+            var playPerformanceChangeCommand = createPlayPerformanceChangeCommand();
+
+            validatePlayPerformanceChange(playPerformanceChangeCommand);
+            executeSaveProcedure(playPerformanceChangeCommand);
+        } catch (ValidationException ex) {
+            markInvalidPerformances(
+                    ValidationUtil.getGenericErrorDto(ex)
+            );
         } catch (Exception ex) {
-            System.out.println(ex);
+            DialogUtil.showErrorMessage(owner, SYSTEM_ERROR, UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN.formatted(ex));
         } finally {
             btSave.setEnabled(true);
         }
     }
 
-    private void executeSaveProcedure() {
-        var playPerformanceChangeCommand = createPlayPerformanceChangeCommand();
+    private void validatePlayPerformanceChange(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
+        //TODO implement!
+    }
 
+    private void markInvalidPerformances(List<PlayPerformanceValidationErrorDto> errorDtos) {
+        //TODO implement!
+    }
+
+    private void executeSaveProcedure(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
         ContextUtil.getBean(PlayPerformanceCommandService.class)
                 .save(playPerformanceChangeCommand);
-
-        performances.clear();
-        performances.addAll(makePerformanceSimpleDtos(playPerformanceChangeCommand.getNewPlayState()));
 
         updateOriginalState(playPerformanceChangeCommand.getNewPlayState());
         updateOriginalState(newState);
@@ -675,7 +679,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void createOpera() {
-        var dialog = new PlayDialog(owner, TITLE_CREATE_OPERA_DIALOG);
+        var dialog = new PlayDialog(owner);
 
         if (dialog.getDialogStatus() == OK) {
             var playListDto = ContextUtil.getBean(PlayCommandService.class)
@@ -686,7 +690,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void updateOpera() {
-        var dialog = new PlayDialog(owner, TITLE_UPDATE_OPERA_DIALOG, selectedPlay);
+        var dialog = new PlayDialog(owner, selectedPlay);
 
         if (dialog.getDialogStatus() == OK) {
             var playListDto = ContextUtil.getBean(PlayCommandService.class)
@@ -717,7 +721,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return DialogUtil.showCustomQuestionDialog(
                 owner,
                 CHOOSING_OPERATION_TITLE,
-                OPERA_DELETE_QUESTION_PATTERN.formatted(composerPlayTextProvider.apply(selectedPlay)),
+                OPERA_DELETE_QUESTION_PATTERN.formatted(composerPlayTextProvider.provide(selectedPlay)),
                 yesNoOptions,
                 1
         );
@@ -799,14 +803,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 });
     }
 
-    private void clearDuplicateAssociationsInTable(RoleChangeCommand roleChangeCommand, Set<ArtistPerformanceSimpleDto> duplicateAssociations) {
-        duplicateAssociations.forEach(artistPerformanceSimpleDto -> {
-            var performanceColumn = findPerformanceColumnBy(artistPerformanceSimpleDto.getPerformanceSimpleDto());
-
-            clearDuplicateAssociationInPerformanceColumn(roleChangeCommand, performanceColumn, artistPerformanceSimpleDto);
-        });
-    }
-
     private void clearDuplicateAssociationInPerformanceColumn(RoleChangeCommand roleChangeCommand, int performanceColumn, ArtistPerformanceSimpleDto artistPerformanceSimpleDto) {
         var artists = new HashSet<ArtistListDto>();
 
@@ -853,7 +849,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private String joinArtistNames(Set<ArtistListDto> artistListDtos) {
         return artistListDtos.stream()
-                .map(artistTextProvider)
+                .map(artistTextProvider::provide)
                 .collect(Collectors.joining(" , "));
     }
 
@@ -1010,10 +1006,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void createPerformance() {
         addPerformanceColumn();
-        performances.add(makeNewPErformanceSingleDto());
+        performances.add(makeNewPerformanceSingleDto());
     }
 
-    private static PerformanceSimpleDto makeNewPErformanceSingleDto() {
+    private static PerformanceSimpleDto makeNewPerformanceSingleDto() {
         return PerformanceSimpleDto.builder()
                 .withNaturalId(UUID.randomUUID())
                 .build();
@@ -1034,7 +1030,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
         var selectedColumn = tblPerformances.getSelectedColumn();
         var selectedPerformanceIndex = calculateSelectedPerformanceIndex();
 
-        if (selectedColumn > -1) {
+        if (selectedColumn > 0) {
             markStateChanged();
 
             columnModel.removeColumn(
@@ -1043,8 +1039,12 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
             performances.remove(selectedPerformanceIndex);
         } else {
-            //TODO: show warning message!
+            showNoPerformanceSelectedErrorMessage();
         }
+    }
+
+    private void showNoPerformanceSelectedErrorMessage() {
+        DialogUtil.showWarningMessage(owner, INVALID_OPERATION, NO_PERFORMANCE_SELECTED_ERROR_MESSAGE);
     }
 
     private void addConductor() {
@@ -1075,7 +1075,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private Optional<LocationDto> createLocation() {
-        var dialog = new LocationDialog(owner, TITLE_CREATE_LOCATION_DIALOG);
+        var dialog = new LocationDialog(owner);
 
         if (dialog.getDialogStatus() == OK) {
             var savedValue = ContextUtil.getBean(LocationCommandService.class)
@@ -1088,7 +1088,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private Optional<ArtistListDto> createConductor() {
-        var dialog = new ArtistDialog(owner, TITLE_CREATE_CONDUCTOR_DIALOG);
+        var dialog = new ArtistDialog(owner, ArtistPosition.CONDUCTOR);
 
         if (dialog.getDialogStatus() == OK) {
             var savedValue = ContextUtil.getBean(ArtistCommandService.class)
@@ -1101,7 +1101,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private Optional<ArtistListDto> createSinger() {
-        var dialog = new ArtistDialog(owner, TITLE_CREATE_SINGER_DIALOG);
+        var dialog = new ArtistDialog(owner, ArtistPosition.SINGER);
 
         if (dialog.getDialogStatus() == OK) {
             var savedValue = ContextUtil.getBean(ArtistCommandService.class)

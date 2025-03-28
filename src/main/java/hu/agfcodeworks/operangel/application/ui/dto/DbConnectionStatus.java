@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.ui.uidto;
+package hu.agfcodeworks.operangel.application.ui.dto;
 
 import lombok.AllArgsConstructor;
 

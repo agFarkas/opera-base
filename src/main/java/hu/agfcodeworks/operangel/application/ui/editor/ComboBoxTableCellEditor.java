@@ -1,14 +1,14 @@
 package hu.agfcodeworks.operangel.application.ui.editor;
 
 import hu.agfcodeworks.operangel.application.ui.components.custom.JCustomComboBox;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import lombok.NonNull;
 
-import javax.swing.DefaultCellEditor;
+import javax.swing.*;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ComboBoxTableCellEditor<V> extends DefaultCellEditor {
@@ -16,7 +16,7 @@ public class ComboBoxTableCellEditor<V> extends DefaultCellEditor {
     private final BiConsumer<V, V> itemChangeHandler;
 
     public ComboBoxTableCellEditor(
-            @NonNull Function<V, String> textProvider,
+            @NonNull TextProvider<V> textProvider,
             @NonNull Comparator<V> comparator,
             @NonNull Supplier<Optional<V>> itemSupplier,
             @NonNull BiConsumer<V, V> itemChangeHandler
@@ -61,7 +61,7 @@ public class ComboBoxTableCellEditor<V> extends DefaultCellEditor {
         prepareComboBox(textProvider, comparator, itemSupplier);
     }
 
-    private void prepareComboBox(Function<V, String> textProvider, Comparator<V> comparator, Supplier<Optional<V>> itemSupplier) {
+    private void prepareComboBox(TextProvider<V> textProvider, Comparator<V> comparator, Supplier<Optional<V>> itemSupplier) {
         var comboBox = getEditorComponent();
 
         comboBox.setTextProvider(textProvider);

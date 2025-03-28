@@ -1,23 +1,31 @@
 package hu.agfcodeworks.operangel.application.exception;
 
-import hu.agfcodeworks.operangel.application.dto.ErrorDto;
+import hu.agfcodeworks.operangel.application.validation.error.ErrorDto;
+import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ValidationException extends RuntimeException {
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.RETURN_AND_LINE_BREAK;
+
+public abstract class ValidationException extends RuntimeException {
 
     private static final String MESSAGE_PATTERN = "%s: %s";
 
-    public ValidationException(List<ErrorDto> errorDtos) {
+    @Getter
+    private final List<? extends ErrorDto<?>> errorDtos;
+
+    public ValidationException(List<? extends ErrorDto<?>> errorDtos) {
         super(convertToMessage(errorDtos));
+
+        this.errorDtos = errorDtos;
     }
 
-    private static String convertToMessage(List<ErrorDto> errorDtos) {
-        return errorDtos.stream()
-                .sorted(Comparator.comparing(err -> err.getFieldName().toLowerCase()))
-                .map(err -> MESSAGE_PATTERN.formatted(err.getFieldName(), err.getErrorDescription()))
-                .collect(Collectors.joining("\r\n"));
+    private static String convertToMessage(List<? extends ErrorDto<?>> dialogValidationErrorDtos) {
+        return dialogValidationErrorDtos.stream()
+                .sorted(Comparator.comparing(err -> err.getFieldMarkerText().toLowerCase()))
+                .map(err -> MESSAGE_PATTERN.formatted(err.getFieldMarkerText(), err.getErrorDescription()))
+                .collect(Collectors.joining(RETURN_AND_LINE_BREAK));
     }
 }

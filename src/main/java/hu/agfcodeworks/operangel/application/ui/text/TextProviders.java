@@ -7,7 +7,6 @@ import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.dto.RoleDto;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public interface TextProviders {
 
@@ -15,9 +14,9 @@ public interface TextProviders {
 
     String PLAY_LIST_ITEM_TEXT_PATTERN = "%s: %s";
 
-    Function<LocationDto, String> locationTextProvider = LocationDto::getName;
+    TextProvider<LocationDto> locationTextProvider = LocationDto::getName;
 
-    Function<ComposerDto, String> composerTextProvider = c -> {
+    TextProvider<ComposerDto> composerTextProvider = c -> {
         if (Objects.nonNull(c.getGivenName())) {
             return NAME_PATTERN.formatted(c.getFamilyName(), c.getGivenName());
         }
@@ -25,12 +24,12 @@ public interface TextProviders {
         return c.getFamilyName();
     };
 
-    Function<ArtistListDto, String> artistTextProvider = a -> NAME_PATTERN.formatted(a.getFamilyName(), a.getGivenName());
+    TextProvider<ArtistListDto> artistTextProvider = a -> NAME_PATTERN.formatted(a.getFamilyName(), a.getGivenName());
 
-    Function<PlayListDto, String> composerPlayTextProvider = p -> PLAY_LIST_ITEM_TEXT_PATTERN.formatted(
+    TextProvider<PlayListDto> composerPlayTextProvider = p -> PLAY_LIST_ITEM_TEXT_PATTERN.formatted(
             p.getComposer().getFamilyName(),
             p.getTitle()
     );
 
-    Function<RoleDto, String> roleTextProvider = RoleDto::getDescription;
+    TextProvider<RoleDto> roleTextProvider = RoleDto::getDescription;
 }

@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
 import hu.agfcodeworks.operangel.application.dto.ComposerDto;
-import hu.agfcodeworks.operangel.application.dto.ErrorDto;
+import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.service.cache.global.ComposerCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ComposerCommandService;
@@ -18,23 +18,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static hu.agfcodeworks.operangel.application.ui.uidto.DialogStatus.OK;
+import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
+import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
 
 public class PlayDialog extends JAbstractDialog<PlayListDto> {
 
-    private static final String TITLE_CREATE_COMPOSER_DIALOG = "Új szerző";
+    private static final String TITLE_CREATE_OPERA_DIALOG = "Új opera";
 
     private JLabeledComboBox<ComposerDto> cbComposer;
 
     private JLabeledTextField tfTitle;
 
-    public PlayDialog(Frame owner, String title, PlayListDto initialValue) {
-        super(owner, title, initialValue);
+    public PlayDialog(Frame owner, PlayListDto initialValue) {
+        super(owner, composerPlayTextProvider, initialValue);
         setVisible(true);
     }
 
-    public PlayDialog(Frame owner, String title) {
-        super(owner, title, null);
+    public PlayDialog(Frame owner) {
+        super(owner);
 
         cbComposer.setSelectedIndex(-1);
 
@@ -42,8 +43,13 @@ public class PlayDialog extends JAbstractDialog<PlayListDto> {
     }
 
     @Override
-    protected List<ErrorDto> validateCustomFields() {
-        var errorDtos = new LinkedList<ErrorDto>();
+    protected String obtainTitle() {
+        return TITLE_CREATE_OPERA_DIALOG;
+    }
+
+    @Override
+    protected List<DialogValidationErrorDto> validateCustomFields() {
+        var errorDtos = new LinkedList<DialogValidationErrorDto>();
 
         errorDtos.addAll(getErrorDtos(cbComposer));
         errorDtos.addAll(getErrorDtos(tfTitle));
@@ -76,7 +82,7 @@ public class PlayDialog extends JAbstractDialog<PlayListDto> {
     }
 
     private Optional<ComposerDto> createComposer() {
-        var dialog = new ComposerDialog((Frame) getOwner(), TITLE_CREATE_COMPOSER_DIALOG);
+        var dialog = new ComposerDialog((Frame) getOwner());
         if (dialog.getDialogStatus() ==  OK) {
 
             var savedComposerDto = ContextUtil.getBean(ComposerCommandService.class)
@@ -89,10 +95,10 @@ public class PlayDialog extends JAbstractDialog<PlayListDto> {
     }
 
     @Override
-    protected void initiateValue(PlayListDto initialValue) {
-        if (Objects.nonNull(initialValue)) {
-            cbComposer.setSelectedItem(initialValue.getComposer());
-            tfTitle.setText(initialValue.getTitle());
+    protected void initiateValue() {
+        if (Objects.nonNull(value)) {
+            cbComposer.setSelectedItem(value.getComposer());
+            tfTitle.setText(value.getTitle());
         }
     }
 
