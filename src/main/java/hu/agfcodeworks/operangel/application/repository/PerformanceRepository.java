@@ -23,12 +23,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
             """)
     List<Performance> findByPlayNaturalId(@Param("playNaturalId") UUID playNaturalId);
 
-    @Query("""
-            select prf from Performance prf
-            where prf.naturalId in :naturalIds
-            """)
-    List<Performance> findByNaturalIds(@Param("naturalIds") List<UUID> naturalIds);
-
     Optional<Performance> findByNaturalId(UUID naturalId);
 
     void deleteByNaturalId(UUID naturalId);

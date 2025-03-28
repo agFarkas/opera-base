@@ -8,20 +8,23 @@ import hu.agfcodeworks.operangel.application.model.Play;
 import hu.agfcodeworks.operangel.application.model.Role;
 import hu.agfcodeworks.operangel.application.repository.RoleRepository;
 import hu.agfcodeworks.operangel.application.service.query.service.PlayQueryService;
+import hu.agfcodeworks.operangel.application.service.query.service.RoleQueryService;
 import hu.agfcodeworks.operangel.application.util.ThreadCacheUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+//@Transactional
 @Service
 @AllArgsConstructor
 public class RoleCommandService {
 
-    private final RoleRepository roleRepository;
+    private final RoleQueryService roleQueryService;
 
     private final RoleDtoMapper roleDtoMapper;
+
+    private final RoleRepository roleRepository;
 
     private final PlayQueryService playQueryService;
 
@@ -31,13 +34,16 @@ public class RoleCommandService {
     }
 
     private RoleDto updateOrCreate(RoleCommand roleCommand) {
-        return roleRepository.findByNaturalId(roleCommand.getNaturalId())
-                .map(role -> {
-                    role.setDescription(roleCommand.getDescription());
+        return roleQueryService.findByNaturalId(roleCommand.getNaturalId())
+                .map(role -> update(roleCommand, role))
+                .orElseGet((() -> createNew(roleCommand)));
+    }
 
-                    roleRepository.save(role);
-                    return roleDtoMapper.entityToDto(role);
-                }).orElseGet((() -> createNew(roleCommand)));
+    private RoleDto update(RoleCommand roleCommand, Role role) {
+        role.setDescription(roleCommand.getDescription());
+
+        roleRepository.save(role);
+        return roleDtoMapper.entityToDto(role);
     }
 
     private RoleDto createNew(RoleCommand roleCommand) {

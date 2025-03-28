@@ -5,10 +5,16 @@ import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.PerformanceSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.state.PerformanceStateDto;
-import hu.agfcodeworks.operangel.application.model.*;
+import hu.agfcodeworks.operangel.application.model.Performance;
+import hu.agfcodeworks.operangel.application.model.PerformanceConductorJoin;
+import hu.agfcodeworks.operangel.application.model.ArtistPerformanceRoleJoin;
+import hu.agfcodeworks.operangel.application.model.Artist;
+import hu.agfcodeworks.operangel.application.model.Role;
+import hu.agfcodeworks.operangel.application.model.Location;
 import hu.agfcodeworks.operangel.application.model.embeddable.ArtistPerformanceRoleId;
 import hu.agfcodeworks.operangel.application.model.embeddable.PerformanceConductorId;
 import hu.agfcodeworks.operangel.application.repository.PerformanceRepository;
+import hu.agfcodeworks.operangel.application.service.query.service.PerformanceQueryService;
 import hu.agfcodeworks.operangel.application.util.ThreadCacheUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -26,10 +32,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PerformanceCommandService {
 
+    private final PerformanceQueryService performanceQueryService;
+
     private final PerformanceRepository performanceRepository;
 
     public void save(@NonNull PerformanceStateDto performanceStateDto) {
-        var performanceOpt = performanceRepository.findByNaturalId(performanceStateDto.getNaturalId());
+        var performanceOpt = performanceQueryService.findByNaturalId(performanceStateDto.getNaturalId());
 
         if (performanceOpt.isPresent()) {
             update(performanceOpt.get(), performanceStateDto);
