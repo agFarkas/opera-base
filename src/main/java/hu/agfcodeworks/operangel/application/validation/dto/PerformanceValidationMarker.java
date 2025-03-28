@@ -1,4 +1,4 @@
-package hu.agfcodeworks.operangel.application.validation;
+package hu.agfcodeworks.operangel.application.validation.dto;
 
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
 import lombok.Builder;

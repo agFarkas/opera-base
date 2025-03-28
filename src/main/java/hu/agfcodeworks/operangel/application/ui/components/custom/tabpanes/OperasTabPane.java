@@ -1,18 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes;
 
-import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
-import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.ArtistRoleSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.LocationDto;
-import hu.agfcodeworks.operangel.application.dto.LocationSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.PerformanceDto;
-import hu.agfcodeworks.operangel.application.dto.PerformanceSimpleDto;
-import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
-import hu.agfcodeworks.operangel.application.dto.PlayDetailedDto;
-import hu.agfcodeworks.operangel.application.dto.PlayListDto;
-import hu.agfcodeworks.operangel.application.dto.RoleDto;
-import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.*;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
@@ -31,62 +19,36 @@ import hu.agfcodeworks.operangel.application.ui.dialog.ArtistDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.LocationDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.PlayDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.enums.ArtistPosition;
-import hu.agfcodeworks.operangel.application.ui.editor.ArtistEditor;
-import hu.agfcodeworks.operangel.application.ui.editor.DateEditor;
-import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
-import hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue;
-import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
+import hu.agfcodeworks.operangel.application.ui.editor.*;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
 import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import hu.agfcodeworks.operangel.application.util.ValidationUtil;
-import hu.agfcodeworks.operangel.application.validation.error.ErrorDto;
+import hu.agfcodeworks.operangel.application.validation.PlayPerformanceChangeValidator;
 import hu.agfcodeworks.operangel.application.validation.error.PlayPerformanceValidationErrorDto;
 import lombok.NonNull;
 import org.springframework.util.CollectionUtils;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Frame;
+import java.awt.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ARTIST;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_CONDUCTOR;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.*;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.*;
+import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
 import static hu.agfcodeworks.operangel.application.ui.text.Comparators.playDtoByTitleComparator;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.artistTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
-import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
 
 public class OperasTabPane extends AbstractCustomTabPane {
 
@@ -614,7 +576,8 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void validatePlayPerformanceChange(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
-        //TODO implement!
+        ContextUtil.getBean(PlayPerformanceChangeValidator.class)
+                .validate(playPerformanceChangeCommand);
     }
 
     private void markInvalidPerformances(List<PlayPerformanceValidationErrorDto> errorDtos) {

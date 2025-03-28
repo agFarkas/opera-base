@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.validation.error;
 
 import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
-import hu.agfcodeworks.operangel.application.validation.PerformanceValidationMarker;
+import hu.agfcodeworks.operangel.application.validation.dto.PerformanceValidationMarker;
 import lombok.Getter;
 import lombok.NonNull;
 
