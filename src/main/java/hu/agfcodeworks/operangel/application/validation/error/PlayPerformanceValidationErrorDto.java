@@ -13,9 +13,9 @@ import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.locati
 @Getter
 public class PlayPerformanceValidationErrorDto extends ErrorDto<PerformanceValidationMarkerContent> {
 
-    private static final String NO_DATE_TEXT = "Nincs dátum";
+    private static final String NO_DATE_TEXT = "[Nincs dátum]";
 
-    private static final String NO_LOCATION_TEXT = "Nincs helyszín";
+    private static final String NO_LOCATION_TEXT = "[Nincs helyszín]";
 
     private static final String PERFORMANCE_MARKER_TEXT_PATTERN = "%s (%s)";
 

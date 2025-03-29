@@ -12,6 +12,8 @@ import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.UNE
 @UtilityClass
 public class DialogUtil {
 
+    public static final String TITLE_AND_INDENTED_CONTENT_PATTERN = "%s:\r\n%s";
+
     public void showInfoMessage(Component parent, String title, String message) {
         JOptionPane.showMessageDialog(
                 parent,
@@ -55,11 +57,15 @@ public class DialogUtil {
 
         JOptionPane.showMessageDialog(
                 parent,
-                UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN.formatted(ex),
+                UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN.formatted(sylizeMessageOf(ex)),
                 title,
                 JOptionPane.ERROR_MESSAGE,
                 null
         );
+    }
+
+    private String sylizeMessageOf(Exception ex) {
+        return TITLE_AND_INDENTED_CONTENT_PATTERN.formatted(ex.getClass(), ex.getMessage());
     }
 
     public int showCustomQuestionDialog(Component parent, String title, String message, Object[] options, int defaultOptionIndex) {

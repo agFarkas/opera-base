@@ -635,9 +635,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void showErrorMessageAndMarkers(ValidationException ex) {
         DialogUtil.showWarningMessageByValidation(owner, ex);
-        markInvalidPerformances(
-                ValidationUtil.getGenericErrorDto(ex)
-        );
+        markInvalidPerformances(ValidationUtil.getGenericErrorDto(ex));
     }
 
     private void validatePlayPerformanceChange(PlayPerformanceChangeCommand playPerformanceChangeCommand) {

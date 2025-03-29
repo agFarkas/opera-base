@@ -22,7 +22,7 @@ public interface UiConstants {
 
     String INVALID_OPERATION = "Érvénytelen művelet";
 
-    String UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN = "Nem várt hiba történt: %s";
+    String UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN = "Nem várt hiba történt:\r\n%s";
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
