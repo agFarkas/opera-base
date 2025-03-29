@@ -30,9 +30,8 @@ public abstract class ValidationException extends RuntimeException {
     }
 
     private static String convertToMessage(List<? extends ErrorDto<?>> errorDtos, Comparator<? super ErrorDto<?>> comparator) {
-        var errorDtosByFieldMarkers = collectErrorDtosByFieldMarkers(errorDtos, comparator);
-
-        return errorDtosByFieldMarkers.values()
+        return collectErrorDtosByFieldMarkers(errorDtos, comparator)
+                .values()
                 .stream()
                 .filter(l -> !CollectionUtils.isEmpty(l))
                 .map(ValidationException::composeErrorMessage)
@@ -50,6 +49,7 @@ public abstract class ValidationException extends RuntimeException {
                     errorDtosByFieldMarkers.computeIfAbsent(fieldMarker, v -> new LinkedList<>())
                             .add(errorDto);
                 });
+
         return errorDtosByFieldMarkers;
     }
 
