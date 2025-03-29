@@ -1,8 +1,8 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.labeled;
 
+import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import hu.agfcodeworks.operangel.application.ui.renderer.CustomCellRenderer;
 import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
-import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import lombok.NonNull;
 
 import javax.swing.DefaultListModel;

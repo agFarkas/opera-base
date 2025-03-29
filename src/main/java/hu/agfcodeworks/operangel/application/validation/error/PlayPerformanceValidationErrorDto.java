@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.validation.error;
 
 import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
-import hu.agfcodeworks.operangel.application.validation.dto.PerformanceValidationMarker;
+import hu.agfcodeworks.operangel.application.validation.dto.PerformanceValidationMarkerContent;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -11,7 +11,7 @@ import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dat
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.locationTextProvider;
 
 @Getter
-public class PlayPerformanceValidationErrorDto extends ErrorDto<PerformanceValidationMarker> {
+public class PlayPerformanceValidationErrorDto extends ErrorDto<PerformanceValidationMarkerContent> {
 
     private static final String NO_DATE_TEXT = "Nincs dátum";
 
@@ -19,21 +19,21 @@ public class PlayPerformanceValidationErrorDto extends ErrorDto<PerformanceValid
 
     private static final String PERFORMANCE_MARKER_TEXT_PATTERN = "%s (%s)";
 
-    private static final TextProvider<PerformanceValidationMarker> fieldMarkerTextProvider = p -> PERFORMANCE_MARKER_TEXT_PATTERN.formatted(
+    private static final TextProvider<PerformanceValidationMarkerContent> fieldMarkerTextProvider = p -> PERFORMANCE_MARKER_TEXT_PATTERN.formatted(
             obtainLocationText(p), obtainDateText(p)
     );
 
-    private static String obtainLocationText(PerformanceValidationMarker performanceValidationMarker) {
-        return Objects.nonNull(performanceValidationMarker.getLocation()) ?
-                locationTextProvider.provide(performanceValidationMarker.getLocation()) : NO_LOCATION_TEXT;
+    public PlayPerformanceValidationErrorDto(@NonNull PerformanceValidationMarkerContent fieldMarkerContent, @NonNull String errorDescription) {
+        super(new FieldMarker<>(fieldMarkerContent), errorDescription, fieldMarkerTextProvider);
     }
 
-    private static String obtainDateText(PerformanceValidationMarker performanceValidationMarker) {
-        return Objects.nonNull(performanceValidationMarker.getDate()) ?
-                dateFormatter.format(performanceValidationMarker.getDate()) : NO_DATE_TEXT;
+    private static String obtainLocationText(PerformanceValidationMarkerContent performanceValidationMarkerContent) {
+        return Objects.nonNull(performanceValidationMarkerContent.getLocation()) ?
+                locationTextProvider.provide(performanceValidationMarkerContent.getLocation()) : NO_LOCATION_TEXT;
     }
 
-    public PlayPerformanceValidationErrorDto(@NonNull PerformanceValidationMarker fieldMarker, @NonNull String errorDescription) {
-        super(fieldMarker, errorDescription, fieldMarkerTextProvider);
+    private static String obtainDateText(PerformanceValidationMarkerContent performanceValidationMarkerContent) {
+        return Objects.nonNull(performanceValidationMarkerContent.getDate()) ?
+                dateFormatter.format(performanceValidationMarkerContent.getDate()) : NO_DATE_TEXT;
     }
 }

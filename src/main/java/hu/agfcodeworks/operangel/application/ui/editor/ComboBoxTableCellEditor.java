@@ -4,7 +4,7 @@ import hu.agfcodeworks.operangel.application.ui.components.custom.JCustomComboBo
 import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import lombok.NonNull;
 
-import javax.swing.*;
+import javax.swing.DefaultCellEditor;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;

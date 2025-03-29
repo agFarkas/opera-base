@@ -1,8 +1,8 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
-import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledTextField;
+import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 
 import javax.swing.JPanel;
 import java.awt.FlowLayout;

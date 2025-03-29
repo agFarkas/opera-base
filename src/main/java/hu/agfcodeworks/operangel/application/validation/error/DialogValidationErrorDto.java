@@ -9,7 +9,7 @@ public class DialogValidationErrorDto extends ErrorDto<String> {
 
     private static final TextProvider<String> fieldMarkerTextProvider = t -> t;
 
-    public DialogValidationErrorDto(@NonNull String fieldMarker, @NonNull String errorDescription) {
-        super(fieldMarker, errorDescription, fieldMarkerTextProvider);
+    public DialogValidationErrorDto(@NonNull String fieldMarkerContent, @NonNull String errorDescription) {
+        super(new FieldMarker<>(fieldMarkerContent), errorDescription, fieldMarkerTextProvider);
     }
 }

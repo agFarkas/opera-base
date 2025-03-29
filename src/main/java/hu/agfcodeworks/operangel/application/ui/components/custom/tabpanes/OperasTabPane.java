@@ -1,6 +1,18 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom.tabpanes;
 
-import hu.agfcodeworks.operangel.application.dto.*;
+import hu.agfcodeworks.operangel.application.dto.ArtistListDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistPerformanceSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistRoleSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.ArtistSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.LocationDto;
+import hu.agfcodeworks.operangel.application.dto.LocationSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.PerformanceDto;
+import hu.agfcodeworks.operangel.application.dto.PerformanceSimpleDto;
+import hu.agfcodeworks.operangel.application.dto.PerformanceSummaryDto;
+import hu.agfcodeworks.operangel.application.dto.PlayDetailedDto;
+import hu.agfcodeworks.operangel.application.dto.PlayListDto;
+import hu.agfcodeworks.operangel.application.dto.RoleDto;
+import hu.agfcodeworks.operangel.application.dto.RoleSimpleDto;
 import hu.agfcodeworks.operangel.application.dto.command.PlayCommand;
 import hu.agfcodeworks.operangel.application.dto.command.PlayPerformanceChangeCommand;
 import hu.agfcodeworks.operangel.application.dto.command.RoleChangeCommand;
@@ -19,7 +31,11 @@ import hu.agfcodeworks.operangel.application.ui.dialog.ArtistDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.LocationDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.PlayDialog;
 import hu.agfcodeworks.operangel.application.ui.dialog.enums.ArtistPosition;
-import hu.agfcodeworks.operangel.application.ui.editor.*;
+import hu.agfcodeworks.operangel.application.ui.editor.ArtistEditor;
+import hu.agfcodeworks.operangel.application.ui.editor.DateEditor;
+import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
+import hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue;
+import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
 import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
@@ -30,21 +46,49 @@ import hu.agfcodeworks.operangel.application.validation.error.PlayPerformanceVal
 import lombok.NonNull;
 import org.springframework.util.CollectionUtils;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.*;
-import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.*;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ARTIST;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_CONDUCTOR;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.INVALID_OPERATION;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.LIST_LINE_BREAK;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.RETURN_AND_LINE_BREAK;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.SYSTEM_ERROR;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.roleChangeOperationOptions;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.yesNoOptions;
 import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
 import static hu.agfcodeworks.operangel.application.ui.text.Comparators.playDtoByTitleComparator;
 import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.artistTextProvider;
@@ -541,19 +585,26 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private JPanel makePerformanceCrudPanel() {
         var performanceCrudPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
+        buildEventListenersForPerformanceCrudButtons();
+        addButtonsToPerformanceCrudPanel(performanceCrudPanel);
+
+        return performanceCrudPanel;
+    }
+
+    private void buildEventListenersForPerformanceCrudButtons() {
         btCreatePerformance.addActionListener(e -> createPerformance());
         btDeletePerformance.addActionListener(e -> deletePerformance());
         btAddConductor.addActionListener(e -> addConductor());
         btSave.addActionListener(e -> executor.submit(this::saveChanges));
         btRefresh.addActionListener(e -> refreshDetails());
+    }
 
+    private void addButtonsToPerformanceCrudPanel(JPanel performanceCrudPanel) {
         performanceCrudPanel.add(btCreatePerformance);
         performanceCrudPanel.add(btDeletePerformance);
         performanceCrudPanel.add(btAddConductor);
         performanceCrudPanel.add(btSave);
         performanceCrudPanel.add(btRefresh);
-
-        return performanceCrudPanel;
     }
 
     private void saveChanges() {
@@ -565,14 +616,28 @@ public class OperasTabPane extends AbstractCustomTabPane {
             validatePlayPerformanceChange(playPerformanceChangeCommand);
             executeSaveProcedure(playPerformanceChangeCommand);
         } catch (ValidationException ex) {
-            markInvalidPerformances(
-                    ValidationUtil.getGenericErrorDto(ex)
-            );
+            showErrorMessageAndMarkers(ex);
         } catch (Exception ex) {
-            DialogUtil.showErrorMessage(owner, SYSTEM_ERROR, UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN.formatted(ex));
+            showSystemErrorMessage(ex);
         } finally {
             btSave.setEnabled(true);
         }
+    }
+
+    private void executeSaveProcedure(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
+        ContextUtil.getBean(PlayPerformanceCommandService.class)
+                .save(playPerformanceChangeCommand);
+
+        updateOriginalState(playPerformanceChangeCommand.getNewPlayState());
+        updateOriginalState(newState);
+    }
+
+
+    private void showErrorMessageAndMarkers(ValidationException ex) {
+        DialogUtil.showWarningMessageByValidation(owner, ex);
+        markInvalidPerformances(
+                ValidationUtil.getGenericErrorDto(ex)
+        );
     }
 
     private void validatePlayPerformanceChange(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
@@ -584,12 +649,12 @@ public class OperasTabPane extends AbstractCustomTabPane {
         //TODO implement!
     }
 
-    private void executeSaveProcedure(PlayPerformanceChangeCommand playPerformanceChangeCommand) {
-        ContextUtil.getBean(PlayPerformanceCommandService.class)
-                .save(playPerformanceChangeCommand);
-
-        updateOriginalState(playPerformanceChangeCommand.getNewPlayState());
-        updateOriginalState(newState);
+    private void showSystemErrorMessage(Exception ex) {
+        DialogUtil.showErrorMessageByException(
+                owner,
+                SYSTEM_ERROR,
+                ex
+        );
     }
 
     private List<PerformanceSimpleDto> makePerformanceSimpleDtos(PlayStateDto playStateDto) {
@@ -1219,8 +1284,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private LocationSimpleDto readLocationFromTable(int column) {
+        var locationDto = readLocationDto(column);
+
+        if (Objects.isNull(locationDto)) {
+            return null;
+        }
+
         return convertToLocationSimpleDto(
-                readLocationDto(column)
+                locationDto
         );
     }
 

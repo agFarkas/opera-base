@@ -1,19 +1,26 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
-import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import hu.agfcodeworks.operangel.application.exception.DialogValidationException;
 import hu.agfcodeworks.operangel.application.exception.ValidationException;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JAbstractedLabeledTextField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComboBox;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComponent;
-import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import hu.agfcodeworks.operangel.application.ui.dto.DialogStatus;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
+import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import lombok.NonNull;
 import org.springframework.util.CollectionUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collections;

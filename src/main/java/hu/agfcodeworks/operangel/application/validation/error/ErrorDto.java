@@ -8,7 +8,8 @@ import lombok.NonNull;
 @AllArgsConstructor
 public abstract class ErrorDto<M> {
 
-    protected final @NonNull M fieldMarker;
+    @Getter
+    protected final @NonNull FieldMarker<M> fieldMarker;
 
     @Getter
     private final @NonNull String errorDescription;
@@ -16,6 +17,6 @@ public abstract class ErrorDto<M> {
     private final @NonNull TextProvider<M> fieldMarkerTextProvider;
 
     public String getFieldMarkerText() {
-        return fieldMarkerTextProvider.provide(fieldMarker);
+        return fieldMarkerTextProvider.provide(fieldMarker.getContent());
     }
 }

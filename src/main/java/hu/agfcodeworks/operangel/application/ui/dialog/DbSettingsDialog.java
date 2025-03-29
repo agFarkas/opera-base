@@ -1,6 +1,5 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
-import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import hu.agfcodeworks.operangel.application.settings.DbEngine;
 import hu.agfcodeworks.operangel.application.settings.DbSettings;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledComboBox;
@@ -8,6 +7,7 @@ import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabel
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledNumberField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledPasswordField;
 import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabeledTextField;
+import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 
 import javax.swing.JPanel;
 import java.awt.Frame;

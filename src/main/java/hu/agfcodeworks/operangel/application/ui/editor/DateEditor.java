@@ -15,13 +15,8 @@ import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dat
 
 public class DateEditor extends DefaultCellEditor {
 
-
-    private final BiConsumer<LocalDate, LocalDate> finishedEditingHandler;
-
     public DateEditor(@NonNull BiConsumer<LocalDate, LocalDate> finishedEditingHandler) {
         super(new JTextField());
-
-        this.finishedEditingHandler = finishedEditingHandler;
 
         this.delegate = new EditorDelegate() {
 
@@ -31,10 +26,6 @@ public class DateEditor extends DefaultCellEditor {
                 var text = textField.getText();
 
                 if (!StringUtils.hasText(text)) {
-                    if (Objects.nonNull(value)) {
-                        return value;
-                    }
-
                     return null;
                 }
 

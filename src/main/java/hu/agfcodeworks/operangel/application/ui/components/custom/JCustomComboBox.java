@@ -1,8 +1,8 @@
 package hu.agfcodeworks.operangel.application.ui.components.custom;
 
+import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import hu.agfcodeworks.operangel.application.ui.renderer.CustomComboBoxRenderer;
 import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
-import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
 import hu.agfcodeworks.operangel.application.validation.ValidationStatus;
 import lombok.Getter;
 import lombok.NonNull;

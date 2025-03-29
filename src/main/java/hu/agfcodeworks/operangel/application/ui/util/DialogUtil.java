@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import java.awt.Component;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.INVALID_VALUES;
+import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN;
 
 @UtilityClass
 public class DialogUtil {
@@ -43,6 +44,18 @@ public class DialogUtil {
         JOptionPane.showMessageDialog(
                 parent,
                 message,
+                title,
+                JOptionPane.ERROR_MESSAGE,
+                null
+        );
+    }
+
+    public void showErrorMessageByException(Component parent, String title, Exception ex) {
+        ex.printStackTrace();
+
+        JOptionPane.showMessageDialog(
+                parent,
+                UNEXPECTED_ERROR_ERROR_MESSAGE_PATTERN.formatted(ex),
                 title,
                 JOptionPane.ERROR_MESSAGE,
                 null

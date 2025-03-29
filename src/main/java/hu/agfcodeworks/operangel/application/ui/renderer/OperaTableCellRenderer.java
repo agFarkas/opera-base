@@ -8,16 +8,25 @@ import hu.agfcodeworks.operangel.application.ui.text.TextProviders;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 
-import javax.swing.*;
+import javax.swing.JTable;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
-import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.*;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_CONDUCTOR;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_DATE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_LOCATION;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.FONT_STYLE_ROLE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_DATE;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_FIRST_CONDUCTOR;
+import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.ROW_LOCATION;
 import static hu.agfcodeworks.operangel.application.ui.constants.UiConstants.dateFormatter;
 
 @AllArgsConstructor

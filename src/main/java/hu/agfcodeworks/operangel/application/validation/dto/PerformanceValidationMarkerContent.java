@@ -1,7 +1,9 @@
 package hu.agfcodeworks.operangel.application.validation.dto;
 
 import hu.agfcodeworks.operangel.application.dto.LocationDto;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -10,7 +12,8 @@ import java.util.UUID;
 
 @Getter
 @Builder(setterPrefix = "with")
-public class PerformanceValidationMarker {
+@EqualsAndHashCode
+public class PerformanceValidationMarkerContent {
 
     @NonNull
     private final UUID naturalId;
@@ -18,4 +21,9 @@ public class PerformanceValidationMarker {
     private final LocalDate date;
 
     private final LocationDto location;
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

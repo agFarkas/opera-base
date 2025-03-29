@@ -1,7 +1,7 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import lombok.AllArgsConstructor;
 
 import javax.swing.Icon;

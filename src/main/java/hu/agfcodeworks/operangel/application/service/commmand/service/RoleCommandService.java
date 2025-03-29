@@ -13,7 +13,6 @@ import hu.agfcodeworks.operangel.application.util.ThreadCacheUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 //@Transactional
 @Service

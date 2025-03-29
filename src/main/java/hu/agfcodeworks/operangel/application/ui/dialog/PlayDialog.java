@@ -1,7 +1,6 @@
 package hu.agfcodeworks.operangel.application.ui.dialog;
 
 import hu.agfcodeworks.operangel.application.dto.ComposerDto;
-import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 import hu.agfcodeworks.operangel.application.dto.PlayListDto;
 import hu.agfcodeworks.operangel.application.service.cache.global.ComposerCache;
 import hu.agfcodeworks.operangel.application.service.commmand.service.ComposerCommandService;
@@ -10,6 +9,7 @@ import hu.agfcodeworks.operangel.application.ui.components.custom.labeled.JLabel
 import hu.agfcodeworks.operangel.application.ui.text.Comparators;
 import hu.agfcodeworks.operangel.application.ui.text.TextProviders;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
+import hu.agfcodeworks.operangel.application.validation.error.DialogValidationErrorDto;
 
 import javax.swing.JPanel;
 import java.awt.Frame;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
 import static hu.agfcodeworks.operangel.application.ui.dto.DialogStatus.OK;
+import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.composerPlayTextProvider;
 
 public class PlayDialog extends JAbstractDialog<PlayListDto> {
 

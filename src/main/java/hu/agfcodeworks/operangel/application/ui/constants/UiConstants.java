@@ -16,7 +16,7 @@ public interface UiConstants {
 
     String LIST_ITEM_CREATE_NEW = "Új létrehozása...";
 
-    String INVALID_VALUES = "Érvénytelen értékek";
+    String INVALID_VALUES = "Érvénytelen adatok";
 
     String SYSTEM_ERROR = "Rendszerhiba";
 

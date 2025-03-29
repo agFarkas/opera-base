@@ -1,11 +1,12 @@
 package hu.agfcodeworks.operangel.application.ui.renderer;
 
-import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import hu.agfcodeworks.operangel.application.ui.dto.ListItemWrapper;
+import hu.agfcodeworks.operangel.application.ui.text.TextProvider;
 import lombok.NonNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import java.awt.Component;
 import java.util.Objects;
 
 import static hu.agfcodeworks.operangel.application.constants.StringConstants.EMPTY_TEXT;
