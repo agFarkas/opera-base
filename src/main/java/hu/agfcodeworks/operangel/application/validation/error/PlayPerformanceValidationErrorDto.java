@@ -19,9 +19,8 @@ public class PlayPerformanceValidationErrorDto extends ErrorDto<PerformanceValid
 
     private static final String PERFORMANCE_MARKER_TEXT_PATTERN = "%s (%s)";
 
-    private static final TextProvider<PerformanceValidationMarkerContent> fieldMarkerTextProvider = p -> PERFORMANCE_MARKER_TEXT_PATTERN.formatted(
-            obtainLocationText(p), obtainDateText(p)
-    );
+    private static final TextProvider<PerformanceValidationMarkerContent> fieldMarkerTextProvider =
+            p -> PERFORMANCE_MARKER_TEXT_PATTERN.formatted(obtainLocationText(p), obtainDateText(p));
 
     public PlayPerformanceValidationErrorDto(@NonNull PerformanceValidationMarkerContent fieldMarkerContent, @NonNull String errorDescription) {
         super(new FieldMarker<>(fieldMarkerContent), errorDescription, fieldMarkerTextProvider);
