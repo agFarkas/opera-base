@@ -7,6 +7,8 @@ import lombok.NonNull;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.util.Collection;
@@ -37,9 +39,16 @@ public class JLabeledList<I> extends JLabeledComponent<JList<ListItemWrapper<I>>
         removeAll();
         setLayout(new BorderLayout());
         add(label, BorderLayout.PAGE_START);
-        add(component, BorderLayout.CENTER);
+        add(putOnScrollPane(component), BorderLayout.CENTER);
 
         component.setModel(new DefaultListModel<>());
+    }
+
+    private JScrollPane putOnScrollPane(JList<ListItemWrapper<I>> component) {
+        var scrollPaneList = new JScrollPane(component);
+        scrollPaneList.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        return scrollPaneList;
     }
 
     public int getSelectedIndex() {

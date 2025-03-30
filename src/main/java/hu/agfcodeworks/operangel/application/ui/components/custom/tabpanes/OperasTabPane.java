@@ -37,7 +37,9 @@ import hu.agfcodeworks.operangel.application.ui.editor.LocationEditor;
 import hu.agfcodeworks.operangel.application.ui.editor.OperationOnChangingValue;
 import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
+import hu.agfcodeworks.operangel.application.ui.text.TextProviders;
 import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
+import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
 import hu.agfcodeworks.operangel.application.util.ValidationUtil;
@@ -47,8 +49,11 @@ import lombok.NonNull;
 import org.springframework.util.CollectionUtils;
 
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -60,6 +65,8 @@ import javax.swing.table.TableCellEditor;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +81,7 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static hu.agfcodeworks.operangel.application.ui.constants.OperaTableConstants.COLUMN_ROLE;
@@ -96,15 +104,31 @@ import static hu.agfcodeworks.operangel.application.ui.text.TextProviders.compos
 
 public class OperasTabPane extends AbstractCustomTabPane {
 
-    private static final String CAPTION_CONDUCTOR = "Karmester";
-
     private static final String CAPTION_DATE = "Dátum";
 
     private static final String CAPTION_LOCATION = "Helyszín";
 
+    private static final String CAPTION_CONDUCTOR = "Karmester";
+
+    private static final String CAPTION_SINGER = "Énekes";
+
+    private static final String CAPTION_MODIFY_LOCATION = "Helyszín módosítása";
+
+    private static final String CAPTION_DELETE_LOCATION = "Helyszín törlése";
+
+    private static final String CAPTION_DELETE_ROLE = "Szerep törlése";
+
+    private static final String CAPTION_DELETE_ARTIST_PATTERN = "%s törlése";
+
+    private static final String CAPTION_CHANGE_ARTIST_PATTERN = "%s módosítása";
+
+    private static final String CAPTION_DELETE_ROLE_PATTERN = "'%s' szerep törlése";
+
     private static final String ROLE_CHANGE_QUESTION_PATTERN = "A '%s' szerep megnevezését átírva a következőre: '%s'.\r\nMódosítod a leírást a meglévő szerepnél, vagy új szerepet hozol létre az új leírással?";
 
     private static final String OPERA_DELETE_QUESTION_PATTERN = "Biztosan törlöd ezt az operát: '%s'?";
+
+    private static final String ARTIST_PERFORMANCE_TEXT_PATTERN = "%s-i előadásban %s";
 
     private static final String CHOOSING_OPERATION_TITLE = "Műveletválasztás";
 
@@ -112,11 +136,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String DUPLICATE_ARTIST_PERFORMANCE_ASSOCIATIONS_WARNING_TITLE = "Többszörös szerep-énekes párosítás";
 
-    private static final String ARTIST_PERFORMANCE_TEXT_PATTERN = "%s-i előadásban %s";
-
     private static final String NO_PERFORMANCE_SELECTED_ERROR_MESSAGE = "Nincs előadás kiválasztva.";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
     private final JLabeledList<PlayListDto> lsOpera = new JLabeledList<>("Operák");
 
@@ -422,9 +445,9 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void fillRoles(List<RoleDto> roles) {
         var firstRoleRow = findFirstRoleRow();
 
-        for (int i = 0; i < roles.size(); i++) {
-            var roleDto = roles.get(i);
-            tblPerformances.setValueAt(roleDto, firstRoleRow + i, COLUMN_ROLE);
+        for (int r = 0; r < roles.size(); r++) {
+            var roleDto = roles.get(r);
+            tblPerformances.setValueAt(roleDto, firstRoleRow + r, COLUMN_ROLE);
         }
     }
 
@@ -451,8 +474,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
         if (!CollectionUtils.isEmpty(conductors)) {
             fillConductors(performanceColumnIndex, conductors);
         }
-
-
     }
 
     private void fillConductors(int performanceColumnIndex, List<ArtistListDto> conductors) {
@@ -653,14 +674,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 SYSTEM_ERROR,
                 ex
         );
-    }
-
-    private List<PerformanceSimpleDto> makePerformanceSimpleDtos(PlayStateDto playStateDto) {
-        return playStateDto.getPerformanceStateDtos()
-                .stream()
-                .map(PerformanceStateDto::getNaturalId)
-                .map(this::createPerformanceSimpleDto)
-                .toList();
     }
 
     private PlayPerformanceChangeCommand createPlayPerformanceChangeCommand() {
@@ -999,25 +1012,6 @@ public class OperasTabPane extends AbstractCustomTabPane {
                 .build();
     }
 
-    private boolean isOnlyRowWithRole(RoleDto originalRole) {
-        var selectedRow = tblPerformances.getSelectedRow();
-        var rowCount = retrieveModel()
-                .getRowCount();
-
-        for (var r = findFirstRoleRow(); r < rowCount; r++) {
-            if (r != selectedRow && foundOriginalRoleInRow(r, originalRole)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean foundOriginalRoleInRow(int row, RoleDto originalRole) {
-        return tblPerformances.getValueAt(row, COLUMN_ROLE) instanceof RoleDto roleDto
-                && Objects.equals(roleDto, originalRole);
-    }
-
     private int findFirstRoleRow() {
         return lastConductorRow + 1;
     }
@@ -1027,7 +1021,19 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private void deleteRole(RoleDto roleDto) {
+        deleteRoleFromTable(roleDto);
         newState.delete(roleDto);
+    }
+
+    private void deleteRoleFromTable(RoleDto roleDto) {
+        DefaultTableModel model = retrieveModel();
+        var firstRoleRow = findFirstRoleRow();
+
+        for (var r = tblPerformances.getRowCount() - 1; r >= firstRoleRow; r--) {
+            if (Objects.equals(roleDto, readRoleDto(r))) {
+                model.removeRow(r);
+            }
+        }
     }
 
     private void createPerformance() {
@@ -1143,10 +1149,10 @@ public class OperasTabPane extends AbstractCustomTabPane {
         prepareLsOpera();
         prepareTblPerformances();
 
-        var scrollPane = new JScrollPane(tblPerformances);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        var scrollPaneTable = new JScrollPane(tblPerformances);
+        scrollPaneTable.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lsOpera, scrollPane);
+        var splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lsOpera, scrollPaneTable);
 
         splitPane.setDividerLocation(200);
         splitPane.setDividerSize(2);
@@ -1163,6 +1169,128 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private void prepareTblPerformances() {
         tblPerformances.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tblPerformances.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                if (event.getButton() == MouseEvent.BUTTON3) {
+                    var locationOnScreen = event.getLocationOnScreen();
+
+                    buildPopupMenu(event)
+                            .show(owner, locationOnScreen.x, locationOnScreen.y);
+                }
+            }
+        });
+    }
+
+    private JPopupMenu buildPopupMenu(MouseEvent event) {
+        var popupMenu = new JPopupMenu();
+        var point = event.getPoint();
+
+        var row = tblPerformances.rowAtPoint(point);
+        var column = tblPerformances.columnAtPoint(point);
+
+        popupMenu.add(makeMenuItemModifyLocation(row, column));
+        popupMenu.add(makeMenuItemDeleteLocation(row, column));
+        popupMenu.add(new JSeparator());
+        popupMenu.add(makeMenuItemModifyArtist(row, column));
+        popupMenu.add(makeMenuItemDeleteArtist(row, column));
+        popupMenu.add(new JSeparator());
+        popupMenu.add(makeMenuItemDeleteRole(row));
+
+        return popupMenu;
+    }
+
+    private JMenuItem makeMenuItemDeleteLocation(int row, int column) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(CAPTION_DELETE_LOCATION);
+
+        if (row == ROW_LOCATION && column > COLUMN_ROLE) {
+            var locationDto = readLocationDto(column);
+            if (Objects.nonNull(locationDto)) {
+                return UiUtil.makeMenuItem(CAPTION_DELETE_LOCATION, e -> deleteLocation(locationDto));
+            }
+            return dummyMenuItemSupplier.get();
+        }
+
+        return dummyMenuItemSupplier.get();
+    }
+
+    private JMenuItem makeMenuItemModifyLocation(int row, int column) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItemToOpenDialog(CAPTION_MODIFY_LOCATION);
+
+        if (row == ROW_LOCATION && column > COLUMN_ROLE) {
+            var locationDto = readLocationDto(column);
+            if (Objects.nonNull(locationDto)) {
+                return UiUtil.makeMenuItemToOpenDialog(CAPTION_MODIFY_LOCATION, e -> modifyLocation(locationDto));
+            }
+            return dummyMenuItemSupplier.get();
+        }
+
+        return dummyMenuItemSupplier.get();
+    }
+
+    private JMenuItem makeMenuItemModifyArtist(int row, int column) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItemToOpenDialog(CAPTION_CHANGE_ARTIST_PATTERN.formatted(row >= findFirstRoleRow() ? CAPTION_SINGER : CAPTION_CONDUCTOR));
+
+        if (row >= ROW_FIRST_CONDUCTOR && column > COLUMN_ROLE) {
+            var artistDto = readArtistDto(row, column);
+            if (Objects.nonNull(artistDto)) {
+                return UiUtil.makeMenuItemToOpenDialog(CAPTION_CHANGE_ARTIST_PATTERN.formatted(artistTextProvider.provide(artistDto)), e -> modifyArtist(artistDto));
+            }
+
+            return dummyMenuItemSupplier.get();
+        }
+
+        return dummyMenuItemSupplier.get();
+    }
+
+    private JMenuItem makeMenuItemDeleteArtist(int row, int column) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(CAPTION_DELETE_ARTIST_PATTERN.formatted(row >= findFirstRoleRow() ? CAPTION_SINGER : CAPTION_CONDUCTOR));
+
+        if (row >= ROW_FIRST_CONDUCTOR && column > COLUMN_ROLE) {
+            var artistDto = readArtistDto(row, column);
+            if (Objects.nonNull(artistDto)) {
+                return UiUtil.makeMenuItem(CAPTION_DELETE_ARTIST_PATTERN.formatted(artistTextProvider.provide(artistDto)), e -> deleteArtist(artistDto));
+            }
+
+            return dummyMenuItemSupplier.get();
+        }
+
+        return dummyMenuItemSupplier.get();
+    }
+
+    private JMenuItem makeMenuItemDeleteRole(int row) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(CAPTION_DELETE_ROLE);
+
+        if (row >= findFirstRoleRow()) {
+            var roleDto = readRoleDto(row);
+            if (Objects.nonNull(roleDto)) {
+                return UiUtil.makeMenuItem(CAPTION_DELETE_ROLE_PATTERN.formatted(TextProviders.roleTextProvider.provide(roleDto)), e -> deleteRole(roleDto));
+            }
+
+            return dummyMenuItemSupplier.get();
+        }
+
+        return dummyMenuItemSupplier.get();
+    }
+
+    private void modifyLocation(LocationDto locationDto) {
+
+    }
+
+    private void deleteLocation(LocationDto locationDto) {
+
+    }
+
+    private void modifyArtist(ArtistListDto artistDto) {
+
+    }
+
+    private void deleteArtist(ArtistListDto artistDto) {
+
+    }
+
+    private ArtistListDto readArtistDto(int row, int column) {
+        return (ArtistListDto) tblPerformances.getValueAt(row, column);
     }
 
     private DefaultTableModel retrieveModel() {
@@ -1390,4 +1518,5 @@ public class OperasTabPane extends AbstractCustomTabPane {
     private void markStateChanged() {
         stateChanged = true;
     }
+
 }

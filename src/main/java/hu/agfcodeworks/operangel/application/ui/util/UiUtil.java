@@ -44,7 +44,6 @@ public class UiUtil {
         UIManager.getDefaults()
                 .entrySet()
                 .stream()
-//                .filter(e -> e.getKey().toString().startsWith("Button"))
                 .forEach(System.out::println);
     }
 
@@ -52,8 +51,15 @@ public class UiUtil {
         return font.deriveFont(Font.PLAIN);
     }
 
-    public JMenuItem makeMenuItem(String caption, ActionListener actionListener, boolean dialogOpening) {
-        var menuItem = new JMenuItem(CAPTION_PATTERN.formatted(caption, dialogOpening ? TRIPLE_DOT : EMPTY_STRING));
+    public JMenu makeMenu(String caption) {
+        var menuItem = new JMenu(caption);
+        menuItem.setOpaque(false);
+
+        return menuItem;
+    }
+
+    public JMenuItem makeMenuItem(String caption, ActionListener actionListener) {
+        var menuItem = new JMenuItem(CAPTION_PATTERN.formatted(caption, EMPTY_STRING));
 
         menuItem.addActionListener(actionListener);
         menuItem.setOpaque(false);
@@ -61,8 +67,10 @@ public class UiUtil {
         return menuItem;
     }
 
-    public JMenu makeMenu(String caption) {
-        var menuItem = new JMenu(caption);
+    public JMenuItem makeMenuItemToOpenDialog(String caption, ActionListener actionListener) {
+        var menuItem = new JMenuItem(CAPTION_PATTERN.formatted(caption, TRIPLE_DOT));
+
+        menuItem.addActionListener(actionListener);
         menuItem.setOpaque(false);
 
         return menuItem;
@@ -76,6 +84,24 @@ public class UiUtil {
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
+    }
+
+    public JMenuItem makeDummyMenuItem(String caption) {
+        var menuItem = new JMenuItem(CAPTION_PATTERN.formatted(caption, EMPTY_STRING));
+
+        menuItem.setEnabled(false);
+        menuItem.setOpaque(false);
+
+        return menuItem;
+    }
+
+    public JMenuItem makeDummyMenuItemToOpenDialog(String caption) {
+        var menuItem = new JMenuItem(CAPTION_PATTERN.formatted(caption, TRIPLE_DOT));
+
+        menuItem.setEnabled(false);
+        menuItem.setOpaque(false);
+
+        return menuItem;
     }
 
     public Border getBorder(String key) {

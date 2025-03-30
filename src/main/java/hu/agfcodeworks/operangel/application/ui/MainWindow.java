@@ -91,13 +91,13 @@ public class MainWindow extends JFrame {
         menuBar.add(mSettings);
         menuBar.add(mHelp);
 
-        mFile.add(UiUtil.makeMenuItem("Importálás", event -> this.importFile(), true));
-        mFile.add(UiUtil.makeMenuItem("Exportálás", event -> this.exportFile(), true));
-        mFile.add(UiUtil.makeMenuItem("Kilépés", event -> this.closeWindow(), false));
+        mFile.add(UiUtil.makeMenuItemToOpenDialog("Importálás", event -> this.importFile()));
+        mFile.add(UiUtil.makeMenuItemToOpenDialog("Exportálás", event -> this.exportFile()));
+        mFile.add(UiUtil.makeMenuItem("Kilépés", event -> this.closeWindow()));
 
-        mSettings.add(UiUtil.makeMenuItem("Adatbázis", event -> this.changeDatabaseConnection(), true));
+        mSettings.add(UiUtil.makeMenuItemToOpenDialog("Adatbázis", event -> this.changeDatabaseConnection()));
 
-        mHelp.add(UiUtil.makeMenuItem("Névjegy", event -> showAbout(), true));
+        mHelp.add(UiUtil.makeMenuItemToOpenDialog("Névjegy", event -> showAbout()));
 
         return menuBar;
     }
