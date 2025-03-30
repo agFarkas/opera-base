@@ -39,6 +39,7 @@ import hu.agfcodeworks.operangel.application.ui.editor.RoleEditor;
 import hu.agfcodeworks.operangel.application.ui.renderer.OperaTableCellRenderer;
 import hu.agfcodeworks.operangel.application.ui.text.TextProviders;
 import hu.agfcodeworks.operangel.application.ui.util.DialogUtil;
+import hu.agfcodeworks.operangel.application.ui.util.SpecificContentUiUtil;
 import hu.agfcodeworks.operangel.application.ui.util.UiUtil;
 import hu.agfcodeworks.operangel.application.util.ContextUtil;
 import hu.agfcodeworks.operangel.application.util.PlayStateUtil;
@@ -112,15 +113,7 @@ public class OperasTabPane extends AbstractCustomTabPane {
 
     private static final String CAPTION_SINGER = "Énekes";
 
-    private static final String CAPTION_MODIFY_LOCATION = "Helyszín módosítása";
-
-    private static final String CAPTION_DELETE_LOCATION = "Helyszín törlése";
-
     private static final String CAPTION_DELETE_ROLE = "Szerep törlése";
-
-    private static final String CAPTION_DELETE_ARTIST_PATTERN = "%s törlése";
-
-    private static final String CAPTION_CHANGE_ARTIST_PATTERN = "%s módosítása";
 
     private static final String CAPTION_DELETE_ROLE_PATTERN = "'%s' szerep törlése";
 
@@ -1183,12 +1176,17 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private JPopupMenu buildPopupMenu(MouseEvent event) {
-        var popupMenu = new JPopupMenu();
         var point = event.getPoint();
 
-        var row = tblPerformances.rowAtPoint(point);
-        var column = tblPerformances.columnAtPoint(point);
+        return buildPopupMenu(
+                tblPerformances.rowAtPoint(point),
+                tblPerformances.columnAtPoint(point)
+        );
+    }
 
+    private JPopupMenu buildPopupMenu(int row, int column) {
+
+        var popupMenu = new JPopupMenu();
         popupMenu.add(makeMenuItemModifyLocation(row, column));
         popupMenu.add(makeMenuItemDeleteLocation(row, column));
         popupMenu.add(new JSeparator());
@@ -1200,28 +1198,30 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return popupMenu;
     }
 
-    private JMenuItem makeMenuItemDeleteLocation(int row, int column) {
-        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(CAPTION_DELETE_LOCATION);
+    private JMenuItem makeMenuItemModifyLocation(int row, int column) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItemToOpenDialog(SpecificContentUiUtil.CAPTION_MODIFY_LOCATION);
 
         if (row == ROW_LOCATION && column > COLUMN_ROLE) {
             var locationDto = readLocationDto(column);
             if (Objects.nonNull(locationDto)) {
-                return UiUtil.makeMenuItem(CAPTION_DELETE_LOCATION, e -> deleteLocation(locationDto));
+                return SpecificContentUiUtil.makeMenuItemModifyLocation(locationDto, this::modifyLocation);
             }
+
             return dummyMenuItemSupplier.get();
         }
 
         return dummyMenuItemSupplier.get();
     }
 
-    private JMenuItem makeMenuItemModifyLocation(int row, int column) {
-        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItemToOpenDialog(CAPTION_MODIFY_LOCATION);
+    private JMenuItem makeMenuItemDeleteLocation(int row, int column) {
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(SpecificContentUiUtil.CAPTION_DELETE_LOCATION);
 
         if (row == ROW_LOCATION && column > COLUMN_ROLE) {
             var locationDto = readLocationDto(column);
             if (Objects.nonNull(locationDto)) {
-                return UiUtil.makeMenuItemToOpenDialog(CAPTION_MODIFY_LOCATION, e -> modifyLocation(locationDto));
+                return SpecificContentUiUtil.makeMenuItemDeleteLocation(locationDto, this::deleteLocation);
             }
+
             return dummyMenuItemSupplier.get();
         }
 
@@ -1229,12 +1229,12 @@ public class OperasTabPane extends AbstractCustomTabPane {
     }
 
     private JMenuItem makeMenuItemModifyArtist(int row, int column) {
-        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItemToOpenDialog(CAPTION_CHANGE_ARTIST_PATTERN.formatted(row >= findFirstRoleRow() ? CAPTION_SINGER : CAPTION_CONDUCTOR));
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItemToOpenDialog(SpecificContentUiUtil.CAPTION_MODIFY_ARTIST_PATTERN.formatted(row >= findFirstRoleRow() ? CAPTION_SINGER : CAPTION_CONDUCTOR));
 
         if (row >= ROW_FIRST_CONDUCTOR && column > COLUMN_ROLE) {
             var artistDto = readArtistDto(row, column);
             if (Objects.nonNull(artistDto)) {
-                return UiUtil.makeMenuItemToOpenDialog(CAPTION_CHANGE_ARTIST_PATTERN.formatted(artistTextProvider.provide(artistDto)), e -> modifyArtist(artistDto));
+                return SpecificContentUiUtil.makeMenuItemModifyArtist(artistDto, this::modifyArtist);
             }
 
             return dummyMenuItemSupplier.get();
@@ -1243,13 +1243,14 @@ public class OperasTabPane extends AbstractCustomTabPane {
         return dummyMenuItemSupplier.get();
     }
 
+
     private JMenuItem makeMenuItemDeleteArtist(int row, int column) {
-        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(CAPTION_DELETE_ARTIST_PATTERN.formatted(row >= findFirstRoleRow() ? CAPTION_SINGER : CAPTION_CONDUCTOR));
+        Supplier<JMenuItem> dummyMenuItemSupplier = () -> UiUtil.makeDummyMenuItem(SpecificContentUiUtil.CAPTION_DELETE_ARTIST_PATTERN.formatted(row >= findFirstRoleRow() ? CAPTION_SINGER : CAPTION_CONDUCTOR));
 
         if (row >= ROW_FIRST_CONDUCTOR && column > COLUMN_ROLE) {
             var artistDto = readArtistDto(row, column);
             if (Objects.nonNull(artistDto)) {
-                return UiUtil.makeMenuItem(CAPTION_DELETE_ARTIST_PATTERN.formatted(artistTextProvider.provide(artistDto)), e -> deleteArtist(artistDto));
+                return SpecificContentUiUtil.makeMenuItemDeleteArtist(artistDto, this::deleteArtist);
             }
 
             return dummyMenuItemSupplier.get();
